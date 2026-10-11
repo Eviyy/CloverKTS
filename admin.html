@@ -22,7 +22,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- LOGIN SCREEN (EMAIL & PASSWORD) -->
+    <!-- LOGIN SCREEN (USERNAME & PASSWORD) -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl text-center space-y-6 border border-slate-100">
             <div class="w-16 h-16 bg-emerald-500 text-white rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/30">
@@ -30,13 +30,13 @@
             </div>
             <div>
                 <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Dashboard Admin</h2>
-                <p class="text-xs text-slate-500 font-medium leading-relaxed">Masuk menggunakan Email dan Password admin yang terdaftar di Firebase.</p>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed">Masuk menggunakan Username dan Password admin Anda.</p>
             </div>
             
             <form id="loginForm" class="space-y-4 text-left">
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-2">Email Admin</label>
-                    <input type="email" id="adminEmailInput" required placeholder="admin@clover.com" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 shadow-inner">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-2">Username Admin</label>
+                    <input type="text" id="adminUsernameInput" required placeholder="admin" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 shadow-inner">
                 </div>
                 <div>
                     <label class="block text-xs font-extrabold text-slate-700 mb-2">Password</label>
@@ -91,7 +91,7 @@
 
             <!-- TAB 1: MODERASI PESAN -->
             <div id="tabContentMessages" class="space-y-6">
-                <!-- Statistik Utama (Kunjungan, Pengunjung Online, Status Server) -->
+                <!-- Statistik Utama -->
                 <div class="grid grid-cols-1 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
@@ -173,7 +173,7 @@
 
             <!-- TAB 2: MASUKAN WEB -->
             <div id="tabContentFeedback" class="hidden space-y-6">
-                <!-- Statistik Utama (Kunjungan, Pengunjung Online, Status Server) -->
+                <!-- Statistik Utama -->
                 <div class="grid grid-cols-1 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
@@ -245,7 +245,7 @@
 
             <!-- TAB 3: BROADCAST -->
             <div id="tabContentBroadcast" class="hidden space-y-6">
-                <!-- Statistik Utama (Kunjungan, Pengunjung Online, Status Server) -->
+                <!-- Statistik Utama -->
                 <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
@@ -313,7 +313,7 @@
         </main>
     </div>
 
-    <!-- FIREBASE + ADMIN SCRIPT (EMAIL & PASSWORD AUTH) -->
+    <!-- FIREBASE + ADMIN SCRIPT (USERNAME & PASSWORD AUTH) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -339,7 +339,7 @@
         const loginScreen = document.getElementById("loginScreen");
         const adminDashboard = document.getElementById("adminDashboard");
         const loginForm = document.getElementById("loginForm");
-        const adminEmailInput = document.getElementById("adminEmailInput");
+        const adminUsernameInput = document.getElementById("adminUsernameInput");
         const adminPasswordInput = document.getElementById("adminPasswordInput");
         const logoutBtn = document.getElementById("logoutBtn");
         const loginError = document.getElementById("loginError");
@@ -378,14 +378,21 @@
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             loginError.classList.add("hidden");
-            const email = adminEmailInput.value.trim();
+            
+            let userInput = adminUsernameInput.value.trim();
             const password = adminPasswordInput.value;
 
+            // Otomatis ubah username ke format email internal jika tidak mengandung '@'
+            let emailToUse = userInput;
+            if (!emailToUse.includes("@")) {
+                emailToUse = userInput + "@clover.admin";
+            }
+
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                await signInWithEmailAndPassword(auth, emailToUse, password);
             } catch (err) {
                 console.error(err);
-                loginError.textContent = "Gagal masuk: " + err.message;
+                loginError.textContent = "Gagal masuk: Username atau password salah.";
                 loginError.classList.remove("hidden");
             }
         });
@@ -399,7 +406,7 @@
                 if (user.uid === ADMIN_UID) {
                     loginScreen.classList.add("hidden");
                     adminDashboard.classList.remove("hidden");
-                    adminEmailDisplay.textContent = user.email || "Admin";
+                    adminEmailDisplay.textContent = user.email ? user.email.split('@')[0] : "Admin";
                     initAdminPanel();
                 } else {
                     signOut(auth);
