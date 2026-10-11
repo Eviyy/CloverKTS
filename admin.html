@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Clover Admin Dashboard">
-    <meta name="theme-color" content="#10b981">
-
-    <title>Clover — Admin Dashboard</title>
+    <title>Dashboard Admin — Clover</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,1168 +15,391 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: "Plus Jakarta Sans", sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Floating Clovers Background Animation */
-        @keyframes float-up {
-            0% { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
-            10% { opacity: 0.15; }
-            90% { opacity: 0.15; }
-            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
-        }
-        .bg-clover {
-            position: fixed;
-            color: #10b981;
-            animation: float-up linear infinite;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Glassmorphism utilities */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
         }
     </style>
 </head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative">
-
-<!-- Background Floating Clovers -->
-<div id="floating-backgrounds">
-    <i class="fa-solid fa-clover bg-clover text-2xl" style="left: 10%; animation-duration: 18s; animation-delay: 0s;"></i>
-    <i class="fa-solid fa-clover bg-clover text-4xl" style="left: 35%; animation-duration: 25s; animation-delay: 4s;"></i>
-    <i class="fa-solid fa-clover bg-clover text-xl"  style="left: 60%; animation-duration: 20s; animation-delay: 2s;"></i>
-    <i class="fa-solid fa-clover bg-clover text-3xl" style="left: 85%; animation-duration: 22s; animation-delay: 7s;"></i>
-    <i class="fa-solid fa-clover bg-clover text-2xl" style="left: 20%; animation-duration: 19s; animation-delay: 10s;"></i>
-    <i class="fa-solid fa-clover bg-clover text-xl"  style="left: 75%; animation-duration: 24s; animation-delay: 12s;"></i>
-</div>
-
-<!-- =====================================================
-     TOAST CONTAINER, CONFIRM MODAL & REPLY MODAL
-===================================================== -->
-<div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-<div id="confirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden transition-all">
-    <div class="bg-white rounded-[2rem] p-6 max-w-sm w-full shadow-2xl border border-slate-100 transform scale-95 transition-all">
-        <div id="confirmIconContainer" class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-bold mb-4">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
-        <h3 id="confirmTitle" class="text-lg font-extrabold text-slate-900 mb-2">Konfirmasi</h3>
-        <p id="confirmMessage" class="text-sm font-medium text-slate-500 mb-6">Apakah Anda yakin?</p>
-        <div class="flex gap-3">
-            <button id="confirmCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-3 rounded-2xl transition-all">Batal</button>
-            <button id="confirmYesBtn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl transition-all shadow-md shadow-emerald-600/20">Ya, Lanjutkan</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Balas Admin -->
-<div id="replyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden transition-all">
-    <div class="bg-white rounded-[2rem] p-6 max-w-md w-full shadow-2xl border border-slate-100 transform scale-95 transition-all">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold mb-4">
-            <i class="fa-solid fa-reply"></i>
-        </div>
-        <h3 class="text-lg font-extrabold text-slate-900 mb-1">Balas Pesan / Masukan</h3>
-        <p class="text-xs font-medium text-slate-500 mb-4">Tulis tanggapan atau komentar resmi dari admin.</p>
-        <textarea id="replyTextarea" rows="4" placeholder="Tulis balasan di sini..." class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-slate-800 text-sm font-medium shadow-inner transition-all mb-6 resize-none"></textarea>
-        <div class="flex gap-3">
-            <button id="replyCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-3 rounded-2xl transition-all">Batal</button>
-            <button id="replySubmitBtn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl transition-all shadow-md shadow-emerald-600/20">Kirim Balasan</button>
-        </div>
-    </div>
-</div>
-
-<!-- =====================================================
-     LOGIN PAGE
-===================================================== -->
-<div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-emerald-50 via-teal-50 to-slate-100">
-    <div class="w-full max-w-md glass-card rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-white">
-        
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/30 mx-auto mb-4 bg-teal-500">
-                <img src="Icon/Hicon1.png" alt="Clover Logo" class="w-full h-full object-cover">
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl text-center space-y-6 border border-slate-100">
+            <div class="w-16 h-16 bg-emerald-500 text-white rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/30">
+                <i class="fa-solid fa-shield-halved"></i>
             </div>
-            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Clover Admin</h1>
-            <p class="text-xs font-semibold text-emerald-600 mt-1">Masuk untuk mengelola pesan dan masukan web</p>
-        </div>
-
-        <form id="loginForm" class="space-y-5">
             <div>
-                <label for="email" class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">Email Admin</label>
-                <input type="email" id="email" placeholder="admin@email.com" autocomplete="username" required
-                       class="w-full p-4 bg-white/80 rounded-2xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-slate-800 text-sm font-medium shadow-inner transition-all">
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Dashboard Admin</h2>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed">Masuk menggunakan akun Google Admin yang terdaftar untuk mengelola Clover.</p>
             </div>
-
-            <div>
-                <label for="password" class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">Password</label>
-                <input type="password" id="password" placeholder="Masukkan password" autocomplete="current-password" required
-                       class="w-full p-4 bg-white/80 rounded-2xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-slate-800 text-sm font-medium shadow-inner transition-all">
-            </div>
-
-            <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold p-4 rounded-2xl transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> Masuk ke Dashboard
+            <button id="googleLoginBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-900/15 flex items-center justify-center gap-3">
+                <i class="fa-brands fa-google text-emerald-400"></i> Masuk dengan Google
             </button>
-
-            <div id="loginError" class="min-h-[20px] text-center text-rose-600 text-xs font-bold"></div>
-        </form>
+            <div id="loginError" class="hidden text-xs font-bold text-rose-500 bg-rose-50 p-3 rounded-xl border border-rose-100"></div>
+            <a href="index.html" class="block text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors">&larr; Kembali ke Beranda</a>
+        </div>
     </div>
-</div>
 
-<!-- =====================================================
-     DASHBOARD
-===================================================== -->
-<div id="dashboard" class="hidden min-h-screen flex flex-col">
-
-    <!-- NAVBAR -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40 transition-all">
-        <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
-            
-            <div class="flex items-center gap-3 shrink-0">
-                <div class="w-10 h-10 rounded-2xl overflow-hidden shadow-md shadow-emerald-500/20 bg-teal-500">
-                    <img src="Icon/Hicon1.png" alt="Clover Logo" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h2 class="font-extrabold text-base text-slate-900 leading-tight tracking-tight">Clover Admin</h2>
-                    <span class="text-[10px] font-semibold text-emerald-600">Monitoring Pesan & Masukan Web</span>
-                </div>
-            </div>
-
-            <button id="logoutButton" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs px-4 py-2.5 rounded-2xl transition-colors flex items-center gap-2 border border-rose-100 shadow-sm">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </button>
-        </div>
-    </header>
-
-    <!-- CONTENT -->
-    <main class="max-w-6xl mx-auto px-4 py-12 flex-1 space-y-8 w-full relative z-10">
-
-        <div class="welcome">
-            <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Dashboard Admin</h1>
-            <p class="text-sm font-medium text-slate-500">Pantau statistik pengguna, moderasi pesan kehangatan, dan tinjau masukan pengguna secara *real-time*.</p>
-        </div>
-
-        <!-- STATISTICS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <p class="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Sedang Online
-                </p>
-                <h2 id="activeUsers" class="text-3xl font-extrabold text-amber-500">0</h2>
-            </div>
-
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <p class="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">Total Kunjungan</p>
-                <h2 id="totalVisits" class="text-3xl font-extrabold text-blue-600">0</h2>
-            </div>
-
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <p class="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">Total Pesan</p>
-                <h2 id="totalMessages" class="text-3xl font-extrabold text-emerald-600">0</h2>
-            </div>
-
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <p class="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">Pesan Hari Ini</p>
-                <h2 id="todayMessages" class="text-3xl font-extrabold text-teal-600">0</h2>
-            </div>
-
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <p class="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">Status Database</p>
-                <h2 id="databaseStatus" class="text-lg font-extrabold text-slate-700">Menunggu...</h2>
-            </div>
-        </div>
-
-        <!-- TAB BUTTONS NAVIGATION -->
-        <div class="flex flex-wrap items-center gap-3 bg-white p-2.5 rounded-3xl border border-slate-100 shadow-sm w-fit">
-            <button id="tabMessagesBtn" class="px-6 py-3 rounded-2xl text-xs font-extrabold transition-all bg-emerald-600 text-white shadow-md shadow-emerald-600/25 flex items-center gap-2">
-                <i class="fa-solid fa-envelope-open-text"></i> Pesan Kehangatan
-            </button>
-            <button id="tabFeedbackBtn" class="px-6 py-3 rounded-2xl text-xs font-extrabold transition-all text-slate-600 hover:bg-slate-100 flex items-center gap-2">
-                <i class="fa-solid fa-comment-dots"></i> Masukan Web <span id="feedbackNavBadge" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0</span>
-            </button>
-        </div>
-
-        <!-- =================================================
-             MESSAGE SECTION (DEFAULT TAB)
-        ================================================== -->
-        <section id="messagesSection" class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-6">
-            <!-- Header Kontrol Pesan, Filter Tanggal, Pencarian & Ekspor -->
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 pb-6 border-b border-slate-100">
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden flex-1 flex flex-col">
+        
+        <!-- TOP NAVBAR -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <input type="checkbox" id="selectAllCheckbox" class="w-5 h-5 rounded-lg text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer">
-                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-envelope-open-text text-emerald-500"></i> Pesan Kehangatan Masuk
-                    </h2>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
+                        <i class="fa-solid fa-clover"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-slate-900 text-base leading-tight">Clover Admin</h1>
+                        <p id="adminEmail" class="text-[10px] font-semibold text-emerald-600">Admin terverifikasi</p>
+                    </div>
                 </div>
-
-                <!-- Kontrol Filter & Pencarian -->
-                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                    
-                    <!-- Search Input -->
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2 shadow-inner">
-                        <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-                        <input type="text" id="messageSearchInput" placeholder="Cari pesan atau pengirim..." class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none w-36 sm:w-44">
-                    </div>
-
-                    <!-- Date Filter Input -->
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 shadow-inner">
-                        <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
-                        <input type="date" id="filterDateInput" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
-                        <button id="clearDateBtn" class="hidden text-xs text-rose-500 font-extrabold hover:text-rose-600 px-1" title="Reset Filter Tanggal">✕</button>
-                    </div>
-
-                    <!-- Export CSV Button -->
-                    <button id="exportMessagesBtn" class="bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold text-xs px-4 py-2.5 rounded-2xl transition-all border border-teal-100 flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-file-excel"></i> Ekspor CSV
-                    </button>
-
-                    <!-- Bulk Actions Container -->
-                    <div id="bulkActionsContainer" class="hidden flex items-center gap-2 flex-wrap">
-                        <span id="selectedCountBadge" class="bg-emerald-50 text-emerald-700 text-xs font-extrabold px-3 py-2 rounded-2xl border border-emerald-100">0 dipilih</span>
-                        <button id="bulkApproveBtn" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-xs px-4 py-2.5 rounded-2xl transition-all">✓ Approve</button>
-                        <button id="bulkRejectBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold text-xs px-4 py-2.5 rounded-2xl transition-all">✕ Reject</button>
-                        <button id="bulkDeleteBtn" class="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-4 py-2.5 rounded-2xl transition-all shadow-md shadow-rose-500/20">🗑 Hapus</button>
-                    </div>
-
-                    <button id="deleteAllButton" class="bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-700 font-bold text-xs px-4 py-2.5 rounded-2xl transition-all shadow-sm flex items-center gap-2 ml-auto lg:ml-0">
-                        <i class="fa-solid fa-trash-can"></i> Hapus Semua
-                    </button>
-                </div>
+                <button id="logoutBtn" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs px-4 py-2.5 rounded-xl border border-rose-100 transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                </button>
             </div>
+        </header>
 
-            <div id="messageList" class="space-y-4">
-                <div class="py-16 text-center text-slate-400 font-medium text-sm">
-                    Memuat data pesan...
-                </div>
-            </div>
-
-            <!-- Pagination Container for Messages -->
-            <div id="messagePagination"></div>
-        </section>
-
-        <!-- =================================================
-             MASUKAN WEB SECTION (HIDDEN BY DEFAULT)
-        ================================================== -->
-        <section id="feedbackSection" class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-6 hidden">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-100">
-                <div class="flex items-center gap-3">
-                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-comment-dots text-teal-500"></i> Masukan & Saran Pengguna Web
-                    </h2>
-                    <span id="feedbackCountBadge" class="bg-teal-50 text-teal-700 text-xs font-extrabold px-3.5 py-2 rounded-2xl border border-teal-100">0 Masukan</span>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <!-- Search Input for Feedback -->
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2 shadow-inner">
-                        <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-                        <input type="text" id="feedbackSearchInput" placeholder="Cari masukan..." class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none w-36 sm:w-44">
-                    </div>
-
-                    <!-- Export Feedback CSV Button -->
-                    <button id="exportFeedbackBtn" class="bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold text-xs px-4 py-2.5 rounded-2xl transition-all border border-teal-100 flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-file-excel"></i> Ekspor CSV
-                    </button>
-                </div>
-            </div>
-
-            <div id="feedbackList" class="space-y-4">
-                <div class="py-12 text-center text-slate-400 font-medium text-sm">
-                    Memuat data masukan web...
-                </div>
-            </div>
-
-            <!-- Pagination Container for Feedback -->
-            <div id="feedbackPagination"></div>
-        </section>
-
-    </main>
-</div>
-
-<!-- =====================================================
-     FIREBASE + JAVASCRIPT
-===================================================== -->
-<script type="module">
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getDatabase, ref, onValue, update, remove, get, query, limitToLast, orderByChild } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk",
-        authDomain: "aplikasi-d862d.firebaseapp.com",
-        databaseURL: "https://aplikasi-d862d-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "aplikasi-d862d",
-        storageBucket: "aplikasi-d862d.firebasestorage.app",
-        messagingSenderId: "491134919372",
-        appId: "1:491134919372:web:63fde8d8d32eb8820e1869",
-        measurementId: "G-3TK6ZQGMDP"
-    };
-
-    const ADMIN_UID = "B5hS7tiFB7Q291pToua9CituJug2";
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
-
-    const loginPage = document.getElementById("loginPage");
-    const dashboard = document.getElementById("dashboard");
-    const loginForm = document.getElementById("loginForm");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginError = document.getElementById("loginError");
-    const logoutButton = document.getElementById("logoutButton");
-    
-    // Tab Elements
-    const tabMessagesBtn = document.getElementById("tabMessagesBtn");
-    const tabFeedbackBtn = document.getElementById("tabFeedbackBtn");
-    const messagesSection = document.getElementById("messagesSection");
-    const feedbackSection = document.getElementById("feedbackSection");
-    const feedbackNavBadge = document.getElementById("feedbackNavBadge");
-
-    // Elemen Statistik & Konten
-    const activeUsers = document.getElementById("activeUsers");
-    const totalVisits = document.getElementById("totalVisits");
-    const messageList = document.getElementById("messageList");
-    const totalMessages = document.getElementById("totalMessages");
-    const todayMessages = document.getElementById("todayMessages");
-    const databaseStatus = document.getElementById("databaseStatus");
-    const deleteAllButton = document.getElementById("deleteAllButton");
-    
-    // Elemen Masukan Web
-    const feedbackList = document.getElementById("feedbackList");
-    const feedbackCountBadge = document.getElementById("feedbackCountBadge");
-    const feedbackSearchInput = document.getElementById("feedbackSearchInput");
-    const exportFeedbackBtn = document.getElementById("exportFeedbackBtn");
-    const feedbackPagination = document.getElementById("feedbackPagination");
-
-    // Elemen Multi-Select, Bulk Actions & Filter Tanggal
-    const selectAllCheckbox = document.getElementById("selectAllCheckbox");
-    const bulkActionsContainer = document.getElementById("bulkActionsContainer");
-    const selectedCountBadge = document.getElementById("selectedCountBadge");
-    const bulkApproveBtn = document.getElementById("bulkApproveBtn");
-    const bulkRejectBtn = document.getElementById("bulkRejectBtn");
-    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
-    const filterDateInput = document.getElementById("filterDateInput");
-    const clearDateBtn = document.getElementById("clearDateBtn");
-    const messageSearchInput = document.getElementById("messageSearchInput");
-    const exportMessagesBtn = document.getElementById("exportMessagesBtn");
-    const messagePagination = document.getElementById("messagePagination");
-
-    let currentMessages = [];
-    let currentFeedbacks = [];
-    let selectedMessageIds = new Set();
-    let selectedFilterDate = "";
-    let messageSearchQuery = "";
-    let feedbackSearchQuery = "";
-
-    // Pagination State
-    let messageCurrentPage = 1;
-    const itemsPerPage = 8;
-    let feedbackCurrentPage = 1;
-
-    // State untuk Modal Balas Admin
-    let currentReplyTarget = { id: null, collection: null };
-    const replyModal = document.getElementById("replyModal");
-    const replyTextarea = document.getElementById("replyTextarea");
-    const replyCancelBtn = document.getElementById("replyCancelBtn");
-    const replySubmitBtn = document.getElementById("replySubmitBtn");
-
-    // Tab Switching Logic
-    tabMessagesBtn.addEventListener("click", () => {
-        messagesSection.classList.remove("hidden");
-        feedbackSection.classList.add("hidden");
-
-        tabMessagesBtn.className = "px-6 py-3 rounded-2xl text-xs font-extrabold transition-all bg-emerald-600 text-white shadow-md shadow-emerald-600/25 flex items-center gap-2";
-        tabFeedbackBtn.className = "px-6 py-3 rounded-2xl text-xs font-extrabold transition-all text-slate-600 hover:bg-slate-100 flex items-center gap-2";
-    });
-
-    tabFeedbackBtn.addEventListener("click", () => {
-        feedbackSection.classList.remove("hidden");
-        messagesSection.classList.add("hidden");
-
-        tabFeedbackBtn.className = "px-6 py-3 rounded-2xl text-xs font-extrabold transition-all bg-teal-600 text-white shadow-md shadow-teal-600/25 flex items-center gap-2";
-        tabMessagesBtn.className = "px-6 py-3 rounded-2xl text-xs font-extrabold transition-all text-slate-600 hover:bg-slate-100 flex items-center gap-2";
-    });
-
-    // Sistem Toast Notifikasi
-    function showToast(message, type = "success") {
-        const container = document.getElementById("toastContainer");
-        const toast = document.createElement("div");
-        
-        let bgClass = "bg-emerald-600 text-white shadow-emerald-600/20";
-        let icon = "fa-circle-check";
-        if (type === "error") {
-            bgClass = "bg-rose-600 text-white shadow-rose-600/20";
-            icon = "fa-circle-xmark";
-        } else if (type === "info") {
-            bgClass = "bg-slate-900 text-white shadow-slate-900/20";
-            icon = "fa-circle-info";
-        }
-
-        toast.className = `pointer-events-auto px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-bold transform translate-y-2 opacity-0 transition-all duration-300 ${bgClass}`;
-        toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${escapeHTML(message)}</span>`;
-        
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.remove("translate-y-2", "opacity-0"), 10);
-        setTimeout(() => {
-            toast.classList.add("translate-y-2", "opacity-0");
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-
-    // Sistem Modal Konfirmasi Kustom
-    let confirmCallback = null;
-    const confirmModal = document.getElementById("confirmModal");
-    const confirmTitleEl = document.getElementById("confirmTitle");
-    const confirmMessageEl = document.getElementById("confirmMessage");
-    const confirmYesBtn = document.getElementById("confirmYesBtn");
-    const confirmCancelBtn = document.getElementById("confirmCancelBtn");
-    const confirmIconContainer = document.getElementById("confirmIconContainer");
-
-    confirmCancelBtn.addEventListener("click", () => {
-        confirmModal.classList.add("hidden");
-        confirmCallback = null;
-    });
-
-    confirmYesBtn.addEventListener("click", () => {
-        confirmModal.classList.add("hidden");
-        if (confirmCallback) confirmCallback();
-        confirmCallback = null;
-    });
-
-    function showConfirm(title, message, callback, isDanger = false) {
-        confirmTitleEl.textContent = title;
-        confirmMessageEl.textContent = message;
-        confirmCallback = callback;
-        
-        if (isDanger) {
-            confirmIconContainer.className = "w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg font-bold mb-4";
-            confirmYesBtn.className = "flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-3 rounded-2xl transition-all shadow-md shadow-rose-600/20";
-        } else {
-            confirmIconContainer.className = "w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-bold mb-4";
-            confirmYesBtn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl transition-all shadow-md shadow-emerald-600/20";
-        }
-
-        confirmModal.classList.remove("hidden");
-    }
-
-    // Logika Modal Balasan
-    function openReplyModal(id, collection, existingReply = "") {
-        currentReplyTarget = { id, collection };
-        replyTextarea.value = existingReply || "";
-        replyModal.classList.remove("hidden");
-        replyTextarea.focus();
-    }
-
-    replyCancelBtn.addEventListener("click", () => {
-        replyModal.classList.add("hidden");
-        currentReplyTarget = { id: null, collection: null };
-    });
-
-    replySubmitBtn.addEventListener("click", async () => {
-        const text = replyTextarea.value.trim();
-        const { id, collection } = currentReplyTarget;
-        if (!id || !collection) return;
-
-        try {
-            const itemRef = ref(database, `clover/${collection}/${id}`);
-            await update(itemRef, {
-                reply: text,
-                repliedAt: Date.now()
-            });
-            showToast("Balasan berhasil disimpan!", "success");
-            replyModal.classList.add("hidden");
-            currentReplyTarget = { id: null, collection: null };
-        } catch (error) {
-            console.error("Gagal menyimpan balasan:", error);
-            showToast("Gagal menyimpan balasan.", "error");
-        }
-    });
-
-    loginForm.addEventListener("submit", async function(event) {
-        event.preventDefault();
-        loginError.textContent = "";
-
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        try {
-            const result = await signInWithEmailAndPassword(auth, email, password);
-            if (result.user.uid !== ADMIN_UID) {
-                await signOut(auth);
-                throw new Error("Akun ini bukan akun admin Clover.");
-            }
-            showToast("Berhasil masuk ke dashboard!", "success");
-        } catch(error) {
-            console.error(error);
-            if (error.message === "Akun ini bukan akun admin Clover.") {
-                loginError.textContent = "Akun tersebut bukan akun admin Clover.";
-            } else {
-                switch(error.code) {
-                    case "auth/invalid-credential":
-                    case "auth/wrong-password":
-                    case "auth/user-not-found":
-                        loginError.textContent = "Email atau password salah.";
-                        break;
-                    case "auth/invalid-email":
-                        loginError.textContent = "Format email tidak valid.";
-                        break;
-                    default:
-                        loginError.textContent = "Login gagal. Silakan coba lagi.";
-                }
-            }
-        }
-    });
-
-    onAuthStateChanged(auth, function(user) {
-        if (user) {
-            if (user.uid !== ADMIN_UID) {
-                signOut(auth);
-                loginPage.classList.remove("hidden");
-                dashboard.classList.add("hidden");
-                loginError.textContent = "Akun ini bukan akun admin.";
-                return;
-            }
-
-            loginPage.classList.add("hidden");
-            dashboard.classList.remove("hidden");
-            loginError.textContent = "";
-            loadDashboardData();
-        } else {
-            loginPage.classList.remove("hidden");
-            dashboard.classList.add("hidden");
-            messageList.innerHTML = `<div class="py-16 text-center text-slate-400 font-medium text-sm">Silakan login untuk melihat pesan.</div>`;
-            feedbackList.innerHTML = `<div class="py-12 text-center text-slate-400 font-medium text-sm">Silakan login untuk melihat masukan.</div>`;
-        }
-    });
-
-    logoutButton.addEventListener("click", async function() {
-        try {
-            await signOut(auth);
-            emailInput.value = "";
-            passwordInput.value = "";
-            showToast("Berhasil keluar dari akun.", "info");
-        } catch(error) {
-            console.error(error);
-        }
-    });
-
-    function loadDashboardData() {
-        // 1. Pantau Pengunjung Aktif
-        const activeRef = ref(database, "clover/active_users");
-        onValue(activeRef, function(snapshot) {
-            const data = snapshot.val();
-            const count = data ? Object.keys(data).length : 0;
-            activeUsers.textContent = count;
-        });
-
-        // 2. Pantau Total Kunjungan
-        const visitsRef = ref(database, "clover/stats/totalVisits");
-        onValue(visitsRef, function(snapshot) {
-            const count = snapshot.val() || 0;
-            totalVisits.textContent = count;
-        });
-
-        // 3. Pantau Total Pesan Keseluruhan
-        const messagesRef = ref(database, "clover/messages");
-        onValue(messagesRef, function(snapshot) {
-            const data = snapshot.val();
-            if (!data) {
-                totalMessages.textContent = "0";
-                todayMessages.textContent = "0";
-                return;
-            }
-            const messages = Object.values(data);
-            totalMessages.textContent = messages.length;
-
-            const today = new Date().toDateString();
-            const todayCount = messages.filter(msg => {
-                if (!msg.createdAt) return false;
-                return new Date(Number(msg.createdAt)).toDateString() === today;
-            }).length;
-            todayMessages.textContent = todayCount;
-        });
-
-        // 4. Pantau & Render Pesan dengan limit 100 pesan terakhir
-        const limitedMessagesQuery = query(messagesRef, orderByChild("createdAt"), limitToLast(100));
-
-        onValue(limitedMessagesQuery, function(snapshot) {
-            const data = snapshot.val();
-            databaseStatus.textContent = "Online";
-            databaseStatus.className = "text-lg font-extrabold text-emerald-600";
-
-            if (!data) {
-                currentMessages = [];
-                renderMessages();
-                return;
-            }
-
-            currentMessages = Object.entries(data).map(([id, message]) => ({ id, ...message }));
-            currentMessages.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-
-            renderMessages();
-
-        }, function(error) {
-            console.error(error);
-            databaseStatus.textContent = "Error";
-            databaseStatus.className = "text-lg font-extrabold text-rose-500";
-            messageList.innerHTML = `
-                <div class="py-16 text-center text-rose-400">
-                    <div class="text-4xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <p class="text-sm font-bold">Tidak dapat mengambil data pesan Firebase.</p>
-                </div>
-            `;
-        });
-
-        // 5. Pantau & Render Masukan Web (clover/feedback)
-        const feedbackRef = query(ref(database, "clover/feedback"), orderByChild("createdAt"), limitToLast(100));
-        onValue(feedbackRef, function(snapshot) {
-            const data = snapshot.val();
-            feedbackList.innerHTML = "";
-
-            if (!data) {
-                currentFeedbacks = [];
-                feedbackCountBadge.textContent = "0 Masukan";
-                feedbackNavBadge.textContent = "0";
-                feedbackList.innerHTML = `
-                    <div class="py-12 text-center text-slate-400">
-                        <div class="text-4xl text-teal-200 mb-2"><i class="fa-solid fa-inbox"></i></div>
-                        <p class="text-sm font-bold">Belum ada masukan web dari pengguna.</p>
-                    </div>
-                `;
-                feedbackPagination.innerHTML = "";
-                return;
-            }
-
-            currentFeedbacks = Object.entries(data).map(([id, fb]) => ({ id, ...fb }));
-            currentFeedbacks.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-
-            feedbackCountBadge.textContent = `${currentFeedbacks.length} Masukan`;
-            feedbackNavBadge.textContent = currentFeedbacks.length;
-
-            renderFeedbackList();
-        }, function(error) {
-            console.error("Feedback read error:", error);
-            feedbackList.innerHTML = `
-                <div class="py-12 text-center text-rose-400">
-                    <p class="text-sm font-bold">Gagal memuat masukan web.</p>
-                </div>
-            `;
-        });
-    }
-
-    // Render Masukan Web dengan Pencarian & Pagination
-    function renderFeedbackList() {
-        feedbackList.innerHTML = "";
-
-        let filtered = currentFeedbacks;
-        if (feedbackSearchQuery) {
-            const q = feedbackSearchQuery.toLowerCase();
-            filtered = currentFeedbacks.filter(fb => 
-                (fb.sender && fb.sender.toLowerCase().includes(q)) ||
-                (fb.text && fb.text.toLowerCase().includes(q))
-            );
-        }
-
-        if (filtered.length === 0) {
-            feedbackList.innerHTML = `
-                <div class="py-12 text-center text-slate-400">
-                    <p class="text-sm font-bold">Tidak ada masukan yang sesuai dengan pencarian.</p>
-                </div>
-            `;
-            feedbackPagination.innerHTML = "";
-            return;
-        }
-
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-        if (feedbackCurrentPage > totalPages) feedbackCurrentPage = totalPages || 1;
-
-        const startIndex = (feedbackCurrentPage - 1) * itemsPerPage;
-        const paginatedData = filtered.slice(startIndex, startIndex + itemsPerPage);
-
-        paginatedData.forEach(fb => {
-            const card = document.createElement("div");
-            card.className = "bg-slate-50 p-6 rounded-3xl border border-slate-200/80 shadow-sm transition-all hover:shadow-md";
-
-            const sender = fb.sender || "Pengguna Anonim";
-            const text = fb.text || "(Masukan kosong)";
+        <!-- DASHBOARD CONTENT -->
+        <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-xl w-full space-y-8">
             
-            let dateText = "Tanggal tidak tersedia";
-            if (fb.createdAt) {
-                dateText = new Date(Number(fb.createdAt)).toLocaleString("id-ID", {
-                    day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"
-                });
-            }
+            <!-- STATS OVERVIEW -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Kunjungan Web</p>
+                        <p id="statTotalVisits" class="text-2xl font-extrabold text-slate-900">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pengunjung Online</p>
+                        <p id="statActiveUsers" class="text-2xl font-extrabold text-emerald-600">0</p>
+                    </div>
+                </div>
+            </div>
 
-            let replyHTML = "";
-            if (fb.reply) {
-                const replyDate = fb.repliedAt ? new Date(Number(fb.repliedAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
-                replyHTML = `
-                    <div class="mt-3.5 p-3.5 bg-teal-50/80 rounded-2xl border border-teal-100 text-xs">
-                        <div class="font-extrabold text-teal-800 flex items-center justify-between mb-1">
-                            <span><i class="fa-solid fa-reply mr-1.5"></i> Balasan Admin</span>
-                            <span class="text-[10px] text-slate-400 font-semibold">${replyDate}</span>
+            <!-- TAB NAVIGATION -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                <button id="tabBtnMessages" class="tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-envelope-open-text"></i> Moderasi Pesan Papan
+                </button>
+                <button id="tabBtnFeedback" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-comment-dots"></i> Masukan Web & Balasan
+                </button>
+                <button id="tabBtnBroadcast" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn"></i> Pengumuman Broadcast
+                </button>
+            </div>
+
+            <!-- TAB 1: MODERASI PESAN -->
+            <div id="tabContentMessages" class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-envelope-open-text text-emerald-500"></i> Daftar Pesan Masuk
+                    </h3>
+                </div>
+                <div id="adminMessagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <p class="text-xs text-slate-400 font-bold">Memuat pesan...</p>
+                </div>
+            </div>
+
+            <!-- TAB 2: MASUKAN WEB -->
+            <div id="tabContentFeedback" class="hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-comment-dots text-emerald-500"></i> Masukan & Saran Pengguna
+                    </h3>
+                </div>
+                <div id="adminFeedbackContainer" class="space-y-4">
+                    <p class="text-xs text-slate-400 font-bold">Memuat masukan...</p>
+                </div>
+            </div>
+
+            <!-- TAB 3: BROADCAST MASSAL -->
+            <div id="tabContentBroadcast" class="hidden space-y-6 max-w-2xl">
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn text-emerald-500"></i> Pengumuman Broadcast Global
+                        </h3>
+                        <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                            Kirimkan pengumuman atau informasi penting yang akan tampil di bagian atas halaman utama seluruh pengunjung website secara real-time.
+                        </p>
+                    </div>
+
+                    <div id="broadcastStatusMsg" class="hidden p-4 rounded-2xl text-xs font-bold text-center"></div>
+
+                    <form id="broadcastForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-2">Status Broadcast</label>
+                            <select id="broadcastActiveSelect" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500">
+                                <option value="false">❌ Nonaktifkan (Sembunyikan Banner)</option>
+                                <option value="true">✅ Aktifkan (Tampilkan Banner di Web)</option>
+                            </select>
                         </div>
-                        <p class="text-slate-700 font-medium italic">"${escapeHTML(fb.reply)}"</p>
-                    </div>
-                `;
-            }
 
-            const replyBtnText = fb.reply ? "Edit Balasan" : "Balas";
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-2">Isi Pesan Pengumuman</label>
+                            <textarea id="broadcastMessageInput" rows="4" maxlength="300" placeholder="Contoh: Fitur baru telah rilis! Silakan periksa pembaruan..." class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 resize-none shadow-inner"></textarea>
+                        </div>
 
-            card.innerHTML = `
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                    <div class="font-extrabold text-slate-800 text-sm flex items-center gap-3">
-                        <span class="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">${escapeHTML(sender.charAt(0).toUpperCase())}</span>
-                        ${escapeHTML(sender)}
-                    </div>
-                    <div class="text-xs font-bold text-slate-400">${dateText}</div>
+                        <button type="submit" id="saveBroadcastBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan & Publikasikan Broadcast
+                        </button>
+                    </form>
                 </div>
-                <p class="text-sm text-slate-700 font-medium leading-relaxed italic mb-4 whitespace-pre-wrap break-words">"${escapeHTML(text)}"</p>
-                ${replyHTML}
-                <div class="flex flex-wrap justify-between items-center gap-2 pt-4 mt-4 border-t border-slate-200/60">
-                    <button class="bg-teal-100 hover:bg-teal-200 text-teal-800 text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5" data-feedback-reply>
-                        <i class="fa-solid fa-reply"></i> ${replyBtnText}
-                    </button>
-                    <button class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5" data-feedback-delete="${fb.id}">
-                        <i class="fa-solid fa-trash-can"></i> Hapus Masukan
-                    </button>
-                </div>
-            `;
-
-            card.querySelector("[data-feedback-reply]").addEventListener("click", function() {
-                openReplyModal(fb.id, "feedback", fb.reply || "");
-            });
-
-            card.querySelector("[data-feedback-delete]").addEventListener("click", function() {
-                deleteFeedback(fb.id);
-            });
-
-            feedbackList.appendChild(card);
-        });
-
-        renderPagination(filtered.length, feedbackCurrentPage, itemsPerPage, feedbackPagination, (newPage) => {
-            feedbackCurrentPage = newPage;
-            renderFeedbackList();
-        });
-    }
-
-    async function deleteFeedback(id) {
-        showConfirm("Hapus Masukan Web", "Yakin ingin menghapus masukan atau saran ini?", async () => {
-            try {
-                await remove(ref(database, "clover/feedback/" + id));
-                showToast("Masukan berhasil dihapus.", "success");
-            } catch (error) {
-                console.error("Gagal hapus masukan:", error);
-                showToast("Gagal menghapus masukan.", "error");
-            }
-        }, true);
-    }
-
-    // Fungsi Render Daftar Pesan (termasuk Filter Tanggal, Search & Pagination)
-    function renderMessages() {
-        messageList.innerHTML = "";
-
-        let filteredMessages = currentMessages;
-
-        // Filter Tanggal
-        if (selectedFilterDate) {
-            filteredMessages = filteredMessages.filter(msg => {
-                if (!msg.createdAt) return false;
-                const msgDate = new Date(Number(msg.createdAt)).toISOString().split("T")[0];
-                return msgDate === selectedFilterDate;
-            });
-        }
-
-        // Filter Search Kata Kunci
-        if (messageSearchQuery) {
-            const q = messageSearchQuery.toLowerCase();
-            filteredMessages = filteredMessages.filter(msg => 
-                (msg.sender && msg.sender.toLowerCase().includes(q)) ||
-                (msg.text && msg.text.toLowerCase().includes(q))
-            );
-        }
-
-        if (filteredMessages.length === 0) {
-            messageList.innerHTML = `
-                <div class="py-16 text-center text-slate-400">
-                    <div class="text-4xl text-emerald-200 mb-3"><i class="fa-solid fa-calendar-xmark"></i></div>
-                    <p class="text-sm font-bold">Tidak ada pesan yang ditemukan.</p>
-                </div>
-            `;
-            messagePagination.innerHTML = "";
-            updateBulkUI();
-            return;
-        }
-
-        const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
-        if (messageCurrentPage > totalPages) messageCurrentPage = totalPages || 1;
-
-        const startIndex = (messageCurrentPage - 1) * itemsPerPage;
-        const paginatedMessages = filteredMessages.slice(startIndex, startIndex + itemsPerPage);
-
-        paginatedMessages.forEach(message => createMessageCard(message));
-
-        renderPagination(filteredMessages.length, messageCurrentPage, itemsPerPage, messagePagination, (newPage) => {
-            messageCurrentPage = newPage;
-            renderMessages();
-        });
-
-        updateBulkUI();
-    }
-
-    // Komponen Pagination Helper
-    function renderPagination(totalItems, currentPage, perPage, containerEl, callback) {
-        containerEl.innerHTML = "";
-        const totalPages = Math.ceil(totalItems / perPage);
-        if (totalPages <= 1) return;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "flex items-center justify-between pt-6 border-t border-slate-100 text-xs font-bold text-slate-600";
-        wrapper.innerHTML = `
-            <span>Halaman ${currentPage} dari ${totalPages} (${totalItems} total data)</span>
-            <div class="flex gap-2">
-                <button id="prevPageBtn" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : ''}">Sebelumnya</button>
-                <button id="nextPageBtn" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : ''}">Selanjutnya</button>
             </div>
-        `;
 
-        wrapper.querySelector("#prevPageBtn").addEventListener("click", () => {
-            if (currentPage > 1) callback(currentPage - 1);
-        });
-        wrapper.querySelector("#nextPageBtn").addEventListener("click", () => {
-            if (currentPage < totalPages) callback(currentPage + 1);
-        });
+        </main>
+    </div>
 
-        containerEl.appendChild(wrapper);
-    }
+    <!-- FIREBASE + ADMIN SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    function createMessageCard(message) {
-        const card = document.createElement("div");
-        card.className = "bg-slate-50 p-6 rounded-3xl border border-slate-200/80 shadow-sm transition-all hover:shadow-md";
+        const firebaseConfig = {
+            apiKey: "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk",
+            authDomain: "aplikasi-d862d.firebaseapp.com",
+            databaseURL: "https://aplikasi-d862d-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "aplikasi-d862d",
+            storageBucket: "aplikasi-d862d.firebasestorage.app",
+            messagingSenderId: "491134919372",
+            appId: "1:491134919372:web:63fde8d8d32eb8820e1869",
+            measurementId: "G-3TK6ZQGMDP"
+        };
 
-        const sender = message.sender || "Anonim";
-        const text = message.text || "(Pesan kosong)";
-        const status = message.status || "pending";
-        const isChecked = selectedMessageIds.has(message.id) ? "checked" : "";
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        const provider = new GoogleAuthProvider();
 
-        let dateText = "Tanggal tidak tersedia";
-        if (message.createdAt) {
-            dateText = new Date(Number(message.createdAt)).toLocaleString("id-ID", {
-                day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"
+        const ADMIN_UID = "B5hS7tiFB7Q291pToua9CituJug2";
+
+        const loginScreen = document.getElementById("loginScreen");
+        const adminDashboard = document.getElementById("adminDashboard");
+        const googleLoginBtn = document.getElementById("googleLoginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const loginError = document.getElementById("loginError");
+        const adminEmail = document.getElementById("adminEmail");
+
+        // Tabs
+        const tabBtnMessages = document.getElementById("tabBtnMessages");
+        const tabBtnFeedback = document.getElementById("tabBtnFeedback");
+        const tabBtnBroadcast = document.getElementById("tabBtnBroadcast");
+        const tabContentMessages = document.getElementById("tabContentMessages");
+        const tabContentFeedback = document.getElementById("tabContentFeedback");
+        const tabContentBroadcast = document.getElementById("tabContentBroadcast");
+
+        function switchTab(activeTab) {
+            [tabBtnMessages, tabBtnFeedback, tabBtnBroadcast].forEach(btn => {
+                btn.className = "tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2";
             });
-        }
+            [tabContentMessages, tabContentFeedback, tabContentBroadcast].forEach(content => content.classList.add("hidden"));
 
-        let statusHTML = "";
-        if (status === "approved") {
-            statusHTML = `<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
-        } else if (status === "rejected") {
-            statusHTML = `<span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
-        } else {
-            statusHTML = `<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-clock"></i> Pending</span>`;
-        }
-
-        let replyHTML = "";
-        if (message.reply) {
-            const replyDate = message.repliedAt ? new Date(Number(message.repliedAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
-            replyHTML = `
-                <div class="mt-3.5 p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-100 text-xs">
-                    <div class="font-extrabold text-emerald-800 flex items-center justify-between mb-1">
-                        <span><i class="fa-solid fa-reply mr-1.5"></i> Balasan Admin</span>
-                        <span class="text-[10px] text-slate-400 font-semibold">${replyDate}</span>
-                    </div>
-                    <p class="text-slate-700 font-medium italic">"${escapeHTML(message.reply)}"</p>
-                </div>
-            `;
-        }
-
-        const replyBtnText = message.reply ? "Edit Balasan" : "Balas";
-
-        let buttonsHTML = `
-            <button class="bg-teal-100 hover:bg-teal-200 text-teal-800 text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5" data-action="reply">
-                <i class="fa-solid fa-reply"></i> ${replyBtnText}
-            </button>
-        `;
-
-        if (status === "pending") {
-            buttonsHTML += `
-                <button class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs font-bold px-4 py-2 rounded-xl transition-all" data-action="approve">✓ Approve</button>
-                <button class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-4 py-2 rounded-xl transition-all" data-action="reject">✕ Reject</button>
-            `;
-        } else if (status === "approved") {
-            buttonsHTML += `
-                <button class="bg-amber-100 hover:bg-amber-200 text-amber-700 text-xs font-bold px-4 py-2 rounded-xl transition-all" data-action="pending">↩ Pending</button>
-                <button class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-4 py-2 rounded-xl transition-all" data-action="reject">✕ Reject</button>
-            `;
-        } else if (status === "rejected") {
-            buttonsHTML += `
-                <button class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs font-bold px-4 py-2 rounded-xl transition-all" data-action="approve">✓ Approve</button>
-                <button class="bg-amber-100 hover:bg-amber-200 text-amber-700 text-xs font-bold px-4 py-2 rounded-xl transition-all" data-action="pending">↩ Pending</button>
-            `;
-        }
-        buttonsHTML += `<button class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition-all ml-auto" data-action="delete">🗑 Hapus</button>`;
-
-        card.innerHTML = `
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                <div class="font-extrabold text-slate-800 text-sm flex items-center gap-3">
-                    <input type="checkbox" class="message-checkbox w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer" data-id="${message.id}" ${isChecked}>
-                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">${escapeHTML(sender.charAt(0).toUpperCase())}</span>
-                    ${escapeHTML(sender)}
-                </div>
-                <div class="text-xs font-bold text-slate-400">${dateText}</div>
-            </div>
-            <p class="text-sm text-slate-700 font-medium leading-relaxed italic mb-4 whitespace-pre-wrap break-words">"${escapeHTML(text)}"</p>
-            ${replyHTML}
-            <div class="flex flex-wrap items-center justify-between gap-4 pt-4 mt-4 border-t border-slate-200/60">
-                <div>${statusHTML}</div>
-                <div class="flex flex-wrap gap-2 w-full sm:w-auto">${buttonsHTML}</div>
-            </div>
-        `;
-
-        const checkbox = card.querySelector(".message-checkbox");
-        checkbox.addEventListener("change", function() {
-            if (this.checked) {
-                selectedMessageIds.add(message.id);
-            } else {
-                selectedMessageIds.delete(message.id);
+            if (activeTab === 'messages') {
+                tabBtnMessages.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
+                tabContentMessages.classList.remove("hidden");
+            } else if (activeTab === 'feedback') {
+                tabBtnFeedback.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
+                tabContentFeedback.classList.remove("hidden");
+            } else if (activeTab === 'broadcast') {
+                tabBtnBroadcast.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
+                tabContentBroadcast.classList.remove("hidden");
             }
-            updateBulkUI();
-        });
-
-        card.querySelectorAll("[data-action]").forEach(button => {
-            button.addEventListener("click", function() {
-                const action = this.dataset.action;
-                if (action === "reply") openReplyModal(message.id, "messages", message.reply || "");
-                else if (action === "approve") changeStatus(message.id, "approved");
-                else if (action === "reject") changeStatus(message.id, "rejected");
-                else if (action === "pending") changeStatus(message.id, "pending");
-                else if (action === "delete") deleteMessage(message.id);
-            });
-        });
-
-        messageList.appendChild(card);
-    }
-
-    // Search Input Event Listeners
-    messageSearchInput.addEventListener("input", function() {
-        messageSearchQuery = this.value.trim();
-        messageCurrentPage = 1;
-        renderMessages();
-    });
-
-    feedbackSearchInput.addEventListener("input", function() {
-        feedbackSearchQuery = this.value.trim();
-        feedbackCurrentPage = 1;
-        renderFeedbackList();
-    });
-
-    // Export CSV Functions
-    exportMessagesBtn.addEventListener("click", () => {
-        exportToCSV(currentMessages, "Pesan_Kehangatan_Clover.csv");
-    });
-
-    exportFeedbackBtn.addEventListener("click", () => {
-        exportToCSV(currentFeedbacks, "Masukan_Web_Clover.csv");
-    });
-
-    function exportToCSV(dataArray, filename) {
-        if (!dataArray || dataArray.length === 0) {
-            showToast("Tidak ada data untuk diekspor.", "info");
-            return;
         }
-        let csvContent = "data:text/csv;charset=utf-8,ID,Pengirim,Pesan,Status,Tanggal,Balasan Admin\n";
-        dataArray.forEach(item => {
-            const id = item.id || "";
-            const sender = `"${(item.sender || "").replace(/"/g, '""')}"`;
-            const text = `"${(item.text || "").replace(/"/g, '""')}"`;
-            const status = item.status || "N/A";
-            const date = item.createdAt ? `"${new Date(Number(item.createdAt)).toISOString()}"` : '""';
-            const reply = `"${(item.reply || "").replace(/"/g, '""')}"`;
-            csvContent += `${id},${sender},${text},${status},${date},${reply}\n`;
-        });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast("Data berhasil diekspor ke CSV!", "success");
-    }
 
-    // Listener Filter Tanggal
-    filterDateInput.addEventListener("change", function() {
-        selectedFilterDate = this.value;
-        messageCurrentPage = 1;
-        if (selectedFilterDate) {
-            clearDateBtn.classList.remove("hidden");
-        } else {
-            clearDateBtn.classList.add("hidden");
-        }
-        renderMessages();
-    });
+        tabBtnMessages.addEventListener("click", () => switchTab('messages'));
+        tabBtnFeedback.addEventListener("click", () => switchTab('feedback'));
+        tabBtnBroadcast.addEventListener("click", () => switchTab('broadcast'));
 
-    clearDateBtn.addEventListener("click", function() {
-        filterDateInput.value = "";
-        selectedFilterDate = "";
-        messageCurrentPage = 1;
-        clearDateBtn.classList.add("hidden");
-        renderMessages();
-    });
-
-    // Fungsi Update Status & Hapus Individual
-    async function changeStatus(id, newStatus) {
-        const msg = newStatus === "approved" ? "Setujui pesan ini?" : newStatus === "rejected" ? "Tolak pesan ini?" : "Kembalikan pesan menjadi pending?";
-        showConfirm("Konfirmasi Status", msg, async () => {
+        googleLoginBtn.addEventListener("click", async () => {
+            loginError.classList.add("hidden");
             try {
-                await update(ref(database, "clover/messages/" + id), { status: newStatus });
-                showToast("Status pesan berhasil diperbarui.", "success");
-            } catch (error) {
-                console.error("Gagal update:", error);
-                showToast("Gagal mengubah status pesan.", "error");
+                await signInWithPopup(auth, provider);
+            } catch (err) {
+                console.error(err);
+                loginError.textContent = "Gagal login dengan Google: " + err.message;
+                loginError.classList.remove("hidden");
             }
         });
-    }
 
-    async function deleteMessage(id) {
-        showConfirm("Hapus Pesan", "Yakin ingin menghapus pesan ini?", async () => {
-            try {
-                await remove(ref(database, "clover/messages/" + id));
-                showToast("Pesan berhasil dihapus.", "success");
-            } catch (error) {
-                console.error("Gagal hapus:", error);
-                showToast("Gagal menghapus pesan.", "error");
-            }
-        }, true);
-    }
-
-    // Logika Select All Master Checkbox
-    selectAllCheckbox.addEventListener("change", function() {
-        const visibleCheckboxes = document.querySelectorAll(".message-checkbox");
-        if (this.checked) {
-            visibleCheckboxes.forEach(cb => {
-                cb.checked = true;
-                selectedMessageIds.add(cb.dataset.id);
-            });
-        } else {
-            visibleCheckboxes.forEach(cb => cb.checked = false);
-            selectedMessageIds.clear();
-        }
-        updateBulkUI();
-    });
-
-    function updateBulkUI() {
-        const count = selectedMessageIds.size;
-        selectedCountBadge.textContent = `${count} dipilih`;
-
-        if (count > 0) {
-            bulkActionsContainer.classList.remove("hidden");
-        } else {
-            bulkActionsContainer.classList.add("hidden");
-        }
-
-        const visibleCheckboxes = document.querySelectorAll(".message-checkbox");
-        const checkedVisibleCount = Array.from(visibleCheckboxes).filter(cb => cb.checked).length;
-
-        if (visibleCheckboxes.length > 0 && checkedVisibleCount === visibleCheckboxes.length) {
-            selectAllCheckbox.checked = true;
-            selectAllCheckbox.indeterminate = false;
-        } else if (checkedVisibleCount > 0 && checkedVisibleCount < visibleCheckboxes.length) {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = true;
-        } else {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = false;
-        }
-    }
-
-    // Aksi Massal (Bulk Actions)
-    bulkApproveBtn.addEventListener("click", () => executeBulkStatus("approved", "Setujui"));
-    bulkRejectBtn.addEventListener("click", () => executeBulkStatus("rejected", "Tolak"));
-    
-    function executeBulkStatus(newStatus, actionName) {
-        if (selectedMessageIds.size === 0) return;
-        showConfirm(`Konfirmasi ${actionName} Massal`, `${actionName} ${selectedMessageIds.size} pesan terpilih?`, async () => {
-            try {
-                const updates = {};
-                selectedMessageIds.forEach(id => {
-                    updates[`clover/messages/${id}/status`] = newStatus;
-                });
-                await update(ref(database), updates);
-                showToast(`Berhasil memperbarui ${selectedMessageIds.size} pesan.`, "success");
-                selectedMessageIds.clear();
-                updateBulkUI();
-            } catch (error) {
-                console.error("Gagal aksi massal:", error);
-                showToast("Gagal memproses aksi massal.", "error");
-            }
+        logoutBtn.addEventListener("click", async () => {
+            await signOut(auth);
         });
-    }
 
-    bulkDeleteBtn.addEventListener("click", () => {
-        if (selectedMessageIds.size === 0) return;
-        showConfirm("Hapus Pesan Terpilih", `Yakin ingin menghapus ${selectedMessageIds.size} pesan yang dipilih?\n\nTindakan ini tidak dapat dibatalkan.`, async () => {
-            try {
-                const updates = {};
-                selectedMessageIds.forEach(id => {
-                    updates[`clover/messages/${id}`] = null;
-                });
-                await update(ref(database), updates);
-                showToast(`${selectedMessageIds.size} pesan berhasil dihapus.`, "success");
-                selectedMessageIds.clear();
-                updateBulkUI();
-            } catch (error) {
-                console.error("Gagal hapus massal:", error);
-                showToast("Gagal menghapus pesan terpilih.", "error");
-            }
-        }, true);
-    });
-
-    deleteAllButton.addEventListener("click", function() {
-        showConfirm("Hapus Semua Pesan", "Yakin ingin menghapus SEMUA pesan?\n\nTindakan ini tidak dapat dibatalkan.", async () => {
-            try {
-                const messagesRef = ref(database, "clover/messages");
-                const snapshot = await get(messagesRef);
-                
-                if (snapshot.exists()) {
-                    const updates = {};
-                    snapshot.forEach((childSnapshot) => {
-                        updates[childSnapshot.key] = null;
-                    });
-                    await update(messagesRef, updates);
-                    showToast("Semua pesan berhasil dihapus.", "success");
-                    selectedMessageIds.clear();
-                    updateBulkUI();
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (user.uid === ADMIN_UID) {
+                    loginScreen.classList.add("hidden");
+                    adminDashboard.classList.remove("hidden");
+                    adminEmail.textContent = user.email || "Admin";
+                    initAdminPanel();
                 } else {
-                    showToast("Tidak ada pesan untuk dihapus.", "info");
+                    signOut(auth);
+                    loginError.textContent = "Akses ditolak. Akun ini bukan admin utama.";
+                    loginError.classList.remove("hidden");
                 }
-            } catch (error) {
-                console.error("Gagal hapus semua:", error);
-                showToast("Gagal menghapus semua pesan.", "error");
+            } else {
+                loginScreen.classList.remove("hidden");
+                adminDashboard.classList.add("hidden");
             }
-        }, true);
-    });
+        });
 
-    function escapeHTML(value) {
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-    }
+        function initAdminPanel() {
+            // Stats
+            onValue(ref(database, "clover/stats/totalVisits"), (snapshot) => {
+                document.getElementById("statTotalVisits").textContent = snapshot.val() || 0;
+            });
+            onValue(ref(database, "clover/active_users"), (snapshot) => {
+                const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+                document.getElementById("statActiveUsers").textContent = count;
+            });
 
-</script>
+            // Load Messages
+            const messagesRef = ref(database, "clover/messages");
+            onValue(messagesRef, (snapshot) => {
+                const container = document.getElementById("adminMessagesContainer");
+                container.innerHTML = "";
+                const data = snapshot.val();
+                if (!data) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 font-bold col-span-2">Tidak ada pesan.</p>`;
+                    return;
+                }
+                const list = Object.entries(data).map(([id, msg]) => ({ id, ...msg }));
+                list.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+                list.forEach(msg => {
+                    const card = document.createElement("div");
+                    card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between";
+                    
+                    let statusBadge = "";
+                    if (msg.status === "approved") statusBadge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>';
+                    else if (msg.status === "rejected") statusBadge = '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>';
+                    else statusBadge = '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-extrabold text-sm text-slate-800">${escapeHTML(msg.sender || "Anonim")}</span>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-xs text-slate-600 font-medium italic mb-4">"${escapeHTML(msg.text)}"</p>
+                        </div>
+                        <div class="space-y-3 pt-3 border-t border-slate-100 text-xs">
+                            <div class="flex gap-2">
+                                <button onclick="window.approveMsg('${msg.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl transition-colors">Setujui</button>
+                                <button onclick="window.rejectMsg('${msg.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
+                                <button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+
+            // Load Feedback
+            const feedbackRef = ref(database, "clover/feedback");
+            onValue(feedbackRef, (snapshot) => {
+                const container = document.getElementById("adminFeedbackContainer");
+                container.innerHTML = "";
+                const data = snapshot.val();
+                if (!data) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 font-bold">Tidak ada masukan web.</p>`;
+                    return;
+                }
+                const list = Object.entries(data).map(([id, fb]) => ({ id, ...fb }));
+                list.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+                list.forEach(fb => {
+                    const card = document.createElement("div");
+                    card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3";
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+                            <span>${escapeHTML(fb.sender || "Anonim")}</span>
+                            <span>${new Date(Number(fb.createdAt)).toLocaleString("id-ID")}</span>
+                        </div>
+                        <p class="text-sm text-slate-700 font-medium italic">"${escapeHTML(fb.text)}"</p>
+                        <div class="pt-2">
+                            <textarea id="replyInput_${fb.id}" rows="2" placeholder="Tulis balasan untuk pengguna ini..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(fb.reply || "")}</textarea>
+                            <div class="flex justify-end gap-2">
+                                <button onclick="window.sendFeedbackReply('${fb.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"><i class="fa-solid fa-reply mr-1"></i> Kirim Balasan</button>
+                                <button onclick="window.deleteFeedback('${fb.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+
+            // Load Broadcast Settings
+            const broadcastRef = ref(database, "clover/broadcast");
+            onValue(broadcastRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById("broadcastActiveSelect").value = String(Boolean(data.active));
+                    document.getElementById("broadcastMessageInput").value = data.message || "";
+                }
+            });
+
+            const broadcastForm = document.getElementById("broadcastForm");
+            broadcastForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const active = document.getElementById("broadcastActiveSelect").value === "true";
+                const message = document.getElementById("broadcastMessageInput").value.trim();
+                const statusMsg = document.getElementById("broadcastStatusMsg");
+
+                try {
+                    await set(ref(database, "clover/broadcast"), {
+                        active: active,
+                        message: message,
+                        updatedAt: Date.now()
+                    });
+                    statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 border border-emerald-200";
+                    statusMsg.textContent = "Broadcast berhasil diperbarui!";
+                    statusMsg.classList.remove("hidden");
+                    setTimeout(() => statusMsg.classList.add("hidden"), 4000);
+                } catch (err) {
+                    console.error(err);
+                    statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
+                    statusMsg.textContent = "Gagal menyimpan broadcast.";
+                    statusMsg.classList.remove("hidden");
+                }
+            });
+        }
+
+        window.approveMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "approved" });
+        window.rejectMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "rejected" });
+        window.deleteMsg = (id) => { if(confirm("Hapus pesan ini?")) remove(ref(database, `clover/messages/${id}`)); };
+        window.deleteFeedback = (id) => { if(confirm("Hapus masukan ini?")) remove(ref(database, `clover/feedback/${id}`)); };
+        
+        window.sendFeedbackReply = (id) => {
+            const replyText = document.getElementById(`replyInput_${id}`).value.trim();
+            update(ref(database, `clover/feedback/${id}`), {
+                reply: replyText,
+                repliedAt: Date.now()
+            }).then(() => {
+                alert("Balasan berhasil dikirim ke perangkat pengguna!");
+            }).catch(err => {
+                alert("Gagal mengirim balasan: " + err.message);
+            });
+        };
+
+        function escapeHTML(value) {
+            const div = document.createElement("div");
+            div.textContent = String(value ?? "");
+            return div.innerHTML;
+        }
+    </script>
 </body>
 </html>
