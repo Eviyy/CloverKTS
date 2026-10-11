@@ -91,7 +91,7 @@
 
             <!-- TAB 1: MODERASI PESAN -->
             <div id="tabContentMessages" class="space-y-6">
-                <!-- Statistik Utama (Lebar Full ke Bawah) -->
+                <!-- Statistik Utama (Kunjungan, Pengunjung Online, Status Server) -->
                 <div class="grid grid-cols-1 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
@@ -109,6 +109,15 @@
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pengunjung Online</p>
                             <p id="statActiveUsers" class="text-2xl font-extrabold text-emerald-600">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server Database</p>
+                            <div class="server-status-display text-sm font-extrabold mt-0.5">Memeriksa...</div>
                         </div>
                     </div>
                 </div>
@@ -164,7 +173,7 @@
 
             <!-- TAB 2: MASUKAN WEB -->
             <div id="tabContentFeedback" class="hidden space-y-6">
-                <!-- Statistik Utama (Lebar Full ke Bawah) -->
+                <!-- Statistik Utama (Kunjungan, Pengunjung Online, Status Server) -->
                 <div class="grid grid-cols-1 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
@@ -182,6 +191,15 @@
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pengunjung Online</p>
                             <p id="statActiveUsersFb" class="text-2xl font-extrabold text-emerald-600">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server Database</p>
+                            <div class="server-status-display text-sm font-extrabold mt-0.5">Memeriksa...</div>
                         </div>
                     </div>
                 </div>
@@ -227,7 +245,7 @@
 
             <!-- TAB 3: BROADCAST -->
             <div id="tabContentBroadcast" class="hidden space-y-6">
-                <!-- Statistik Utama (Lebar Full ke Bawah) -->
+                <!-- Statistik Utama (Kunjungan, Pengunjung Online, Status Server) -->
                 <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
@@ -245,6 +263,15 @@
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pengunjung Online</p>
                             <p id="statActiveUsersBc" class="text-2xl font-extrabold text-emerald-600">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server Database</p>
+                            <div class="server-status-display text-sm font-extrabold mt-0.5">Memeriksa...</div>
                         </div>
                     </div>
                 </div>
@@ -397,6 +424,19 @@
         }
 
         function initAdminPanel() {
+            // Pantau Status Server Database (Firebase .info/connected)
+            onValue(ref(database, ".info/connected"), (snapshot) => {
+                const connected = snapshot.val();
+                const statusDisplays = document.querySelectorAll(".server-status-display");
+                statusDisplays.forEach(el => {
+                    if (connected) {
+                        el.innerHTML = '<span class="text-emerald-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Terhubung (Online)</span>';
+                    } else {
+                        el.innerHTML = '<span class="text-rose-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Terputus (Offline)</span>';
+                    }
+                });
+            });
+
             // Stats Utama (Kunjungan & Online)
             onValue(ref(database, "clover/stats/totalVisits"), (snapshot) => {
                 const val = snapshot.val() || 0;
