@@ -20,7 +20,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -62,10 +62,10 @@
         </header>
 
         <!-- DASHBOARD CONTENT -->
-        <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-xl w-full space-y-8">
+        <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
             
-            <!-- STATS OVERVIEW -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- STATS OVERVIEW (Lebar Full ke Bawah di HP) -->
+            <div class="grid grid-cols-1 gap-4">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
                         <i class="fa-solid fa-eye"></i>
@@ -124,8 +124,8 @@
             </div>
 
             <!-- TAB 3: BROADCAST MASSAL -->
-            <div id="tabContentBroadcast" class="hidden space-y-6 max-w-2xl">
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6">
+            <div id="tabContentBroadcast" class="hidden space-y-6">
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 max-w-2xl mx-auto">
                     <div>
                         <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-bullhorn text-emerald-500"></i> Pengumuman Broadcast Global
@@ -165,7 +165,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk",
@@ -372,7 +372,7 @@
                 } catch (err) {
                     console.error(err);
                     statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
-                    statusMsg.textContent = "Gagal menyimpan broadcast.";
+                    statusMsg.textContent = "Gagal menyimpan broadcast: " + err.message;
                     statusMsg.classList.remove("hidden");
                 }
             });
