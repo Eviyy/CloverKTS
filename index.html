@@ -143,6 +143,21 @@
 </header>
 
 <!-- =====================================================
+     BANNER BROADCAST MASSAL (GLOBAL)
+===================================================== -->
+<div id="broadcastBanner" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-3 shadow-md relative z-40 transition-all">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-4 text-xs md:text-sm font-semibold">
+        <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-bullhorn text-amber-300 text-base animate-bounce shrink-0"></i>
+            <span id="broadcastText">Pengumuman penting dari admin...</span>
+        </div>
+        <button id="closeBroadcastBtn" class="text-white/80 hover:text-white px-2 py-1 rounded-lg transition-colors shrink-0" title="Tutup pengumuman">
+            <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+    </div>
+</div>
+
+<!-- =====================================================
      HERO
 ===================================================== -->
 <section id="hero" class="relative overflow-hidden px-4 py-20 md:py-28">
@@ -606,7 +621,7 @@
     </section>
 
     <!-- =================================================
-         MASUKAN & SARAN WEB (DENGAN RIWAYAT PRIVAT)
+         MASUKAN & SARAN WEB (DENGAN RIWAYAT & NOTIFIKASI)
     ================================================== -->
     <section id="masukan" class="bg-white rounded-[2.5rem] p-6 md:p-10 lg:p-14 border border-slate-100 shadow-xl shadow-slate-200/40 max-w-3xl mx-auto">
         <div class="text-center max-w-xl mx-auto mb-8">
@@ -647,7 +662,7 @@
             </button>
         </form>
 
-        <!-- Riwayat Masukan & Balasan Privat untuk Pengguna Ini Saja -->
+        <!-- Riwayat Masukan & Balasan Privat dengan Lencana Notifikasi -->
         <div id="myFeedbackContainer" class="mt-10 pt-8 border-t border-slate-100 hidden">
             <h4 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i> Riwayat Masukan & Tanggapan Admin Anda
@@ -727,7 +742,38 @@
     }
 
     // =====================================================
-    // 3. FITUR UTAMA WEBSITE (Papan Pesan & Keluhan)
+    // 3. FITUR BROADCAST MASSAL (GLOBAL)
+    // =====================================================
+    const broadcastBanner = document.getElementById("broadcastBanner");
+    const broadcastText = document.getElementById("broadcastText");
+    const closeBroadcastBtn = document.getElementById("closeBroadcastBtn");
+
+    const broadcastRef = ref(database, "clover/broadcast");
+    let currentBroadcastUpdatedAt = "";
+
+    onValue(broadcastRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.active && data.message) {
+            currentBroadcastUpdatedAt = String(data.updatedAt || Date.now());
+            const closedTime = sessionStorage.getItem("clover_closed_broadcast");
+            if (closedTime !== currentBroadcastUpdatedAt) {
+                broadcastText.textContent = data.message;
+                broadcastBanner.classList.remove("hidden");
+            }
+        } else {
+            broadcastBanner.classList.add("hidden");
+        }
+    });
+
+    closeBroadcastBtn.addEventListener("click", () => {
+        broadcastBanner.classList.add("hidden");
+        if (currentBroadcastUpdatedAt) {
+            try { sessionStorage.setItem("clover_closed_broadcast", currentBroadcastUpdatedAt); } catch(e) {}
+        }
+    });
+
+    // =====================================================
+    // 4. FITUR UTAMA WEBSITE (Papan Pesan & Keluhan)
     // =====================================================
 
     const messageForm = document.getElementById("message-form");
@@ -940,7 +986,7 @@
     });
 
     // =====================================================
-    // 4. FITUR MASUKAN & SARAN WEB (DENGAN RIWAYAT PRIVAT)
+    // 5. FITUR MASUKAN & SARAN WEB (DENGAN RIWAYAT & NOTIFIKASI PRIBADI)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -975,7 +1021,7 @@
         feedbackCharCount.textContent = `${length}/500`;
     });
 
-    // Pantau Riwayat Masukan & Balasan Admin Privat untuk Perangkat Ini
+    // Pantau Riwayat Masukan & Notifikasi Balasan Admin Privat untuk Perangkat Ini
     const feedbackRef = ref(database, "clover/feedback");
     onValue(feedbackRef, (snapshot) => {
         const data = snapshot.val();
@@ -986,7 +1032,6 @@
             return;
         }
 
-        // Filter hanya masukan yang memiliki userId sesuai perangkat ini
         const myFeedbacks = Object.entries(data)
             .map(([id, fb]) => ({ id, ...fb }))
             .filter(fb => fb.userId === userDeviceId);
@@ -1001,7 +1046,7 @@
 
         myFeedbacks.forEach(fb => {
             const card = document.createElement("div");
-            card.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-2 shadow-sm";
+            card.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-2 shadow-sm relative overflow-hidden";
 
             let dateText = "";
             if (fb.createdAt) {
@@ -1014,8 +1059,11 @@
             if (fb.reply) {
                 const replyDate = fb.repliedAt ? new Date(Number(fb.repliedAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
                 replyHTML = `
-                    <div class="mt-2.5 p-3 bg-emerald-50/90 rounded-xl border border-emerald-100 text-xs">
-                        <div class="font-extrabold text-emerald-800 flex items-center justify-between mb-1">
+                    <div class="mt-2.5 p-3 bg-emerald-50/90 rounded-xl border border-emerald-100 text-xs relative">
+                        <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-bl-lg shadow-sm flex items-center gap-1">
+                            <i class="fa-solid fa-bell"></i> Balasan Baru
+                        </div>
+                        <div class="font-extrabold text-emerald-800 flex items-center justify-between mb-1 pr-16">
                             <span><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin</span>
                             <span class="text-[10px] text-slate-400 font-semibold">${replyDate}</span>
                         </div>
@@ -1064,7 +1112,7 @@
             await set(newFeedbackRef, {
                 text: text,
                 sender: sender,
-                userId: userDeviceId, // Disimpan secara privat terikat ke perangkat ini
+                userId: userDeviceId,
                 createdAt: Date.now(),
                 status: "pending"
             });
@@ -1084,7 +1132,7 @@
     });
 
     // =====================================================
-    // 5. KELUHAN PRIBADI & VOICE NOTE
+    // 6. KELUHAN PRIBADI & VOICE NOTE
     // =====================================================
 
     const complaintInput = document.getElementById("complaintInput");
@@ -1410,7 +1458,7 @@
     loadComplaint();
 
     // =====================================================
-    // 6. TANTANGAN HARIAN & STREAK
+    // 7. TANTANGAN HARIAN & STREAK
     // =====================================================
     const STORAGE_TASKS = "clover_challenges_v2";
     const STREAK_KEY = "clover_challenge_streak_v2";
@@ -1562,4 +1610,4 @@
 
 </script>
 </body>
-    </html>
+</html>
