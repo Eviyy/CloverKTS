@@ -831,6 +831,21 @@
         const text = message.text?.trim() || "";
         const date = formatDate(message.createdAt);
 
+        // Render Balasan Admin jika ada
+        let replyHTML = "";
+        if (message.reply) {
+            const replyDate = message.repliedAt ? formatDate(message.repliedAt) : "";
+            replyHTML = `
+                <div class="mt-4 p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-100 text-xs">
+                    <div class="font-extrabold text-emerald-800 flex items-center justify-between mb-1">
+                        <span><i class="fa-solid fa-reply mr-1.5"></i> Tanggapan Admin</span>
+                        <span class="text-[10px] text-slate-400 font-semibold">${escapeHTML(replyDate)}</span>
+                    </div>
+                    <p class="text-slate-700 font-medium italic">"${escapeHTML(message.reply)}"</p>
+                </div>
+            `;
+        }
+
         card.innerHTML = `
             <div class="flex items-start justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3">
@@ -848,6 +863,7 @@
                 <p class="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap break-words italic">
                     "${escapeHTML(text)}"
                 </p>
+                ${replyHTML}
             </div>
             <div class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 mt-5 pt-4 border-t border-slate-50">
                 <i class="fa-solid fa-circle-check"></i>
@@ -985,7 +1001,7 @@
     });
 
     // =====================================================
-    // 4. KELUHAN PRIBADI & VOICE NOTE (FIXED ASYNC RACE CONDITION)
+    // 4. KELUHAN PRIBADI & VOICE NOTE
     // =====================================================
 
     const complaintInput = document.getElementById("complaintInput");
@@ -1008,7 +1024,6 @@
     const audioEncouragementContainer = document.getElementById("audioEncouragementContainer");
     const audioEncouragementText = document.getElementById("audioEncouragementText");
 
-    // Voice Recorder DOM Elements
     const recordVoiceBtn = document.getElementById("recordVoiceBtn");
     const recordBtnText = document.getElementById("recordBtnText");
     const voiceTimer = document.getElementById("voiceTimer");
@@ -1027,19 +1042,14 @@
         "Setiap coretan kata di sini adalah bukti bahwa kamu terus berjuang, meskipun di dalam diam. Teruslah bernapas dengan tenang ya.",
         "Badai emosi ini tidak akan berlangsung selamanya. Kamu jauh lebih kuat dari apa yang kamu tuliskan sekarang.",
         "Peluk hangat untuk dirimu yang luar biasa tangguh. Tidak apa-apa untuk merasa lelah, asal jangan menyerah pada mimpimu.",
-        "Perasaan sedih atau lelah ini valid. Terima dan rangkul dirimu sendiri malam ini, kamu sudah bekerja keras.",
-        "Halaman privat ini selalu ada kapan pun kamu butuh tempat untuk menuangkan isi kepala. Istirahatlah dengan tenang. ✨",
-        "Ingatlah, matahari selalu terbit kembali setelah malam yang gelap. Begitu juga dengan bahagiamu yang sedang berproses."
+        "Perasaan sedih atau lelah ini valid. Terima dan rangkul dirimu sendiri malam ini, kamu sudah bekerja keras."
     ];
 
     const audioEncouragingQuotes = [
         "Mendengar suara hatimu lewat rekaman ini mengingatkan betapa berharganya ceritamu. Terima kasih sudah bersuara. 🎙️",
         "Suaramu punya kekuatan besar untuk melepas beban di dada. Tarik napas dalam-dalam, lepaskan semua penatnya.",
         "Terkadang berbicara jauh lebih lega daripada menulis. Bagus sekali kamu memilih mengeluarkan unek-unekmu hari ini!",
-        "Dengarkan kembali rekaman ini kapan pun kamu merasa sepi; ketahuilah bahwa kamu tidak pernah benar-benar sendiri.",
-        "Nada suaramu hari ini menceritakan perjuangan yang hebat. Berikan dirimu apresiasi dan secangkir teh hangat ya.",
-        "Suara hatimu telah tersimpan aman. Sekarang saatnya memanjakan pikiran dan raga untuk istirahat yang nyenyak. 🌙",
-        "Setiap tarikan napas dalam rekaman ini adalah bukti nyata kehidupan dan keteguhan hatimu. Hebat!"
+        "Dengarkan kembali rekaman ini kapan pun kamu merasa sepi; ketahuilah bahwa kamu tidak pernah benar-benar sendiri."
     ];
 
     function getTodayKey() {
@@ -1062,7 +1072,6 @@
     let recordingTimer = null;
     let recordingSeconds = 0;
 
-    // Voice Recorder Handlers
     recordVoiceBtn.addEventListener("click", async () => {
         if (mediaRecorder && mediaRecorder.state === "recording") {
             mediaRecorder.stop();
@@ -1070,8 +1079,6 @@
         }
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            complaintStatus.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-1 text-orange-500'></i> Browser memblokir mikrofon (Gunakan HTTPS / Local Server).";
-            complaintStatus.className = "text-xs font-bold text-orange-600";
             alert("Fitur rekaman suara memerlukan HTTPS atau Local Server (Localhost).");
             return;
         }
@@ -1128,8 +1135,6 @@
 
         } catch (err) {
             console.error("Gagal mengakses mikrofon:", err);
-            complaintStatus.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-1 text-rose-500'></i> Gagal mengakses mikrofon.";
-            complaintStatus.className = "text-xs font-bold text-rose-500";
             alert("Tidak dapat mengakses mikrofon. Pastikan izin mikrofon telah diberikan.");
         }
     });
