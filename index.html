@@ -606,7 +606,7 @@
     </section>
 
     <!-- =================================================
-         MASUKAN & SARAN WEB
+         MASUKAN & SARAN WEB (DENGAN RIWAYAT PRIVAT)
     ================================================== -->
     <section id="masukan" class="bg-white rounded-[2.5rem] p-6 md:p-10 lg:p-14 border border-slate-100 shadow-xl shadow-slate-200/40 max-w-3xl mx-auto">
         <div class="text-center max-w-xl mx-auto mb-8">
@@ -646,6 +646,14 @@
                 <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan
             </button>
         </form>
+
+        <!-- Riwayat Masukan & Balasan Privat untuk Pengguna Ini Saja -->
+        <div id="myFeedbackContainer" class="mt-10 pt-8 border-t border-slate-100 hidden">
+            <h4 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i> Riwayat Masukan & Tanggapan Admin Anda
+            </h4>
+            <div id="myFeedbackList" class="space-y-3"></div>
+        </div>
     </section>
 
 </main>
@@ -710,7 +718,16 @@
     onDisconnect(userSessionRef).remove();
 
     // =====================================================
-    // 2. FITUR UTAMA WEBSITE (Papan Pesan & Keluhan)
+    // 2. DEVICE ID PRIVAT UNTUK MASUKAN WEB
+    // =====================================================
+    let userDeviceId = localStorage.getItem("clover_user_device_id");
+    if (!userDeviceId) {
+        userDeviceId = 'user_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem("clover_user_device_id", userDeviceId);
+    }
+
+    // =====================================================
+    // 3. FITUR UTAMA WEBSITE (Papan Pesan & Keluhan)
     // =====================================================
 
     const messageForm = document.getElementById("message-form");
@@ -831,7 +848,6 @@
         const text = message.text?.trim() || "";
         const date = formatDate(message.createdAt);
 
-        // Render Balasan Admin jika ada
         let replyHTML = "";
         if (message.reply) {
             const replyDate = message.repliedAt ? formatDate(message.repliedAt) : "";
@@ -924,7 +940,7 @@
     });
 
     // =====================================================
-    // 3. FITUR MASUKAN & SARAN WEB
+    // 4. FITUR MASUKAN & SARAN WEB (DENGAN RIWAYAT PRIVAT)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -932,6 +948,9 @@
     const submitFeedbackButton = document.getElementById("submit-feedback-button");
     const feedbackStatus = document.getElementById("feedback-status");
     const feedbackCharCount = document.getElementById("feedback-char-count");
+    
+    const myFeedbackContainer = document.getElementById("myFeedbackContainer");
+    const myFeedbackList = document.getElementById("myFeedbackList");
 
     function showFeedbackStatus(message, type = "info") {
         feedbackStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200", "bg-amber-50", "text-amber-700", "border-amber-200");
@@ -954,6 +973,69 @@
     feedbackInput.addEventListener("input", () => {
         const length = feedbackInput.value.length;
         feedbackCharCount.textContent = `${length}/500`;
+    });
+
+    // Pantau Riwayat Masukan & Balasan Admin Privat untuk Perangkat Ini
+    const feedbackRef = ref(database, "clover/feedback");
+    onValue(feedbackRef, (snapshot) => {
+        const data = snapshot.val();
+        myFeedbackList.innerHTML = "";
+
+        if (!data) {
+            myFeedbackContainer.classList.add("hidden");
+            return;
+        }
+
+        // Filter hanya masukan yang memiliki userId sesuai perangkat ini
+        const myFeedbacks = Object.entries(data)
+            .map(([id, fb]) => ({ id, ...fb }))
+            .filter(fb => fb.userId === userDeviceId);
+
+        if (myFeedbacks.length === 0) {
+            myFeedbackContainer.classList.add("hidden");
+            return;
+        }
+
+        myFeedbackContainer.classList.remove("hidden");
+        myFeedbacks.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+        myFeedbacks.forEach(fb => {
+            const card = document.createElement("div");
+            card.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-2 shadow-sm";
+
+            let dateText = "";
+            if (fb.createdAt) {
+                dateText = new Date(Number(fb.createdAt)).toLocaleString("id-ID", {
+                    day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                });
+            }
+
+            let replyHTML = "";
+            if (fb.reply) {
+                const replyDate = fb.repliedAt ? new Date(Number(fb.repliedAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+                replyHTML = `
+                    <div class="mt-2.5 p-3 bg-emerald-50/90 rounded-xl border border-emerald-100 text-xs">
+                        <div class="font-extrabold text-emerald-800 flex items-center justify-between mb-1">
+                            <span><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin</span>
+                            <span class="text-[10px] text-slate-400 font-semibold">${replyDate}</span>
+                        </div>
+                        <p class="text-slate-700 font-medium italic">"${escapeHTML(fb.reply)}"</p>
+                    </div>
+                `;
+            } else {
+                replyHTML = `<p class="text-[11px] text-amber-600 font-bold mt-1.5"><i class="fa-solid fa-clock mr-1"></i> Menunggu tanggapan admin...</p>`;
+            }
+
+            card.innerHTML = `
+                <div class="flex justify-between items-center text-slate-400 font-bold text-[11px]">
+                    <span>${escapeHTML(fb.sender || "Anonim")}</span>
+                    <span>${dateText}</span>
+                </div>
+                <p class="text-slate-700 font-medium italic">"${escapeHTML(fb.text)}"</p>
+                ${replyHTML}
+            `;
+            myFeedbackList.appendChild(card);
+        });
     });
 
     feedbackForm.addEventListener("submit", async (event) => {
@@ -982,6 +1064,7 @@
             await set(newFeedbackRef, {
                 text: text,
                 sender: sender,
+                userId: userDeviceId, // Disimpan secara privat terikat ke perangkat ini
                 createdAt: Date.now(),
                 status: "pending"
             });
@@ -1001,7 +1084,7 @@
     });
 
     // =====================================================
-    // 4. KELUHAN PRIBADI & VOICE NOTE
+    // 5. KELUHAN PRIBADI & VOICE NOTE
     // =====================================================
 
     const complaintInput = document.getElementById("complaintInput");
@@ -1327,7 +1410,7 @@
     loadComplaint();
 
     // =====================================================
-    // 5. TANTANGAN HARIAN & STREAK
+    // 6. TANTANGAN HARIAN & STREAK
     // =====================================================
     const STORAGE_TASKS = "clover_challenges_v2";
     const STREAK_KEY = "clover_challenge_streak_v2";
