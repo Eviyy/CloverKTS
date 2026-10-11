@@ -313,11 +313,11 @@
         </main>
     </div>
 
-    <!-- FIREBASE + ADMIN SCRIPT (USERNAME & PASSWORD AUTH) -->
+    <!-- FIREBASE + ADMIN SCRIPT (DINAMIS DARI DATABASE) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk",
@@ -333,8 +333,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
-
-        const ADMIN_UID = "9LKHxz1s0zdiMS1Dl01Hky6vp3N2";
 
         const loginScreen = document.getElementById("loginScreen");
         const adminDashboard = document.getElementById("adminDashboard");
@@ -382,7 +380,6 @@
             let userInput = adminUsernameInput.value.trim();
             const password = adminPasswordInput.value;
 
-            // Otomatis ubah username ke format email internal jika tidak mengandung '@'
             let emailToUse = userInput;
             if (!emailToUse.includes("@")) {
                 emailToUse = userInput + "@clover.admin";
@@ -401,16 +398,27 @@
             await signOut(auth);
         });
 
-        onAuthStateChanged(auth, (user) => {
+        // Verifikasi Admin Dinamis dari Database (`clover/admins`)
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if (user.uid === ADMIN_UID) {
-                    loginScreen.classList.add("hidden");
-                    adminDashboard.classList.remove("hidden");
-                    adminEmailDisplay.textContent = user.email ? user.email.split('@')[0] : "Admin";
-                    initAdminPanel();
-                } else {
+                try {
+                    const adminRef = ref(database, `clover/admins/${user.uid}`);
+                    const snapshot = await get(adminRef);
+
+                    if (snapshot.exists() && snapshot.val() === true) {
+                        loginScreen.classList.add("hidden");
+                        adminDashboard.classList.remove("hidden");
+                        adminEmailDisplay.textContent = user.email ? user.email.split('@')[0] : "Admin";
+                        initAdminPanel();
+                    } else {
+                        signOut(auth);
+                        loginError.textContent = "Akses ditolak. Akun ini tidak terdaftar sebagai admin.";
+                        loginError.classList.remove("hidden");
+                    }
+                } catch (err) {
+                    console.error("Gagal memverifikasi admin:", err);
                     signOut(auth);
-                    loginError.textContent = "Akses ditolak. Akun ini bukan admin utama.";
+                    loginError.textContent = "Terjadi kesalahan saat verifikasi admin.";
                     loginError.classList.remove("hidden");
                 }
             } else {
