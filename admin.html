@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MODERASI RUANG CURHAT PUBLIK -->
+            <!-- TAB 2: MODERASI RUANG CURHAT PUBLIK & BALASAN -->
             <div id="tabContentCurhat" class="hidden space-y-6">
                 <!-- Statistik Kurhat -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -439,7 +439,7 @@
                 renderMessages();
             });
 
-            // Curhat Publik
+            // Curhat Publik & Balasan
             onValue(ref(database, "clover/curhat_publik"), (snapshot) => {
                 const data = snapshot.val();
                 cachedCurhats = data ? Object.entries(data).map(([id, val]) => ({ id, ...val })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
@@ -582,16 +582,55 @@
                                   c.status === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>' :
                                   '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
 
+                // Render Replies for Moderation
+                let adminRepliesHTML = "";
+                const repliesObj = c.replies || {};
+                const repliesEntries = Object.entries(repliesObj);
+                
+                if (repliesEntries.length > 0) {
+                    repliesEntries.forEach(([repId, rep]) => {
+                        const repStatus = rep.status || "pending";
+                        let repBadge = repStatus === "approved" ? '<span class="bg-teal-100 text-teal-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full">Disetujui</span>' :
+                                       repStatus === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full">Ditolak</span>' :
+                                       '<span class="bg-amber-100 text-amber-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full">Pending</span>';
+
+                        adminRepliesHTML += `
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-extrabold text-slate-800">${escapeHTML(rep.sender || "Sahabat Baik")}</span>
+                                    ${repBadge}
+                                </div>
+                                <p class="text-slate-600 italic">"${escapeHTML(rep.text)}"</p>
+                                <div class="flex gap-2 pt-1">
+                                    <button onclick="window.approveReply('${c.id}', '${repId}')" class="bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-bold px-3 py-1 rounded-lg">Setujui</button>
+                                    <button onclick="window.rejectReply('${c.id}', '${repId}')" class="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-lg">Tolak</button>
+                                    <button onclick="window.deleteReply('${c.id}', '${repId}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-bold px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    adminRepliesHTML = `<p class="text-[11px] text-slate-400 italic">Belum ada balasan pada curhat ini.</p>`;
+                }
+
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="font-extrabold text-sm text-slate-800">${escapeHTML(c.sender || "Pejuang Tenang")}</span>
                         ${statusBadge}
                     </div>
                     <p class="text-xs text-slate-700 font-medium italic">"${escapeHTML(c.text)}"</p>
-                    <div class="pt-3 border-t border-slate-100 flex gap-2">
+                    <div class="pt-2 flex gap-2">
                         <button onclick="window.approveCurhat('${c.id}')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui Curhat</button>
                         <button onclick="window.rejectCurhat('${c.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
-                        <button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <!-- Moderasi Balasan -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                        <p class="text-[11px] font-black text-slate-500 uppercase tracking-wider">Moderasi Balasan Komunitas</p>
+                        <div class="space-y-2">
+                            ${adminRepliesHTML}
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -639,6 +678,11 @@
         window.approveCurhat = (id) => update(ref(database, `clover/curhat_publik/${id}`), { status: "approved" });
         window.rejectCurhat = (id) => update(ref(database, `clover/curhat_publik/${id}`), { status: "rejected" });
         window.deleteCurhat = (id) => { if(confirm("Hapus curhat ini?")) remove(ref(database, `clover/curhat_publik/${id}`)); };
+
+        // Moderasi Balasan Curhat
+        window.approveReply = (curhatId, replyId) => update(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`), { status: "approved" });
+        window.rejectReply = (curhatId, replyId) => update(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`), { status: "rejected" });
+        window.deleteReply = (curhatId, replyId) => { if(confirm("Hapus balasan ini?")) remove(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`)); };
 
         window.deleteFeedback = (id) => { if(confirm("Hapus masukan ini?")) remove(ref(database, `clover/feedback/${id}`)); };
         window.sendFeedbackReply = (id) => {
