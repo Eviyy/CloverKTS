@@ -210,7 +210,7 @@
 <main class="max-w-5xl mx-auto px-4 py-12 flex-1 space-y-24 w-full relative z-10">
 
     <!-- =================================================
-         TENTANG
+         TENTANG (FOKUS 3 PILAR BARU)
     ================================================== -->
     <section id="tentang" class="relative">
         <div class="text-center max-w-2xl mx-auto mb-12">
@@ -221,37 +221,40 @@
                 Langkah kecil bisa berarti besar
             </h3>
             <p class="text-slate-500 leading-relaxed font-medium">
-                Setiap orang membutuhkan tempat privat untuk merenung dan ruang terbuka yang aman untuk didengar tanpa dihakimi.
+                Pilih ruang yang kamu butuhkan untuk merenung, melangkah keluar dari sepi, atau berbagi energi positif.
             </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <i class="fa-solid fa-lock clover-watermark"></i>
-                <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-6 text-2xl relative z-10">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">100% Privat</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Catatan keluhan dan rekaman suara harianmu tersimpan aman di perangkatmu sendiri.</p>
-            </div>
-
+            <!-- Card 1: Keluhan Pribadi & Curhat Publik -->
             <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
                 <i class="fa-solid fa-comments clover-watermark"></i>
-                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[100px] -z-0"></div>
-                <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-6 text-2xl shadow-lg shadow-emerald-500/30 relative z-10">
+                <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-6 text-2xl relative z-10">
                     <i class="fa-solid fa-comments"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Curhat & Dukungan</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Bagikan ceritamu ke ruang publik dan terima tanggapan serta semangat dari sesama pengguna.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Keluhan & Curhat</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Tulis catatan harian secara privat di perangkatmu atau bagikan cerita ke ruang publik untuk saling menguatkan.</p>
             </div>
 
+            <!-- Card 2: Tantangan Melawan Sepi -->
             <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <i class="fa-solid fa-seedling clover-watermark"></i>
-                <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-6 text-2xl relative z-10">
-                    <i class="fa-solid fa-seedling"></i>
+                <i class="fa-solid fa-leaf clover-watermark"></i>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[100px] -z-0"></div>
+                <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-6 text-2xl shadow-lg shadow-emerald-500/30 relative z-10">
+                    <i class="fa-solid fa-leaf"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Langkah Sederhana</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Satu kalimat baik atau sapaan hangat dapat mengubah hari seseorang.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Tantangan Melawan Sepi</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Lakukan aksi kecil harian untuk menjaga streak semangatmu dan perlahan memecah rasa isolasi diri.</p>
+            </div>
+
+            <!-- Card 3: Pesan Hangat Bagi Sesama -->
+            <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                <i class="fa-solid fa-envelope-open-text clover-watermark"></i>
+                <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-6 text-2xl relative z-10">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Pesan Hangat Bagi Sesama</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Tinggalkan kata-kata positif dan dukungan semangat di papan kehangatan untuk mencerahkan hari orang lain.</p>
             </div>
         </div>
     </section>
@@ -842,7 +845,7 @@
     });
 
     // =====================================================
-    // 4. PAPAN KEHANGATAN
+    // 4. PAPAN KEHANGATAN (DENGAN FIX BUG JUMPING/BERPINDAH SAAT LIKE)
     // =====================================================
     const messageForm = document.getElementById("message-form");
     const messageInput = document.getElementById("message-input");
@@ -889,6 +892,7 @@
     let approvedMessagesCache = [];
     let rotationTimer = null;
     let startIndex = 0;
+    let isInitialLoad = true; // Menjaga agar startIndex tidak reset ke 0 saat tombol like ditekan
 
     onValue(approvedMessagesQuery, (snapshot) => {
         hideFirebaseStatus();
@@ -915,7 +919,15 @@
         approvedMessagesCache = Object.entries(data).map(([id, message]) => ({ id, ...message }));
         approvedMessagesCache.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
 
-        startIndex = 0;
+        if (isInitialLoad) {
+            startIndex = 0;
+            isInitialLoad = false;
+        } else {
+            if (startIndex >= approvedMessagesCache.length) {
+                startIndex = 0;
+            }
+        }
+
         renderRotatingBatch();
 
         if (approvedMessagesCache.length > 2) {
@@ -1091,8 +1103,6 @@
         }
 
         const curhatsList = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-        
-        // Filter: Tampilkan yang approved ATAU milik user sendiri (meskipun pending)
         const visibleCurhats = curhatsList.filter(c => c.status === "approved" || c.userId === userDeviceId);
 
         if (visibleCurhats.length === 0) {
@@ -1138,12 +1148,9 @@
             </button>`;
         }
 
-        // Render Replies
         let repliesHTML = "";
         const repliesObj = curhat.replies || {};
         const repliesList = Object.entries(repliesObj).map(([repId, rep]) => ({ id: repId, ...rep }));
-        
-        // Filter replies: approved ATAU milik user sendiri
         const visibleReplies = repliesList.filter(rep => rep.status === "approved" || rep.userId === userDeviceId);
 
         if (visibleReplies.length > 0) {
@@ -1198,14 +1205,12 @@
                 </div>
             </div>
 
-            <!-- Curhat Content View / Edit Container -->
             <div id="curhat_content_area_${curhat.id}">
                 <p class="text-sm text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap break-words mt-3">
                     "${text}"
                 </p>
             </div>
 
-            <!-- Hidden Edit Form for Curhat -->
             <form id="curhat_edit_form_${curhat.id}" class="hidden space-y-3 mt-3 pt-3 border-t border-slate-100">
                 <textarea rows="3" maxlength="400" class="w-full p-3 bg-slate-50 rounded-xl border border-teal-300 text-xs text-slate-800 font-medium focus:outline-none">${curhat.text}</textarea>
                 <div class="flex justify-end gap-2">
@@ -1220,7 +1225,6 @@
                     ${repliesHTML}
                 </div>
 
-                <!-- Reply Form -->
                 <form class="reply-form flex gap-2 pt-2" data-curhat-id="${curhat.id}">
                     <input type="text" placeholder="Tulis balasan semangat (perlu moderasi admin)..." maxlength="250" required
                            class="reply-input flex-1 px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-teal-400 text-xs text-slate-800 font-medium">
@@ -1231,7 +1235,6 @@
             </div>
         `;
 
-        // Curhat Edit Actions
         if (isMyCurhat) {
             const editBtn = card.querySelector(".edit-curhat-btn");
             const contentArea = card.querySelector(`#curhat_content_area_${curhat.id}`);
@@ -1258,7 +1261,7 @@
                 try {
                     await update(ref(database, `clover/curhat_publik/${curhat.id}`), {
                         text: newText,
-                        status: "pending", // Kembali ke pending untuk disetujui admin
+                        status: "pending",
                         updatedAt: Date.now()
                     });
                     alert("Curhat berhasil diperbarui dan dikirim ulang untuk ditinjau admin 🍀");
@@ -1268,7 +1271,6 @@
             });
         }
 
-        // Reply Form Submission
         const replyForm = card.querySelector(".reply-form");
         replyForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -1283,7 +1285,7 @@
                     sender: "Sahabat Baik",
                     userId: userDeviceId,
                     createdAt: Date.now(),
-                    status: "pending" // Balasan baru wajib disetujui admin
+                    status: "pending"
                 });
                 input.value = "";
                 alert("Balasan berhasil dikirim dan menunggu persetujuan admin 🍀");
@@ -1292,7 +1294,6 @@
             }
         });
 
-        // Edit Reply Actions
         card.querySelectorAll(".edit-reply-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const repId = btn.getAttribute("data-reply-id");
@@ -1311,7 +1312,7 @@
 
                 const editRepForm = document.getElementById(`edit_reply_form_${repId}`);
                 editRepForm.querySelector(".cancel-edit-rep").addEventListener("click", () => {
-                    renderCurhatCard(curhat); // Refresh card to reset view
+                    renderCurhatCard(curhat);
                 });
 
                 editRepForm.addEventListener("submit", async (ev) => {
@@ -1322,7 +1323,7 @@
                     try {
                         await update(ref(database, `clover/curhat_publik/${curhat.id}/replies/${repId}`), {
                             text: updatedRepText,
-                            status: "pending", // Edit balasan kembali ke pending untuk dimoderasi
+                            status: "pending",
                             updatedAt: Date.now()
                         });
                         alert("Balasan diperbarui dan menunggu peninjauan admin 🍀");
