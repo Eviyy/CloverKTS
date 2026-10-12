@@ -23,7 +23,7 @@
     <style>
         html {
             scroll-behavior: smooth;
-            scroll-padding-top: 90px; /* Menyesuaikan dengan tinggi navbar agar tidak terpotong */
+            scroll-padding-top: 90px;
         }
 
         body {
@@ -31,7 +31,6 @@
             overflow-x: hidden;
         }
 
-        /* Task Done Styling */
         .task-done {
             background: #ecfdf5 !important;
             border-color: #6ee7b7 !important;
@@ -45,7 +44,6 @@
             transform: scale(1.1) rotate(15deg);
         }
 
-        /* Message Card Intro Animation */
         .message-card {
             animation: fadeIn 0.5s ease-out backwards;
         }
@@ -54,7 +52,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Loading Spinner */
         .loading-spinner {
             width: 32px;
             height: 32px;
@@ -67,7 +64,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Floating Clovers Background Animation */
         @keyframes float-up {
             0% { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
             10% { opacity: 0.15; }
@@ -82,7 +78,6 @@
             pointer-events: none;
         }
 
-        /* Glassmorphism utilities */
         .glass-card {
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(16px);
@@ -127,18 +122,19 @@
         </a>
 
         <!-- Uniform Links -->
-        <nav class="hidden md:flex items-center gap-7 text-sm font-bold text-slate-600">
+        <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
             <a href="#tentang" class="hover:text-emerald-600 transition-colors">Tentang</a>
-            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Ruang Keluh</a>
+            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan Pribadi</a>
+            <a href="#curhat-publik" class="hover:text-emerald-600 transition-colors">Ruang Curhat</a>
             <a href="#tantangan" class="hover:text-emerald-600 transition-colors">Tantangan</a>
-            <a href="#papan" class="hover:text-emerald-600 transition-colors">Papan Kehangatan</a>
-            <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan Web</a>
+            <a href="#papan" class="hover:text-emerald-600 transition-colors">Kehangatan</a>
+            <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan</a>
         </nav>
 
         <!-- Bantuan Button -->
         <a href="#bantuan" class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-4 py-2.5 rounded-2xl transition-colors flex items-center gap-2 border border-rose-100 shadow-sm">
             <i class="fa-solid fa-phone"></i>
-            <span class="hidden sm:inline">Bantuan Darurat</span>
+            <span class="hidden sm:inline">Darurat</span>
         </a>
     </div>
 </header>
@@ -180,18 +176,18 @@
         </h2>
 
         <p class="text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
-            Clover adalah ruang kecil dan hangat untuk berbagi, mencoba langkah sederhana melawan kesepian, dan saling memberikan dukungan.
+            Clover adalah ruang kecil dan hangat untuk mencatat keluhan pribadi, berbagi curhat dengan sesama, dan saling menguatkan.
         </p>
 
         <div class="flex flex-wrap justify-center gap-3.5">
             <a href="#keluhan" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-feather"></i> Ruang Keluh
+                <i class="fa-solid fa-lock"></i> Keluhan Pribadi
+            </a>
+            <a href="#curhat-publik" class="bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-teal-700/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-comments"></i> Ruang Curhat
             </a>
             <a href="#tantangan" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-slate-900/15 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-leaf"></i> Mulai Tantangan
-            </a>
-            <a href="#papan" class="bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm px-6 py-3.5 rounded-2xl border border-slate-200 shadow-sm hover:shadow transition-all flex items-center gap-2">
-                <i class="fa-solid fa-heart"></i> Bagikan Kehangatan
+                <i class="fa-solid fa-leaf"></i> Tantangan
             </a>
         </div>
     </div>
@@ -214,40 +210,40 @@
                 Langkah kecil bisa berarti besar
             </h3>
             <p class="text-slate-500 leading-relaxed font-medium">
-                Kesepian bukan berarti kamu lemah. Setiap orang membutuhkan koneksi, perhatian, dan tempat untuk merasa didengar dengan aman.
+                Setiap orang membutuhkan tempat privat untuk merenung dan tempat terbuka yang aman untuk didengar tanpa dihakimi.
             </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-6 text-2xl">
-                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2">Saling Menguatkan</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium">Satu kalimat baik dapat membuat seseorang merasa tidak sendirian lagi.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2">100% Privat</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium">Catatan keluhan dan rekaman suara harianmu tersimpan aman di perangkatmu sendiri.</p>
             </div>
 
             <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[100px] -z-10"></div>
                 <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-6 text-2xl shadow-lg shadow-emerald-500/30">
-                    <i class="fa-solid fa-seedling"></i>
+                    <i class="fa-solid fa-comments"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2">Mulai Hal Kecil</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium">Tidak perlu langsung melakukan hal besar. Satu langkah kecil sudah sangat berarti.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2">Curhat & Dukungan</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium">Bagikan ceritamu ke ruang publik dan terima tanggapan serta semangat dari sesama pengguna.</p>
             </div>
 
             <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-6 text-2xl">
-                    <i class="fa-solid fa-people-arrows"></i>
+                    <i class="fa-solid fa-seedling"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2">Bangun Koneksi</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium">Hubungan yang hangat dan suportif dapat dimulai dari sapaan sederhana.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2">Langkah Sederhana</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium">Satu kalimat baik atau sapaan hangat dapat mengubah hari seseorang.</p>
             </div>
         </div>
     </section>
 
     <!-- =================================================
-         KELUHAN HARI INI + VOICE NOTE
+         1. KELUHAN PRIBADI & VOICE NOTE (LOKAL)
     ================================================== -->
     <section id="keluhan" class="relative rounded-[2.5rem] p-6 md:p-10 lg:p-14 shadow-2xl border border-white overflow-hidden">
         
@@ -260,17 +256,17 @@
                 
                 <div class="flex-1">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white shadow-md text-emerald-500 text-xl mb-6">
-                        <i class="fa-solid fa-feather"></i>
+                        <i class="fa-solid fa-lock"></i>
                     </div>
                     <span class="block text-emerald-700 text-xs font-black uppercase tracking-widest mb-2">
-                        Ruang Privat
+                        Ruang Privat (Di Perangkat Anda)
                     </span>
                     <h3 class="text-3xl font-extrabold text-slate-900 mb-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-emerald-800">
-                        Ceritakan apa yang kamu rasakan hari ini
+                        Catatan Keluhan Pribadi & Rekaman Suara
                     </h3>
                     <p class="text-sm text-slate-600 leading-relaxed font-medium">
-                        Tuliskan keluhan, beban pikiran, atau rekam suara isi hatimu. 
-                        <strong>Catatan & rekaman ini 100% rahasia</strong> dan hanya tersimpan di perangkatmu sendiri.
+                        Tuliskan keluhan atau unek-unek harian untuk diri sendiri. 
+                        <strong>100% rahasia</strong> dan hanya tersimpan di browser perangkatmu.
                     </p>
                 </div>
 
@@ -287,7 +283,7 @@
                             <div class="relative z-10">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
-                                        <i class="fa-solid fa-lock"></i> Catatan Teks Tersimpan
+                                        <i class="fa-solid fa-lock"></i> Catatan Privat Tersimpan
                                     </h4>
                                     <button id="editComplaintButton" type="button" class="bg-white hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-200 shadow-sm transition-all flex items-center gap-1.5">
                                         <i class="fa-solid fa-pen-to-square"></i> Edit
@@ -317,7 +313,7 @@
                             <div class="relative z-10">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-1.5">
-                                        <i class="fa-solid fa-microphone"></i> Rekaman Suara Tersimpan
+                                        <i class="fa-solid fa-microphone"></i> Rekaman Suara Privat Tersimpan
                                     </h4>
                                     <button id="deleteAudioOnlyButton" type="button" class="bg-white hover:bg-rose-50 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-rose-100 shadow-sm transition-all flex items-center gap-1.5" title="Hapus rekaman saja">
                                         <i class="fa-solid fa-trash-can"></i> Hapus Suara
@@ -344,7 +340,7 @@
                     <!-- TEXTAREA INPUT -->
                     <div class="bg-white/80 rounded-3xl p-3 border border-slate-100 shadow-inner mb-4">
                         <textarea id="complaintInput" rows="4" maxlength="1000" 
-                                  placeholder="Contoh: Hari ini terasa berat dan sepi, aku merasa..."
+                                  placeholder="Contoh: Hari ini terasa berat dan melelahkan, aku merasa..."
                                   class="w-full p-4 bg-transparent text-sm text-slate-700 font-medium resize-none focus:outline-none placeholder:text-slate-400"></textarea>
                     </div>
                     
@@ -375,7 +371,7 @@
                     <div class="flex flex-wrap gap-3 mt-6">
                         <button id="saveComplaintButton" type="button" 
                                 class="flex-1 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-6 py-3.5 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-lock text-xs"></i> Simpan Catatan & Suara
+                            <i class="fa-solid fa-lock text-xs"></i> Simpan Keluhan Pribadi
                         </button>
                         <button id="clearComplaintButton" type="button" title="Hapus semua"
                                 class="bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-rose-600 text-sm font-bold px-6 py-3.5 rounded-2xl transition-all flex items-center gap-2">
@@ -388,7 +384,63 @@
     </section>
 
     <!-- =================================================
-         TANTANGAN
+         2. RUANG CURHAT PUBLIK (BISA DITANGGAPI ORANG LAIN)
+    ================================================== -->
+    <section id="curhat-publik" class="space-y-8 pt-6">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-teal-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                <i class="fa-solid fa-comments"></i> Ruang Curhat Bersama
+            </span>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                Curhat dan Saling Mendukung
+            </h3>
+            <p class="text-slate-500 leading-relaxed font-medium">
+                Bagikan keluh kesahmu secara terbuka di sini. Anggota komunitas lain dapat membaca dan memberikan balasan dukungan hangat untukmu.
+            </p>
+        </div>
+
+        <div id="curhat-firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
+
+        <!-- Form Kirim Curhat Publik -->
+        <form id="curhat-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5">
+            <div>
+                <label for="curhat-input" class="block text-sm font-extrabold text-slate-700 mb-2">Tulis Curhat Publik <span class="text-rose-500">*</span></label>
+                <textarea id="curhat-input" rows="4" maxlength="400" required placeholder="Contoh: Rasanya akhir-akhir ini lelah banget menghadapi tekanan kuliah/kerja, ada yang ngerasain hal serupa? 🍀" 
+                          class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
+                <div class="flex justify-between mt-2 px-1">
+                    <span class="text-[10px] font-bold text-slate-400">Maksimal 400 karakter</span>
+                    <span id="curhat-char-count" class="text-[10px] font-bold text-slate-400">0/400</span>
+                </div>
+            </div>
+
+            <div>
+                <label for="curhat-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
+                    Nama / Panggilan <span class="font-medium text-slate-400">(opsional)</span>
+                </label>
+                <input type="text" id="curhat-sender-input" maxlength="40" placeholder="Pejuang Tenang" 
+                       class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
+            </div>
+
+            <button type="submit" id="submit-curhat-button" class="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-teal-600/25">
+                <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik
+            </button>
+            
+            <p class="text-xs text-center font-medium text-slate-400 pt-1">
+                Curhat akan dimoderasi sebentar sebelum tampil agar tetap aman dan positif.
+            </p>
+        </form>
+
+        <!-- Daftar Curhat Publik dari Komunitas -->
+        <div id="curhats-container" class="space-y-6 pt-6 max-w-2xl mx-auto">
+            <div class="bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-sm font-bold text-slate-400">Memuat ruang curhat komunitas...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================
+         3. TANTANGAN
     ================================================== -->
     <section id="tantangan">
         <div class="text-center max-w-2xl mx-auto mb-10">
@@ -484,7 +536,7 @@
                                 Satu Pesan Hangat
                             </span>
                             <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Kirim pesan santai ke teman atau keluarga yang sudah lama tidak mengobrol (misal: "Halo, apa kabar?").
+                                Kirim pesan santai ke teman atau keluarga yang sudah lama tidak mengobrol.
                             </span>
                         </div>
                     </label>
@@ -500,7 +552,7 @@
                                 Jeda Dunia Maya
                             </span>
                             <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Jauhkan diri dari media sosial selama 1 jam, letakkan HP, dan perhatikan keadaan fisik di sekitarmu.
+                                Jauhkan diri dari media sosial selama 1 jam dan perhatikan keadaan fisik di sekitarmu.
                             </span>
                         </div>
                     </label>
@@ -532,7 +584,7 @@
     </section>
 
     <!-- =================================================
-         PAPAN KEHANGATAN
+         4. PAPAN KEHANGATAN (DENGAN LIKE & TANPA TANGGAL)
     ================================================== -->
     <section id="papan" class="space-y-8 pt-10 border-t border-slate-200/60">
         <div class="text-center max-w-2xl mx-auto">
@@ -586,7 +638,7 @@
     </section>
 
     <!-- =================================================
-         BANTUAN
+         5. BANTUAN
     ================================================== -->
     <section id="bantuan" class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-rose-100 shadow-inner mt-12">
         <div class="text-center max-w-2xl mx-auto mb-8">
@@ -622,7 +674,7 @@
     </section>
 
     <!-- =================================================
-         MASUKAN & SARAN WEB (DENGAN RIWAYAT & NOTIFIKASI)
+         6. MASUKAN & SARAN WEB
     ================================================== -->
     <section id="masukan" class="bg-white rounded-[2.5rem] p-6 md:p-10 lg:p-14 border border-slate-100 shadow-xl shadow-slate-200/40 max-w-3xl mx-auto">
         <div class="text-center max-w-xl mx-auto mb-8">
@@ -663,7 +715,6 @@
             </button>
         </form>
 
-        <!-- Riwayat Masukan & Balasan Privat dengan Lencana Notifikasi -->
         <div id="myFeedbackContainer" class="mt-10 pt-8 border-t border-slate-100 hidden">
             <h4 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i> Riwayat Masukan & Tanggapan Admin Anda
@@ -714,7 +765,7 @@
     const database = getDatabase(app);
 
     // =====================================================
-    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif (Online)
+    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif
     // =====================================================
     if (!sessionStorage.getItem("clover_visited")) {
         sessionStorage.setItem("clover_visited", "true");
@@ -728,13 +779,11 @@
 
     const activeUsersRef = ref(database, "clover/active_users");
     const userSessionRef = push(activeUsersRef);
-    set(userSessionRef, {
-        joinedAt: Date.now()
-    });
+    set(userSessionRef, { joinedAt: Date.now() });
     onDisconnect(userSessionRef).remove();
 
     // =====================================================
-    // 2. DEVICE ID PRIVAT UNTUK MASUKAN WEB
+    // 2. DEVICE ID PRIVAT
     // =====================================================
     let userDeviceId = localStorage.getItem("clover_user_device_id");
     if (!userDeviceId) {
@@ -743,7 +792,7 @@
     }
 
     // =====================================================
-    // 3. FITUR BROADCAST MASSAL (GLOBAL)
+    // 3. FITUR BROADCAST MASSAL
     // =====================================================
     const broadcastBanner = document.getElementById("broadcastBanner");
     const broadcastText = document.getElementById("broadcastText");
@@ -774,9 +823,8 @@
     });
 
     // =====================================================
-    // 4. FITUR UTAMA WEBSITE (Papan Pesan & Keluhan)
+    // 4. PAPAN KEHANGATAN (DENGAN LIKE & TANPA TANGGAL)
     // =====================================================
-
     const messageForm = document.getElementById("message-form");
     const messageInput = document.getElementById("message-input");
     const senderInput = document.getElementById("sender-input");
@@ -819,7 +867,6 @@
     }
 
     const approvedMessagesQuery = query(ref(database, "clover/messages"), orderByChild("status"), equalTo("approved"));
-
     let approvedMessagesCache = [];
     let rotationTimer = null;
     let startIndex = 0;
@@ -839,8 +886,8 @@
             messagesContainer.innerHTML = `
                 <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-emerald-100 text-center">
                     <div class="text-5xl text-emerald-200 mb-4"><i class="fa-solid fa-leaf"></i></div>
-                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada pesan yang disetujui.</h4>
-                    <p class="text-sm font-medium text-slate-400">Jadilah orang pertama yang memberikan kehangatan di sini.</p>
+                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada pesan kehangatan.</h4>
+                    <p class="text-sm font-medium text-slate-400">Jadilah yang pertama mengirimkan pesan positif.</p>
                 </div>
             `;
             return;
@@ -858,17 +905,6 @@
                 renderRotatingBatch();
             }, 5000);
         }
-
-    }, (error) => {
-        console.error("Firebase read error:", error);
-        messagesContainer.innerHTML = `
-            <div class="md:col-span-2 bg-white rounded-3xl p-12 border border-rose-100 shadow-sm text-center">
-                <div class="text-4xl text-rose-300 mb-4"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <h4 class="font-extrabold text-slate-800 mb-2">Tidak dapat membaca pesan.</h4>
-                <p class="text-xs font-medium text-slate-500 leading-5">Pastikan koneksi internet stabil atau cek Rules Realtime Database.</p>
-            </div>
-        `;
-        showFirebaseStatus("Koneksi ke database gagal. Tidak dapat memuat pesan.", "error");
     });
 
     function renderRotatingBatch() {
@@ -893,7 +929,11 @@
 
         const sender = message.sender?.trim() || "Sahabat Anonim";
         const text = message.text?.trim() || "";
-        const date = formatDate(message.createdAt);
+
+        // Like Data calculation
+        const likesObj = message.likes || {};
+        const likeCount = Object.keys(likesObj).length;
+        const hasLiked = Boolean(likesObj[userDeviceId]);
 
         let replyHTML = "";
         if (message.reply) {
@@ -917,10 +957,12 @@
                     </div>
                     <div>
                         <p class="text-sm font-extrabold text-slate-800">${escapeHTML(sender)}</p>
-                        ${date ? `<span class="text-[10px] font-bold text-slate-400">${escapeHTML(date)}</span>` : ""}
                     </div>
                 </div>
-                <i class="fa-solid fa-quote-right text-emerald-100 text-2xl"></i>
+                <button type="button" class="like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all ${hasLiked ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-50 hover:bg-emerald-50 text-slate-600 border border-slate-200'}" title="Sukai pesan ini">
+                    <i class="${hasLiked ? 'fa-solid text-rose-500' : 'fa-regular text-slate-400'} fa-heart"></i>
+                    <span>${likeCount}</span>
+                </button>
             </div>
             <div class="flex-1">
                 <p class="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap break-words italic">
@@ -933,22 +975,31 @@
                 <span>Disetujui Admin Clover</span>
             </div>
         `;
+
+        // Like button event listener
+        card.querySelector(".like-btn").addEventListener("click", async () => {
+            const likeRef = ref(database, `clover/messages/${message.id}/likes/${userDeviceId}`);
+            try {
+                if (hasLiked) {
+                    await set(likeRef, null); // Unlike
+                } else {
+                    await set(likeRef, true); // Like
+                }
+            } catch (err) {
+                console.error("Gagal mengubah status like:", err);
+            }
+        });
+
         messagesContainer.appendChild(card);
     }
 
     messageForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         const text = messageInput.value.trim();
         const sender = senderInput.value.trim() || "Sahabat Anonim";
 
-        if (!text) {
-            showFirebaseStatus("Tulis pesan terlebih dahulu.", "error");
-            return;
-        }
-
-        if (text.length > 300) {
-            showFirebaseStatus("Pesan maksimal 300 karakter.", "error");
+        if (!text || text.length > 300) {
+            showFirebaseStatus("Pesan wajib diisi (maksimal 300 karakter).", "error");
             return;
         }
 
@@ -957,24 +1008,15 @@
 
         try {
             const messagesRef = ref(database, "clover/messages");
-            const newMessageRef = push(messagesRef);
-
-            await set(newMessageRef, {
-                text: text,
-                sender: sender,
-                uid: "anonymous",
-                createdAt: Date.now(),
-                status: "pending"
+            await set(push(messagesRef), {
+                text, sender, uid: "anonymous", createdAt: Date.now(), status: "pending"
             });
-
             messageForm.reset();
             charCount.textContent = "0/300";
             showFirebaseStatus("Pesan terkirim! Akan muncul setelah disetujui admin 🍀", "success");
             setTimeout(hideFirebaseStatus, 6000);
-
         } catch (error) {
-            console.error("Firebase write error:", error);
-            showFirebaseStatus("Gagal mengirim pesan. Periksa koneksi internet.", "error");
+            showFirebaseStatus("Gagal mengirim pesan.", "error");
         } finally {
             submitButton.disabled = false;
             submitButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Kehangatan`;
@@ -982,12 +1024,186 @@
     });
 
     messageInput.addEventListener("input", () => {
-        const length = messageInput.value.length;
-        charCount.textContent = `${length}/300`;
+        charCount.textContent = `${messageInput.value.length}/300`;
     });
 
     // =====================================================
-    // 5. FITUR MASUKAN & SARAN WEB (DENGAN RIWAYAT & NOTIFIKASI PRIBADI)
+    // 5. RUANG CURHAT PUBLIK & BALASAN KOMUNITAS
+    // =====================================================
+    const curhatForm = document.getElementById("curhat-form");
+    const curhatInput = document.getElementById("curhat-input");
+    const curhatSenderInput = document.getElementById("curhat-sender-input");
+    const submitCurhatButton = document.getElementById("submit-curhat-button");
+    const curhatFirebaseStatus = document.getElementById("curhat-firebase-status");
+    const curhatCharCount = document.getElementById("curhat-char-count");
+    const curhatsContainer = document.getElementById("curhats-container");
+
+    function showCurhatStatus(message, type = "info") {
+        curhatFirebaseStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-teal-50", "text-teal-700", "border-teal-200", "bg-amber-50", "text-amber-700", "border-amber-200");
+        curhatFirebaseStatus.classList.add("border-2");
+        if (type === "error") curhatFirebaseStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+        else if (type === "success") curhatFirebaseStatus.classList.add("bg-teal-50", "text-teal-700", "border-teal-200");
+        else curhatFirebaseStatus.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
+        curhatFirebaseStatus.textContent = message;
+    }
+
+    function hideCurhatStatus() {
+        curhatFirebaseStatus.classList.add("hidden");
+    }
+
+    curhatInput.addEventListener("input", () => {
+        curhatCharCount.textContent = `${curhatInput.value.length}/400`;
+    });
+
+    const approvedCurhatsQuery = query(ref(database, "clover/curhat_publik"), orderByChild("status"), equalTo("approved"));
+
+    onValue(approvedCurhatsQuery, (snapshot) => {
+        hideCurhatStatus();
+        const data = snapshot.val();
+        curhatsContainer.innerHTML = "";
+
+        if (!data) {
+            curhatsContainer.innerHTML = `
+                <div class="bg-white rounded-3xl p-10 border-2 border-dashed border-teal-100 text-center">
+                    <div class="text-4xl text-teal-200 mb-3"><i class="fa-solid fa-comments"></i></div>
+                    <h4 class="font-extrabold text-slate-800 mb-1">Belum ada curhat publik.</h4>
+                    <p class="text-sm font-medium text-slate-400">Jadilah yang pertama berbagi cerita di ruang ini.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const curhatsList = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+        curhatsList.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+        curhatsList.forEach(curhat => {
+            renderCurhatCard(curhat);
+        });
+    });
+
+    function renderCurhatCard(curhat) {
+        const card = document.createElement("article");
+        card.className = "bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all space-y-4";
+
+        const sender = escapeHTML(curhat.sender?.trim() || "Pejuang Tenang");
+        const text = escapeHTML(curhat.text?.trim() || "");
+        const date = formatDate(curhat.createdAt);
+
+        let repliesHTML = "";
+        const replies = curhat.replies ? Object.entries(curhat.replies) : [];
+        
+        if (replies.length > 0) {
+            replies.sort((a, b) => Number(a[1].createdAt || 0) - Number(b[1].createdAt || 0));
+            replies.forEach(([replyId, rep]) => {
+                const repSender = escapeHTML(rep.sender || "Sahabat Baik");
+                const repText = escapeHTML(rep.text || "");
+                const repDate = formatDate(rep.createdAt);
+                repliesHTML += `
+                    <div class="bg-teal-50/70 p-3.5 rounded-2xl border border-teal-100 text-xs space-y-1">
+                        <div class="flex items-center justify-between text-teal-900 font-extrabold">
+                            <span><i class="fa-solid fa-reply mr-1"></i> ${repSender}</span>
+                            <span class="text-[10px] text-slate-400">${repDate}</span>
+                        </div>
+                        <p class="text-slate-700 font-medium italic">"${repText}"</p>
+                    </div>
+                `;
+            });
+        } else {
+            repliesHTML = `<p class="text-xs text-slate-400 italic">Belum ada balasan. Jadilah orang pertama yang menyemangati curhat ini!</p>`;
+        }
+
+        card.innerHTML = `
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold shrink-0">
+                        ${sender.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <p class="text-sm font-extrabold text-slate-800">${sender}</p>
+                        <span class="text-[10px] font-bold text-slate-400">${date}</span>
+                    </div>
+                </div>
+                <span class="bg-teal-50 text-teal-700 font-extrabold text-[10px] px-3 py-1 rounded-full border border-teal-100">
+                    <i class="fa-solid fa-earth-americas mr-1"></i> Curhat Publik
+                </span>
+            </div>
+
+            <p class="text-sm text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap break-words">
+                "${text}"
+            </p>
+
+            <div class="pt-3 border-t border-slate-100 space-y-3">
+                <p class="text-xs font-black text-slate-500 uppercase tracking-wider">Tanggapan & Dukungan (${replies.length})</p>
+                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    ${repliesHTML}
+                </div>
+
+                <!-- Reply Form -->
+                <form class="reply-form flex gap-2 pt-2" data-curhat-id="${curhat.id}">
+                    <input type="text" placeholder="Tulis balasan semangat..." maxlength="250" required
+                           class="reply-input flex-1 px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-teal-400 text-xs text-slate-800 font-medium">
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-colors shrink-0">
+                        Kirim
+                    </button>
+                </form>
+            </div>
+        `;
+
+        const replyForm = card.querySelector(".reply-form");
+        replyForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = replyForm.querySelector(".reply-input");
+            const repText = input.value.trim();
+            if (!repText) return;
+
+            try {
+                const repliesRef = ref(database, `clover/curhat_publik/${curhat.id}/replies`);
+                await set(push(repliesRef), {
+                    text: repText,
+                    sender: "Sahabat Baik",
+                    createdAt: Date.now()
+                });
+                input.value = "";
+            } catch (err) {
+                alert("Gagal mengirim balasan. Coba lagi.");
+            }
+        });
+
+        curhatsContainer.appendChild(card);
+    }
+
+    curhatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = curhatInput.value.trim();
+        const sender = curhatSenderInput.value.trim() || "Pejuang Tenang";
+
+        if (!text || text.length > 400) {
+            showCurhatStatus("Curhat wajib diisi (maksimal 400 karakter).", "error");
+            return;
+        }
+
+        submitCurhatButton.disabled = true;
+        submitCurhatButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
+
+        try {
+            const curhatRef = ref(database, "clover/curhat_publik");
+            await set(push(curhatRef), {
+                text, sender, createdAt: Date.now(), status: "pending"
+            });
+            curhatForm.reset();
+            curhatCharCount.textContent = "0/400";
+            showCurhatStatus("Curhat berhasil dikirim! Akan muncul di ruang publik setelah disetujui admin 🍀", "success");
+            setTimeout(hideCurhatStatus, 6000);
+        } catch (error) {
+            showCurhatStatus("Gagal mengirim curhat.", "error");
+        } finally {
+            submitCurhatButton.disabled = false;
+            submitCurhatButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik`;
+        }
+    });
+
+    // =====================================================
+    // 6. MASUKAN WEB & TANGGAPAN ADMIN
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -995,34 +1211,22 @@
     const submitFeedbackButton = document.getElementById("submit-feedback-button");
     const feedbackStatus = document.getElementById("feedback-status");
     const feedbackCharCount = document.getElementById("feedback-char-count");
-    
     const myFeedbackContainer = document.getElementById("myFeedbackContainer");
     const myFeedbackList = document.getElementById("myFeedbackList");
 
     function showFeedbackStatus(message, type = "info") {
         feedbackStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200", "bg-amber-50", "text-amber-700", "border-amber-200");
         feedbackStatus.classList.add("border-2");
-
-        if (type === "error") {
-            feedbackStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
-        } else if (type === "success") {
-            feedbackStatus.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
-        } else {
-            feedbackStatus.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
-        }
+        if (type === "error") feedbackStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+        else if (type === "success") feedbackStatus.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
+        else feedbackStatus.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
         feedbackStatus.textContent = message;
     }
 
-    function hideFeedbackStatus() {
-        feedbackStatus.classList.add("hidden");
-    }
-
     feedbackInput.addEventListener("input", () => {
-        const length = feedbackInput.value.length;
-        feedbackCharCount.textContent = `${length}/500`;
+        feedbackCharCount.textContent = `${feedbackInput.value.length}/500`;
     });
 
-    // Pantau Riwayat Masukan & Notifikasi Balasan Admin Privat untuk Perangkat Ini
     const feedbackRef = ref(database, "clover/feedback");
     onValue(feedbackRef, (snapshot) => {
         const data = snapshot.val();
@@ -1048,14 +1252,8 @@
         myFeedbacks.forEach(fb => {
             const card = document.createElement("div");
             card.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-2 shadow-sm relative overflow-hidden";
-
-            let dateText = "";
-            if (fb.createdAt) {
-                dateText = new Date(Number(fb.createdAt)).toLocaleString("id-ID", {
-                    day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
-                });
-            }
-
+            let dateText = fb.createdAt ? new Date(Number(fb.createdAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+            
             let replyHTML = "";
             if (fb.reply) {
                 const replyDate = fb.repliedAt ? new Date(Number(fb.repliedAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
@@ -1089,17 +1287,11 @@
 
     feedbackForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         const text = feedbackInput.value.trim();
         const sender = feedbackSenderInput.value.trim() || "Pengguna Anonim";
 
-        if (!text) {
-            showFeedbackStatus("Tulis masukan terlebih dahulu.", "error");
-            return;
-        }
-
-        if (text.length > 500) {
-            showFeedbackStatus("Masukan maksimal 500 karakter.", "error");
+        if (!text || text.length > 500) {
+            showFeedbackStatus("Masukan wajib diisi (maksimal 500 karakter).", "error");
             return;
         }
 
@@ -1107,25 +1299,15 @@
         submitFeedbackButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
 
         try {
-            const feedbackRef = ref(database, "clover/feedback");
-            const newFeedbackRef = push(feedbackRef);
-
-            await set(newFeedbackRef, {
-                text: text,
-                sender: sender,
-                userId: userDeviceId,
-                createdAt: Date.now(),
-                status: "pending"
+            await set(push(ref(database, "clover/feedback")), {
+                text, sender, userId: userDeviceId, createdAt: Date.now(), status: "pending"
             });
-
             feedbackForm.reset();
             feedbackCharCount.textContent = "0/500";
             showFeedbackStatus("Terima kasih! Masukan berhasil dikirim ke admin 🍀", "success");
-            setTimeout(hideFeedbackStatus, 6000);
-
+            setTimeout(() => feedbackStatus.classList.add("hidden"), 6000);
         } catch (error) {
-            console.error("Firebase feedback write error:", error);
-            showFeedbackStatus("Gagal mengirim masukan. Periksa koneksi internet.", "error");
+            showFeedbackStatus("Gagal mengirim masukan.", "error");
         } finally {
             submitFeedbackButton.disabled = false;
             submitFeedbackButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan`;
@@ -1133,9 +1315,8 @@
     });
 
     // =====================================================
-    // 6. KELUHAN PRIBADI & VOICE NOTE
+    // 7. KELUHAN PRIBADI & VOICE NOTE (LOCALSTORAGE)
     // =====================================================
-
     const complaintInput = document.getElementById("complaintInput");
     const complaintStatus = document.getElementById("complaintStatus");
     const complaintCount = document.getElementById("complaintCount");
@@ -1171,31 +1352,23 @@
 
     const textEncouragingQuotes = [
         "Menuliskan isi hati adalah langkah awal yang sangat berani. Kamu hebat sudah mau jujur pada dirimu sendiri hari ini. 🍀",
-        "Setiap coretan kata di sini adalah bukti bahwa kamu terus berjuang, meskipun di dalam diam. Teruslah bernapas dengan tenang ya.",
+        "Setiap coretan kata di sini adalah bukti bahwa kamu terus berjuang, meskipun di dalam diam.",
         "Badai emosi ini tidak akan berlangsung selamanya. Kamu jauh lebih kuat dari apa yang kamu tuliskan sekarang.",
-        "Peluk hangat untuk dirimu yang luar biasa tangguh. Tidak apa-apa untuk merasa lelah, asal jangan menyerah pada mimpimu.",
-        "Perasaan sedih atau lelah ini valid. Terima dan rangkul dirimu sendiri malam ini, kamu sudah bekerja keras."
+        "Peluk hangat untuk dirimu yang luar biasa tangguh. Tidak apa-apa untuk merasa lelah."
     ];
 
     const audioEncouragingQuotes = [
         "Mendengar suara hatimu lewat rekaman ini mengingatkan betapa berharganya ceritamu. Terima kasih sudah bersuara. 🎙️",
-        "Suaramu punya kekuatan besar untuk melepas beban di dada. Tarik napas dalam-dalam, lepaskan semua penatnya.",
-        "Terkadang berbicara jauh lebih lega daripada menulis. Bagus sekali kamu memilih mengeluarkan unek-unekmu hari ini!",
-        "Dengarkan kembali rekaman ini kapan pun kamu merasa sepi; ketahuilah bahwa kamu tidak pernah benar-benar sendiri."
+        "Suaramu punya kekuatan besar untuk melepas beban di dada. Tarik napas dalam-dalam, lepaskan penatmu."
     ];
 
     function getTodayKey() {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const day = String(now.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     }
 
     function formatTime(secs) {
-        const mins = Math.floor(secs / 60);
-        const remSecs = secs % 60;
-        return `${String(mins).padStart(2, '0')}:${String(remSecs).padStart(2, '0')}`;
+        return `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`;
     }
 
     let mediaRecorder = null;
@@ -1210,64 +1383,39 @@
             return;
         }
 
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Fitur rekaman suara memerlukan HTTPS atau Local Server (Localhost).");
-            return;
-        }
-
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            let options = {};
-            if (MediaRecorder.isTypeSupported('audio/webm')) {
-                options = { mimeType: 'audio/webm' };
-            } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                options = { mimeType: 'audio/mp4' };
-            }
-
-            mediaRecorder = new MediaRecorder(stream, options);
+            mediaRecorder = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4' });
             audioChunks = [];
 
-            mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) audioChunks.push(e.data);
-            };
-
+            mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
             mediaRecorder.onstop = () => {
                 stream.getTracks().forEach(track => track.stop());
                 clearInterval(recordingTimer);
-
-                recordedAudioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                recordedAudioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
                 audioPlayback.src = URL.createObjectURL(recordedAudioBlob);
                 audioPreviewWrapper.classList.remove("hidden");
-
-                recordVoiceBtn.classList.remove("bg-rose-50", "text-rose-700", "border-rose-200", "animate-pulse");
-                recordVoiceBtn.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
+                recordVoiceBtn.classList.remove("bg-rose-50", "text-rose-700", "animate-pulse");
+                recordVoiceBtn.classList.add("bg-emerald-50", "text-emerald-700");
                 recordBtnText.textContent = "Rekam Ulang";
                 voiceTimer.classList.add("hidden");
             };
-
             mediaRecorder.onstart = () => {
                 recordingSeconds = 0;
                 voiceTimer.textContent = "00:00";
                 voiceTimer.classList.remove("hidden");
-                recordVoiceBtn.classList.remove("bg-emerald-50", "text-emerald-700", "border-emerald-200");
-                recordVoiceBtn.classList.add("bg-rose-50", "text-rose-700", "border-rose-200", "animate-pulse");
+                recordVoiceBtn.classList.remove("bg-emerald-50", "text-emerald-700");
+                recordVoiceBtn.classList.add("bg-rose-50", "text-rose-700", "animate-pulse");
                 recordBtnText.textContent = "Berhenti Rekam";
-
                 recordingTimer = setInterval(() => {
                     recordingSeconds++;
                     voiceTimer.textContent = formatTime(recordingSeconds);
-                    if (recordingSeconds >= 120) {
-                        mediaRecorder.stop();
-                    }
+                    if (recordingSeconds >= 120) mediaRecorder.stop();
                 }, 1000);
             };
-
             mediaRecorder.start();
-
         } catch (err) {
-            console.error("Gagal mengakses mikrofon:", err);
-            alert("Tidak dapat mengakses mikrofon. Pastikan izin mikrofon telah diberikan.");
+            alert("Tidak dapat mengakses mikrofon. Pastikan izin telah diberikan.");
         }
     });
 
@@ -1302,8 +1450,7 @@
             recordedAudioBlob = null;
             audioPreviewWrapper.classList.add("hidden");
             recordBtnText.textContent = "Rekam Suara";
-
-            complaintStatus.innerHTML = "<i class='fa-regular fa-clock mr-1'></i> Belum ada catatan hari ini.";
+            complaintStatus.innerHTML = "<i class='fa-regular fa-clock mr-1'></i> Belum ada catatan pribadi hari ini.";
             complaintStatus.className = "text-xs font-bold text-slate-400";
             complaintCount.textContent = "0/1000";
             savedComplaintCard.classList.add("hidden");
@@ -1314,16 +1461,14 @@
 
         const savedText = localStorage.getItem(COMPLAINT_KEY);
         const savedAudio = localStorage.getItem(AUDIO_KEY);
-        const savedTextEnc = localStorage.getItem(TEXT_ENC_KEY);
-        const savedAudioEnc = localStorage.getItem(AUDIO_ENC_KEY);
-
         let hasData = false;
 
         if (savedText) {
             savedComplaintText.textContent = savedText;
             savedTextCardWrapper.classList.remove("hidden");
-            if (savedTextEnc) {
-                textEncouragementText.textContent = savedTextEnc;
+            const enc = localStorage.getItem(TEXT_ENC_KEY);
+            if (enc) {
+                textEncouragementText.textContent = enc;
                 textEncouragementContainer.classList.remove("hidden");
             }
             hasData = true;
@@ -1334,8 +1479,9 @@
         if (savedAudio) {
             savedAudioPlayback.src = savedAudio;
             savedAudioCardWrapper.classList.remove("hidden");
-            if (savedAudioEnc) {
-                audioEncouragementText.textContent = savedAudioEnc;
+            const enc = localStorage.getItem(AUDIO_ENC_KEY);
+            if (enc) {
+                audioEncouragementText.textContent = enc;
                 audioEncouragementContainer.classList.remove("hidden");
             }
             hasData = true;
@@ -1347,15 +1493,9 @@
             savedComplaintCard.classList.remove("hidden");
             complaintInput.value = "";
             complaintCount.textContent = "0/1000";
-            recordedAudioBlob = null;
-            audioPreviewWrapper.classList.add("hidden");
-            recordBtnText.textContent = "Rekam Suara";
-            
             complaintStatus.innerHTML = "<i class='fa-solid fa-check-double mr-1'></i> Tersimpan aman di perangkat.";
             complaintStatus.className = "text-xs font-bold text-emerald-600";
         } else {
-            complaintStatus.innerHTML = "<i class='fa-regular fa-clock mr-1'></i> Belum ada catatan hari ini.";
-            complaintStatus.className = "text-xs font-bold text-slate-400";
             savedComplaintCard.classList.add("hidden");
         }
     }
@@ -1366,7 +1506,6 @@
 
     saveComplaintButton.addEventListener("click", async () => {
         const textValue = complaintInput.value.trim();
-        
         if (!textValue && !recordedAudioBlob) {
             complaintStatus.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-1 text-orange-500'></i> Catatan teks atau suara masih kosong.";
             complaintStatus.className = "text-xs font-bold text-orange-600";
@@ -1378,88 +1517,64 @@
 
         try {
             localStorage.setItem(COMPLAINT_DATE_KEY, getTodayKey());
-
             if (textValue) {
                 localStorage.setItem(COMPLAINT_KEY, textValue);
-                const randomTextQuote = textEncouragingQuotes[Math.floor(Math.random() * textEncouragingQuotes.length)];
-                localStorage.setItem(TEXT_ENC_KEY, randomTextQuote);
+                localStorage.setItem(TEXT_ENC_KEY, textEncouragingQuotes[Math.floor(Math.random() * textEncouragingQuotes.length)]);
             }
-
             if (recordedAudioBlob) {
                 const base64Audio = await blobToBase64(recordedAudioBlob);
                 localStorage.setItem(AUDIO_KEY, base64Audio);
-                const randomAudioQuote = audioEncouragingQuotes[Math.floor(Math.random() * audioEncouragingQuotes.length)];
-                localStorage.setItem(AUDIO_ENC_KEY, randomAudioQuote);
+                localStorage.setItem(AUDIO_ENC_KEY, audioEncouragingQuotes[Math.floor(Math.random() * audioEncouragingQuotes.length)]);
             }
-            
             loadComplaint();
-            complaintStatus.innerHTML = "<i class='fa-solid fa-check-double mr-1'></i> Catatan & suara berhasil disimpan!";
+            complaintStatus.innerHTML = "<i class='fa-solid fa-check-double mr-1'></i> Keluhan pribadi berhasil disimpan!";
             complaintStatus.className = "text-xs font-bold text-emerald-600";
         } catch (err) {
-            console.error("Gagal menyimpan:", err);
-            alert("Gagal menyimpan rekaman. Ukuran file mungkin terlalu besar untuk LocalStorage.");
+            alert("Gagal menyimpan ke penyimpanan lokal browser.");
         } finally {
             saveComplaintButton.disabled = false;
-            saveComplaintButton.innerHTML = `<i class="fa-solid fa-lock text-xs"></i> Simpan Catatan & Suara`;
+            saveComplaintButton.innerHTML = `<i class="fa-solid fa-lock text-xs"></i> Simpan Keluhan Pribadi`;
         }
     });
 
     editComplaintButton.addEventListener("click", () => {
-        const currentText = savedComplaintText.textContent;
-        complaintInput.value = currentText;
-        complaintCount.textContent = `${currentText.length}/1000`;
-        
+        complaintInput.value = savedComplaintText.textContent;
+        complaintCount.textContent = `${complaintInput.value.length}/1000`;
         savedTextCardWrapper.classList.add("hidden");
-        if (savedAudioCardWrapper.classList.contains("hidden")) {
-            savedComplaintCard.classList.add("hidden");
-        }
-        
-        complaintStatus.innerHTML = "<i class='fa-solid fa-pen-to-square mr-1 text-teal-600'></i> Sedang mengedit catatan teks...";
+        if (savedAudioCardWrapper.classList.contains("hidden")) savedComplaintCard.classList.add("hidden");
+        complaintStatus.innerHTML = "<i class='fa-solid fa-pen-to-square mr-1 text-teal-600'></i> Mengedit catatan teks...";
         complaintStatus.className = "text-xs font-bold text-teal-600";
-        
         complaintInput.focus();
     });
 
     deleteAudioOnlyButton.addEventListener("click", () => {
-        if (confirm("Hapus rekaman suara ini?")) {
+        if (confirm("Hapus rekaman suara pribadi ini?")) {
             localStorage.removeItem(AUDIO_KEY);
             localStorage.removeItem(AUDIO_ENC_KEY);
             savedAudioCardWrapper.classList.add("hidden");
-            if (savedTextCardWrapper.classList.contains("hidden")) {
-                savedComplaintCard.classList.add("hidden");
-            }
-            complaintStatus.innerHTML = "<i class='fa-regular fa-trash-can mr-1'></i> Rekaman suara dihapus.";
-            complaintStatus.className = "text-xs font-bold text-rose-500";
+            if (savedTextCardWrapper.classList.contains("hidden")) savedComplaintCard.classList.add("hidden");
         }
     });
 
     clearComplaintButton.addEventListener("click", () => {
-        if (confirm("Hapus seluruh catatan teks dan suara hari ini?")) {
+        if (confirm("Hapus seluruh catatan pribadi hari ini?")) {
             localStorage.removeItem(COMPLAINT_KEY);
             localStorage.removeItem(AUDIO_KEY);
             localStorage.removeItem(TEXT_ENC_KEY);
             localStorage.removeItem(AUDIO_ENC_KEY);
-            localStorage.setItem(COMPLAINT_DATE_KEY, getTodayKey());
-            
             complaintInput.value = "";
             complaintCount.textContent = "0/1000";
             recordedAudioBlob = null;
             audioPreviewWrapper.classList.add("hidden");
             recordBtnText.textContent = "Rekam Suara";
-
-            complaintStatus.innerHTML = "<i class='fa-regular fa-trash-can mr-1'></i> Semua catatan dihapus.";
-            complaintStatus.className = "text-xs font-bold text-rose-500";
-            
-            savedComplaintCard.classList.add("hidden");
-            savedTextCardWrapper.classList.add("hidden");
-            savedAudioCardWrapper.classList.add("hidden");
+            loadComplaint();
         }
     });
 
     loadComplaint();
 
     // =====================================================
-    // 7. TANTANGAN HARIAN & STREAK
+    // 8. TANTANGAN HARIAN & STREAK
     // =====================================================
     const STORAGE_TASKS = "clover_challenges_v2";
     const STREAK_KEY = "clover_challenge_streak_v2";
@@ -1469,7 +1584,6 @@
 
     const challengeCheckboxes = Array.from(document.querySelectorAll(".challenge-checkbox"));
     const challengeItems = Array.from(document.querySelectorAll(".challenge-item"));
-    
     const currentStreakElement = document.getElementById("currentStreak");
     const bestStreakElement = document.getElementById("bestStreak");
     const completedTodayElement = document.getElementById("completedToday");
@@ -1477,85 +1591,23 @@
     const challengeProgressText = document.getElementById("challengeProgressText");
     const resetChallengesButton = document.getElementById("resetChallengesButton");
 
-    function getLocalDateKey(date = new Date()) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-    }
-
-    function parseDateKey(key) {
-        const parts = key.split("-").map(Number);
-        if (parts.length !== 3) return null;
-        return new Date(parts[0], parts[1] - 1, parts[2]);
-    }
-
-    function differenceInDays(olderKey, newerKey) {
-        const older = parseDateKey(olderKey);
-        const newer = parseDateKey(newerKey);
-        if (!older || !newer) return null;
-        const oneDay = 24 * 60 * 60 * 1000;
-        return Math.round((newer.getTime() - older.getTime()) / oneDay);
+    function getLocalDateKey() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     }
 
     function loadTaskState() {
         const today = getLocalDateKey();
-        const lastVisitDate = localStorage.getItem(LAST_VISIT_DATE_KEY);
-
-        if (lastVisitDate !== today) {
+        if (localStorage.getItem(LAST_VISIT_DATE_KEY) !== today) {
             localStorage.removeItem(STORAGE_TASKS);
             localStorage.setItem(LAST_VISIT_DATE_KEY, today);
             return challengeCheckboxes.map(() => false);
         }
-
         try {
             const saved = JSON.parse(localStorage.getItem(STORAGE_TASKS));
-            if (Array.isArray(saved) && saved.length === challengeCheckboxes.length) {
-                return saved.map(Boolean);
-            }
-        } catch (error) {
-            console.warn("Gagal membaca task:", error);
-        }
+            if (Array.isArray(saved) && saved.length === challengeCheckboxes.length) return saved.map(Boolean);
+        } catch (e) {}
         return challengeCheckboxes.map(() => false);
-    }
-
-    function saveTaskState() {
-        const state = challengeCheckboxes.map(cb => cb.checked);
-        localStorage.setItem(STORAGE_TASKS, JSON.stringify(state));
-    }
-
-    function getCurrentStreak() { return Number(localStorage.getItem(STREAK_KEY) || 0); }
-    function getBestStreak() { return Number(localStorage.getItem(BEST_STREAK_KEY) || 0); }
-    
-    function setStreak(current, best) {
-        localStorage.setItem(STREAK_KEY, String(current));
-        localStorage.setItem(BEST_STREAK_KEY, String(best));
-    }
-
-    function updateStreakIfNeeded(completedCount) {
-        const today = getLocalDateKey();
-        const lastActive = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
-
-        let current = getCurrentStreak();
-        let best = getBestStreak();
-
-        if (completedCount <= 0) return;
-        if (lastActive === today) return;
-
-        if (!lastActive) {
-            current = 1;
-        } else {
-            const gap = differenceInDays(lastActive, today);
-            if (gap === 1) {
-                current += 1;
-            } else {
-                current = 1;
-            }
-        }
-
-        best = Math.max(best, current);
-        setStreak(current, best);
-        localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
     }
 
     function updateChallengeUI() {
@@ -1565,49 +1617,49 @@
 
         completedTodayElement.textContent = completed;
         challengeProgressText.textContent = `${percentage}%`;
-        
-        const clipValue = 100 - percentage;
-        challengeProgressBar.style.clipPath = `inset(${clipValue}% 0 0 0)`;
+        challengeProgressBar.style.clipPath = `inset(${100 - percentage}% 0 0 0)`;
 
         challengeItems.forEach((item, index) => {
             item.classList.toggle("task-done", Boolean(challengeCheckboxes[index]?.checked));
         });
 
-        updateStreakIfNeeded(completed);
+        const today = getLocalDateKey();
+        const lastActive = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
+        let current = Number(localStorage.getItem(STREAK_KEY) || 0);
+        let best = Number(localStorage.getItem(BEST_STREAK_KEY) || 0);
 
-        currentStreakElement.textContent = getCurrentStreak();
-        bestStreakElement.textContent = getBestStreak();
+        if (completed > 0 && lastActive !== today) {
+            if (!lastActive) {
+                current = 1;
+            } else {
+                const diff = Math.round((new Date(today) - new Date(lastActive)) / (1000 * 60 * 60 * 24));
+                current = (diff === 1) ? current + 1 : 1;
+            }
+            best = Math.max(best, current);
+            localStorage.setItem(STREAK_KEY, String(current));
+            localStorage.setItem(BEST_STREAK_KEY, String(best));
+            localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
+        }
 
-        saveTaskState();
+        currentStreakElement.textContent = Number(localStorage.getItem(STREAK_KEY) || 0);
+        bestStreakElement.textContent = Number(localStorage.getItem(BEST_STREAK_KEY) || 0);
+        localStorage.setItem(STORAGE_TASKS, JSON.stringify(challengeCheckboxes.map(cb => cb.checked)));
     }
 
-    function resetTodayChallenges() {
-        challengeCheckboxes.forEach(cb => cb.checked = false);
-        localStorage.removeItem(STORAGE_TASKS);
-        updateChallengeUI();
-    }
-
+    challengeCheckboxes.forEach((cb) => cb.addEventListener("change", updateChallengeUI));
     const initialTasks = loadTaskState();
-    challengeCheckboxes.forEach((checkbox, index) => {
-        checkbox.checked = Boolean(initialTasks[index]);
-        checkbox.addEventListener("change", updateChallengeUI);
-    });
+    challengeCheckboxes.forEach((cb, i) => cb.checked = Boolean(initialTasks[i]));
+    updateChallengeUI();
 
     resetChallengesButton.addEventListener("click", () => {
-        if (confirm("Reset semua tantangan hari ini? (Progress hari ini akan mengulang ke 0%)")) {
-            resetTodayChallenges();
+        if (confirm("Reset semua tantangan hari ini?")) {
+            challengeCheckboxes.forEach(cb => cb.checked = false);
+            localStorage.removeItem(STORAGE_TASKS);
+            updateChallengeUI();
         }
     });
 
-    updateChallengeUI();
-
     document.getElementById("year").textContent = new Date().getFullYear();
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
-        });
-    }
 
 </script>
 </body>
