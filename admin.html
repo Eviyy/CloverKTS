@@ -79,20 +79,23 @@
             <!-- TAB NAVIGATION -->
             <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
                 <button id="tabBtnMessages" class="tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-envelope-open-text"></i> Moderasi Pesan Papan
+                    <i class="fa-solid fa-envelope-open-text"></i> Pesan Kehangatan
+                </button>
+                <button id="tabBtnCurhat" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-comments"></i> Ruang Curhat Publik
                 </button>
                 <button id="tabBtnFeedback" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-comment-dots"></i> Masukan Web & Balasan
+                    <i class="fa-solid fa-comment-dots"></i> Masukan Web
                 </button>
                 <button id="tabBtnBroadcast" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn"></i> Pengumuman Broadcast
+                    <i class="fa-solid fa-bullhorn"></i> Broadcast
                 </button>
             </div>
 
-            <!-- TAB 1: MODERASI PESAN -->
+            <!-- TAB 1: MODERASI PESAN KEHANGATAN -->
             <div id="tabContentMessages" class="space-y-6">
                 <!-- Statistik Utama -->
-                <div class="grid grid-cols-1 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
                             <i class="fa-solid fa-eye"></i>
@@ -116,7 +119,7 @@
                             <i class="fa-solid fa-server"></i>
                         </div>
                         <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server Database</p>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server</p>
                             <div class="server-status-display text-sm font-extrabold mt-0.5">Memeriksa...</div>
                         </div>
                     </div>
@@ -129,7 +132,7 @@
                         <p id="statTotalMsg" class="text-xl font-extrabold text-slate-800 mt-1">0</p>
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
-                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pesan Hari Ini</p>
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Hari Ini</p>
                         <p id="statTodayMsg" class="text-xl font-extrabold text-teal-600 mt-1">0</p>
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
@@ -146,17 +149,11 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                    <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-envelope-open-text text-emerald-500"></i> Daftar Pesan Masuk
-                    </h3>
-                </div>
-
                 <!-- Kotak Pencarian & Filter Pesan -->
                 <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="searchMessageInput" placeholder="Cari berdasarkan kata kunci atau nama pengirim..." class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="searchMessageInput" placeholder="Cari pesan kehangatan..." class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500">
                     </div>
                     <select id="filterStatusSelect" class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
                         <option value="all">Semua Status</option>
@@ -171,47 +168,56 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MASUKAN WEB -->
-            <div id="tabContentFeedback" class="hidden space-y-6">
-                <!-- Statistik Utama -->
-                <div class="grid grid-cols-1 gap-4">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Kunjungan Web</p>
-                            <p id="statTotalVisitsFb" class="text-2xl font-extrabold text-slate-900">0</p>
-                        </div>
+            <!-- TAB 2: MODERASI RUANG CURHAT PUBLIK -->
+            <div id="tabContentCurhat" class="hidden space-y-6">
+                <!-- Statistik Kurhat -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Curhat</p>
+                        <p id="statTotalCurhat" class="text-xl font-extrabold text-slate-800 mt-1">0</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pengunjung Online</p>
-                            <p id="statActiveUsersFb" class="text-2xl font-extrabold text-emerald-600">0</p>
-                        </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Disetujui</p>
+                        <p id="statApprovedCurhat" class="text-xl font-extrabold text-teal-600 mt-1">0</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-server"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server Database</p>
-                            <div class="server-status-display text-sm font-extrabold mt-0.5">Memeriksa...</div>
-                        </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pending</p>
+                        <p id="statPendingCurhat" class="text-xl font-extrabold text-amber-500 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Ditolak</p>
+                        <p id="statRejectedCurhat" class="text-xl font-extrabold text-rose-500 mt-1">0</p>
                     </div>
                 </div>
 
-                <!-- Statistik Spesifik Masukan -->
+                <!-- Filter & Search Curhat -->
+                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchCurhatInput" placeholder="Cari berdasarkan isi curhat atau nama..." class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-teal-500">
+                    </div>
+                    <select id="filterCurhatStatusSelect" class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 focus:outline-none focus:border-teal-500">
+                        <option value="all">Semua Status</option>
+                        <option value="pending">Menunggu</option>
+                        <option value="approved">Disetujui</option>
+                        <option value="rejected">Ditolak</option>
+                    </select>
+                </div>
+
+                <div id="adminCurhatsContainer" class="space-y-4">
+                    <p class="text-xs text-slate-400 font-bold">Memuat data curhat...</p>
+                </div>
+            </div>
+
+            <!-- TAB 3: MASUKAN WEB -->
+            <div id="tabContentFeedback" class="hidden space-y-6">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
                         <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Masukan</p>
                         <p id="statTotalFb" class="text-xl font-extrabold text-slate-800 mt-1">0</p>
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
-                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Masukan Hari Ini</p>
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Hari Ini</p>
                         <p id="statTodayFb" class="text-xl font-extrabold text-teal-600 mt-1">0</p>
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
@@ -224,17 +230,10 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                    <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-comment-dots text-emerald-500"></i> Masukan & Saran Pengguna
-                    </h3>
-                </div>
-
-                <!-- Kotak Pencarian Masukan -->
                 <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="searchFeedbackInput" placeholder="Cari berdasarkan isi masukan atau nama pengirim..." class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="searchFeedbackInput" placeholder="Cari berdasarkan isi masukan..." class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
@@ -243,40 +242,8 @@
                 </div>
             </div>
 
-            <!-- TAB 3: BROADCAST -->
+            <!-- TAB 4: BROADCAST -->
             <div id="tabContentBroadcast" class="hidden space-y-6">
-                <!-- Statistik Utama -->
-                <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Kunjungan Web</p>
-                            <p id="statTotalVisitsBc" class="text-2xl font-extrabold text-slate-900">0</p>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pengunjung Online</p>
-                            <p id="statActiveUsersBc" class="text-2xl font-extrabold text-emerald-600">0</p>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-server"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Status Server Database</p>
-                            <div class="server-status-display text-sm font-extrabold mt-0.5">Memeriksa...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Form Pengumuman Broadcast -->
                 <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 max-w-2xl mx-auto">
                     <div>
                         <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
@@ -313,7 +280,7 @@
         </main>
     </div>
 
-    <!-- FIREBASE + ADMIN SCRIPT (DINAMIS DARI DATABASE) -->
+    <!-- FIREBASE + ADMIN SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -345,21 +312,27 @@
 
         // Tabs
         const tabBtnMessages = document.getElementById("tabBtnMessages");
+        const tabBtnCurhat = document.getElementById("tabBtnCurhat");
         const tabBtnFeedback = document.getElementById("tabBtnFeedback");
         const tabBtnBroadcast = document.getElementById("tabBtnBroadcast");
+
         const tabContentMessages = document.getElementById("tabContentMessages");
+        const tabContentCurhat = document.getElementById("tabContentCurhat");
         const tabContentFeedback = document.getElementById("tabContentFeedback");
         const tabContentBroadcast = document.getElementById("tabContentBroadcast");
 
         function switchTab(activeTab) {
-            [tabBtnMessages, tabBtnFeedback, tabBtnBroadcast].forEach(btn => {
+            [tabBtnMessages, tabBtnCurhat, tabBtnFeedback, tabBtnBroadcast].forEach(btn => {
                 btn.className = "tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2";
             });
-            [tabContentMessages, tabContentFeedback, tabContentBroadcast].forEach(content => content.classList.add("hidden"));
+            [tabContentMessages, tabContentCurhat, tabContentFeedback, tabContentBroadcast].forEach(content => content.classList.add("hidden"));
 
             if (activeTab === 'messages') {
                 tabBtnMessages.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
                 tabContentMessages.classList.remove("hidden");
+            } else if (activeTab === 'curhat') {
+                tabBtnCurhat.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
+                tabContentCurhat.classList.remove("hidden");
             } else if (activeTab === 'feedback') {
                 tabBtnFeedback.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
                 tabContentFeedback.classList.remove("hidden");
@@ -370,6 +343,7 @@
         }
 
         tabBtnMessages.addEventListener("click", () => switchTab('messages'));
+        tabBtnCurhat.addEventListener("click", () => switchTab('curhat'));
         tabBtnFeedback.addEventListener("click", () => switchTab('feedback'));
         tabBtnBroadcast.addEventListener("click", () => switchTab('broadcast'));
 
@@ -379,32 +353,22 @@
             
             let userInput = adminUsernameInput.value.trim();
             const password = adminPasswordInput.value;
-
-            let emailToUse = userInput;
-            if (!emailToUse.includes("@")) {
-                emailToUse = userInput + "@clover.admin";
-            }
+            let emailToUse = userInput.includes("@") ? userInput : userInput + "@clover.admin";
 
             try {
                 await signInWithEmailAndPassword(auth, emailToUse, password);
             } catch (err) {
-                console.error(err);
                 loginError.textContent = "Gagal masuk: Username atau password salah.";
                 loginError.classList.remove("hidden");
             }
         });
 
-        logoutBtn.addEventListener("click", async () => {
-            await signOut(auth);
-        });
+        logoutBtn.addEventListener("click", async () => { await signOut(auth); });
 
-        // Verifikasi Admin Dinamis dari Database (`clover/admins`)
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const adminRef = ref(database, `clover/admins/${user.uid}`);
-                    const snapshot = await get(adminRef);
-
+                    const snapshot = await get(ref(database, `clover/admins/${user.uid}`));
                     if (snapshot.exists() && snapshot.val() === true) {
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
@@ -416,7 +380,6 @@
                         loginError.classList.remove("hidden");
                     }
                 } catch (err) {
-                    console.error("Gagal memverifikasi admin:", err);
                     signOut(auth);
                     loginError.textContent = "Terjadi kesalahan saat verifikasi admin.";
                     loginError.classList.remove("hidden");
@@ -428,62 +391,38 @@
         });
 
         let cachedMessages = [];
+        let cachedCurhats = [];
         let cachedFeedback = [];
 
         function getTodayKey(timestamp) {
             const date = new Date(Number(timestamp));
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, "0");
-            const day = String(date.getDate()).padStart(2, "0");
-            return `${year}-${month}-${day}`;
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
         }
 
         function initAdminPanel() {
-            // Pantau Status Server Database (Firebase .info/connected)
             onValue(ref(database, ".info/connected"), (snapshot) => {
                 const connected = snapshot.val();
-                const statusDisplays = document.querySelectorAll(".server-status-display");
-                statusDisplays.forEach(el => {
-                    if (connected) {
-                        el.innerHTML = '<span class="text-emerald-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Terhubung (Online)</span>';
-                    } else {
-                        el.innerHTML = '<span class="text-rose-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Terputus (Offline)</span>';
-                    }
+                document.querySelectorAll(".server-status-display").forEach(el => {
+                    el.innerHTML = connected ? 
+                        '<span class="text-emerald-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Online</span>' : 
+                        '<span class="text-rose-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Offline</span>';
                 });
             });
 
-            // Stats Utama (Kunjungan & Online)
             onValue(ref(database, "clover/stats/totalVisits"), (snapshot) => {
-                const val = snapshot.val() || 0;
-                document.getElementById("statTotalVisits").textContent = val;
-                document.getElementById("statTotalVisitsFb").textContent = val;
-                document.getElementById("statTotalVisitsBc").textContent = val;
+                document.getElementById("statTotalVisits").textContent = snapshot.val() || 0;
             });
             onValue(ref(database, "clover/active_users"), (snapshot) => {
-                const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
-                document.getElementById("statActiveUsers").textContent = count;
-                document.getElementById("statActiveUsersFb").textContent = count;
-                document.getElementById("statActiveUsersBc").textContent = count;
+                document.getElementById("statActiveUsers").textContent = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
             });
 
-            // Load Messages & Hitung Statistik Pesan
-            const messagesRef = ref(database, "clover/messages");
-            onValue(messagesRef, (snapshot) => {
+            // Messages
+            onValue(ref(database, "clover/messages"), (snapshot) => {
                 const data = snapshot.val();
-                if (!data) {
-                    cachedMessages = [];
-                } else {
-                    cachedMessages = Object.entries(data).map(([id, msg]) => ({ id, ...msg }));
-                    cachedMessages.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-                }
-
+                cachedMessages = data ? Object.entries(data).map(([id, msg]) => ({ id, ...msg })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
+                
                 const todayStr = getTodayKey(Date.now());
-                let total = cachedMessages.length;
-                let todayCount = 0;
-                let approvedCount = 0;
-                let pendingCount = 0;
-                let rejectedCount = 0;
-
+                let todayCount = 0, approvedCount = 0, pendingCount = 0, rejectedCount = 0;
                 cachedMessages.forEach(msg => {
                     if (getTodayKey(msg.createdAt) === todayStr) todayCount++;
                     if (msg.status === "approved") approvedCount++;
@@ -491,7 +430,7 @@
                     else if (msg.status === "rejected") rejectedCount++;
                 });
 
-                document.getElementById("statTotalMsg").textContent = total;
+                document.getElementById("statTotalMsg").textContent = cachedMessages.length;
                 document.getElementById("statTodayMsg").textContent = todayCount;
                 document.getElementById("statApprovedMsg").textContent = approvedCount;
                 document.getElementById("statPendingMsg").textContent = pendingCount;
@@ -500,30 +439,40 @@
                 renderMessages();
             });
 
-            // Load Feedback & Hitung Statistik Masukan
-            const feedbackRef = ref(database, "clover/feedback");
-            onValue(feedbackRef, (snapshot) => {
+            // Curhat Publik
+            onValue(ref(database, "clover/curhat_publik"), (snapshot) => {
                 const data = snapshot.val();
-                if (!data) {
-                    cachedFeedback = [];
-                } else {
-                    cachedFeedback = Object.entries(data).map(([id, fb]) => ({ id, ...fb }));
-                    cachedFeedback.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-                }
+                cachedCurhats = data ? Object.entries(data).map(([id, val]) => ({ id, ...val })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
+
+                let approvedC = 0, pendingC = 0, rejectedC = 0;
+                cachedCurhats.forEach(c => {
+                    if (c.status === "approved") approvedC++;
+                    else if (c.status === "pending") pendingC++;
+                    else if (c.status === "rejected") rejectedC++;
+                });
+
+                document.getElementById("statTotalCurhat").textContent = cachedCurhats.length;
+                document.getElementById("statApprovedCurhat").textContent = approvedC;
+                document.getElementById("statPendingCurhat").textContent = pendingC;
+                document.getElementById("statRejectedCurhat").textContent = rejectedC;
+
+                renderCurhats();
+            });
+
+            // Feedback
+            onValue(ref(database, "clover/feedback"), (snapshot) => {
+                const data = snapshot.val();
+                cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
 
                 const todayStr = getTodayKey(Date.now());
-                let totalFb = cachedFeedback.length;
-                let todayFbCount = 0;
-                let repliedCount = 0;
-                let unrepliedCount = 0;
-
+                let todayFbCount = 0, repliedCount = 0, unrepliedCount = 0;
                 cachedFeedback.forEach(fb => {
                     if (getTodayKey(fb.createdAt) === todayStr) todayFbCount++;
                     if (fb.reply && fb.reply.trim().length > 0) repliedCount++;
                     else unrepliedCount++;
                 });
 
-                document.getElementById("statTotalFb").textContent = totalFb;
+                document.getElementById("statTotalFb").textContent = cachedFeedback.length;
                 document.getElementById("statTodayFb").textContent = todayFbCount;
                 document.getElementById("statRepliedFb").textContent = repliedCount;
                 document.getElementById("statUnrepliedFb").textContent = unrepliedCount;
@@ -531,14 +480,15 @@
                 renderFeedback();
             });
 
-            // Search & Filter Listeners
+            // Event Listeners for Search & Filter
             document.getElementById("searchMessageInput").addEventListener("input", renderMessages);
             document.getElementById("filterStatusSelect").addEventListener("change", renderMessages);
+            document.getElementById("searchCurhatInput").addEventListener("input", renderCurhats);
+            document.getElementById("filterCurhatStatusSelect").addEventListener("change", renderCurhats);
             document.getElementById("searchFeedbackInput").addEventListener("input", renderFeedback);
 
-            // Load Broadcast Settings
-            const broadcastRef = ref(database, "clover/broadcast");
-            onValue(broadcastRef, (snapshot) => {
+            // Broadcast Form
+            onValue(ref(database, "clover/broadcast"), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     document.getElementById("broadcastActiveSelect").value = String(Boolean(data.active));
@@ -546,27 +496,21 @@
                 }
             });
 
-            const broadcastForm = document.getElementById("broadcastForm");
-            broadcastForm.addEventListener("submit", async (e) => {
+            document.getElementById("broadcastForm").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const active = document.getElementById("broadcastActiveSelect").value === "true";
                 const message = document.getElementById("broadcastMessageInput").value.trim();
                 const statusMsg = document.getElementById("broadcastStatusMsg");
 
                 try {
-                    await set(ref(database, "clover/broadcast"), {
-                        active: active,
-                        message: message,
-                        updatedAt: Date.now()
-                    });
+                    await set(ref(database, "clover/broadcast"), { active, message, updatedAt: Date.now() });
                     statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 border border-emerald-200";
                     statusMsg.textContent = "Broadcast berhasil diperbarui!";
                     statusMsg.classList.remove("hidden");
                     setTimeout(() => statusMsg.classList.add("hidden"), 4000);
                 } catch (err) {
-                    console.error(err);
                     statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
-                    statusMsg.textContent = "Gagal menyimpan broadcast: " + err.message;
+                    statusMsg.textContent = "Gagal: " + err.message;
                     statusMsg.classList.remove("hidden");
                 }
             });
@@ -576,28 +520,25 @@
             const container = document.getElementById("adminMessagesContainer");
             const keyword = document.getElementById("searchMessageInput").value.toLowerCase();
             const statusFilter = document.getElementById("filterStatusSelect").value;
-            
             container.innerHTML = "";
 
-            let filtered = cachedMessages.filter(msg => {
+            const filtered = cachedMessages.filter(msg => {
                 const matchesKeyword = (msg.text || "").toLowerCase().includes(keyword) || (msg.sender || "").toLowerCase().includes(keyword);
                 const matchesStatus = statusFilter === 'all' || msg.status === statusFilter;
                 return matchesKeyword && matchesStatus;
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold col-span-2">Tidak ada pesan yang ditemukan.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold col-span-2">Tidak ada pesan ditemukan.</p>`;
                 return;
             }
 
             filtered.forEach(msg => {
                 const card = document.createElement("div");
                 card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between";
-                
-                let statusBadge = "";
-                if (msg.status === "approved") statusBadge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>';
-                else if (msg.status === "rejected") statusBadge = '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>';
-                else statusBadge = '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
+                let statusBadge = msg.status === "approved" ? '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>' :
+                                  msg.status === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>' :
+                                  '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
 
                 card.innerHTML = `
                     <div>
@@ -607,12 +548,50 @@
                         </div>
                         <p class="text-xs text-slate-600 font-medium italic mb-4">"${escapeHTML(msg.text)}"</p>
                     </div>
-                    <div class="space-y-3 pt-3 border-t border-slate-100 text-xs">
-                        <div class="flex gap-2">
-                            <button onclick="window.approveMsg('${msg.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl transition-colors">Setujui</button>
-                            <button onclick="window.rejectMsg('${msg.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
-                            <button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
-                        </div>
+                    <div class="pt-3 border-t border-slate-100 flex gap-2">
+                        <button onclick="window.approveMsg('${msg.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui</button>
+                        <button onclick="window.rejectMsg('${msg.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
+                        <button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderCurhats() {
+            const container = document.getElementById("adminCurhatsContainer");
+            const keyword = document.getElementById("searchCurhatInput").value.toLowerCase();
+            const statusFilter = document.getElementById("filterCurhatStatusSelect").value;
+            container.innerHTML = "";
+
+            const filtered = cachedCurhats.filter(c => {
+                const matchesKeyword = (c.text || "").toLowerCase().includes(keyword) || (c.sender || "").toLowerCase().includes(keyword);
+                const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+                return matchesKeyword && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold">Tidak ada curhat publik ditemukan.</p>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const card = document.createElement("div");
+                card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4";
+                let statusBadge = c.status === "approved" ? '<span class="bg-teal-100 text-teal-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>' :
+                                  c.status === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>' :
+                                  '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-sm text-slate-800">${escapeHTML(c.sender || "Pejuang Tenang")}</span>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-xs text-slate-700 font-medium italic">"${escapeHTML(c.text)}"</p>
+                    <div class="pt-3 border-t border-slate-100 flex gap-2">
+                        <button onclick="window.approveCurhat('${c.id}')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui Curhat</button>
+                        <button onclick="window.rejectCurhat('${c.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
+                        <button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -622,22 +601,18 @@
         function renderFeedback() {
             const container = document.getElementById("adminFeedbackContainer");
             const keyword = document.getElementById("searchFeedbackInput").value.toLowerCase();
-            
             container.innerHTML = "";
 
-            let filtered = cachedFeedback.filter(fb => {
-                return (fb.text || "").toLowerCase().includes(keyword) || (fb.sender || "").toLowerCase().includes(keyword);
-            });
+            const filtered = cachedFeedback.filter(fb => (fb.text || "").toLowerCase().includes(keyword) || (fb.sender || "").toLowerCase().includes(keyword));
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold">Tidak ada masukan yang ditemukan.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold">Tidak ada masukan ditemukan.</p>`;
                 return;
             }
 
             filtered.forEach(fb => {
                 const card = document.createElement("div");
                 card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3";
-                
                 card.innerHTML = `
                     <div class="flex justify-between items-center text-xs font-bold text-slate-400">
                         <span>${escapeHTML(fb.sender || "Anonim")}</span>
@@ -645,7 +620,7 @@
                     </div>
                     <p class="text-sm text-slate-700 font-medium italic">"${escapeHTML(fb.text)}"</p>
                     <div class="pt-2">
-                        <textarea id="replyInput_${fb.id}" rows="2" placeholder="Tulis balasan untuk pengguna ini..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(fb.reply || "")}</textarea>
+                        <textarea id="replyInput_${fb.id}" rows="2" placeholder="Tulis balasan..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(fb.reply || "")}</textarea>
                         <div class="flex justify-end gap-2">
                             <button onclick="window.sendFeedbackReply('${fb.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"><i class="fa-solid fa-reply mr-1"></i> Kirim Balasan</button>
                             <button onclick="window.deleteFeedback('${fb.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
@@ -656,21 +631,21 @@
             });
         }
 
+        // Global Action Functions
         window.approveMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "approved" });
         window.rejectMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "rejected" });
         window.deleteMsg = (id) => { if(confirm("Hapus pesan ini?")) remove(ref(database, `clover/messages/${id}`)); };
+
+        window.approveCurhat = (id) => update(ref(database, `clover/curhat_publik/${id}`), { status: "approved" });
+        window.rejectCurhat = (id) => update(ref(database, `clover/curhat_publik/${id}`), { status: "rejected" });
+        window.deleteCurhat = (id) => { if(confirm("Hapus curhat ini?")) remove(ref(database, `clover/curhat_publik/${id}`)); };
+
         window.deleteFeedback = (id) => { if(confirm("Hapus masukan ini?")) remove(ref(database, `clover/feedback/${id}`)); };
-        
         window.sendFeedbackReply = (id) => {
             const replyText = document.getElementById(`replyInput_${id}`).value.trim();
-            update(ref(database, `clover/feedback/${id}`), {
-                reply: replyText,
-                repliedAt: Date.now()
-            }).then(() => {
-                alert("Balasan berhasil dikirim ke perangkat pengguna!");
-            }).catch(err => {
-                alert("Gagal mengirim balasan: " + err.message);
-            });
+            update(ref(database, `clover/feedback/${id}`), { reply: replyText, repliedAt: Date.now() })
+                .then(() => alert("Balasan berhasil dikirim!"))
+                .catch(err => alert("Gagal: " + err.message));
         };
 
         function escapeHTML(value) {
