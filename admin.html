@@ -382,34 +382,41 @@
 
         logoutBtn.addEventListener("click", async () => { await signOut(auth); });
 
-        // Verifikasi Peran Owner vs Admin berdasarkan path clover/roles/{uid}
+        // Verifikasi Peran Owner vs Admin berdasarkan path clover/owners & clover/admins
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const roleSnap = await get(ref(database, `clover/roles/${user.uid}`));
-                    if (roleSnap.exists()) {
-                        const roleVal = String(roleSnap.val()).toLowerCase(); // "owner", "admin", atau "admins"
-                        
+                    // 1. Cek apakah user adalah Owner
+                    const ownerSnap = await get(ref(database, `clover/owners/${user.uid}`));
+                    if (ownerSnap.exists() && ownerSnap.val() === true) {
+                        currentUserRole = "owner";
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
-
-                        if (roleVal === "owner") {
-                            currentUserRole = "owner";
-                            adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Owner") + " (Owner Utama)";
-                            tabBtnBroadcast.classList.remove("hidden"); // Tampilkan tab broadcast untuk owner
-                        } else {
-                            currentUserRole = "admin";
-                            adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Admin") + " (Moderator)";
-                            tabBtnBroadcast.classList.add("hidden"); // Sembunyikan tab broadcast untuk admin biasa
-                        }
-
+                        adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Owner") + " (Owner Utama)";
+                        tabBtnBroadcast.classList.remove("hidden"); // Tampilkan tab broadcast untuk owner
                         initAdminPanel();
-                    } else {
-                        signOut(auth);
-                        loginError.textContent = "Akses ditolak. UID akun ini belum terdaftar di database clover/roles.";
-                        loginError.classList.remove("hidden");
+                        return;
                     }
+
+                    // 2. Cek apakah user adalah Admin biasa
+                    const adminSnap = await get(ref(database, `clover/admins/${user.uid}`));
+                    if (adminSnap.exists() && adminSnap.val() === true) {
+                        currentUserRole = "admin";
+                        loginScreen.classList.add("hidden");
+                        adminDashboard.classList.remove("hidden");
+                        adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Admin") + " (Moderator)";
+                        tabBtnBroadcast.classList.add("hidden"); // Sembunyikan tab broadcast untuk admin biasa
+                        initAdminPanel();
+                        return;
+                    }
+
+                    // Jika tidak terdaftar di keduanya
+                    signOut(auth);
+                    loginError.textContent = "Akses ditolak. Akun ini tidak terdaftar sebagai Owner atau Admin.";
+                    loginError.classList.remove("hidden");
+
                 } catch (err) {
+                    console.error("Error verifikasi:", err);
                     signOut(auth);
                     loginError.textContent = "Terjadi kesalahan saat verifikasi hak akses.";
                     loginError.classList.remove("hidden");
