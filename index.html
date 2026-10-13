@@ -450,8 +450,8 @@
         </form>
 
         <!-- Daftar Curhat Publik dari Komunitas -->
-        <div id="curhats-container" class="space-y-6 pt-6 max-w-2xl mx-auto">
-            <div class="bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+        <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
+            <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
                 <div class="loading-spinner mb-4"></div>
                 <p class="text-sm font-bold text-slate-400">Memuat ruang curhat komunitas...</p>
             </div>
@@ -487,7 +487,7 @@
                             <i class="fa-solid fa-clover text-[8rem]"></i>
                         </div>
                         <div class="absolute inset-0 flex items-center justify-center pb-2">
-                            <span id="challengeProgressText" class="text-xl font-black text-white bg-emerald-900/30 backdrop-blur-md px-3 py-1 rounded-2xl shadow-sm">0%</span>
+                            <span id="challengeProgressText" class="text-xl font-black text-white bg-emerald-900/35 backdrop-blur-md px-3 py-1 rounded-2xl shadow-sm">0%</span>
                         </div>
                     </div>
                     
@@ -604,7 +604,7 @@
     </section>
 
     <!-- =================================================
-         4. PAPAN KEHANGATAN (DENGAN LIKE & TANPA TANGGAL)
+         4. PAPAN KEHANGATAN
     ================================================== -->
     <section id="papan" class="space-y-8 pt-10 border-t border-slate-200/60 relative">
         <div class="text-center max-w-2xl mx-auto">
@@ -845,7 +845,7 @@
     });
 
     // =====================================================
-    // 4. PAPAN KEHANGATAN (DENGAN FIX BUG JUMPING/BERPINDAH SAAT LIKE)
+    // 4. PAPAN KEHANGATAN
     // =====================================================
     const messageForm = document.getElementById("message-form");
     const messageInput = document.getElementById("message-input");
@@ -892,9 +892,10 @@
     let approvedMessagesCache = [];
     let rotationTimer = null;
     let startIndex = 0;
-    let isInitialLoad = true; // Menjaga agar startIndex tidak reset ke 0 saat tombol like ditekan
+    let isInitialLoad = true;
 
     onValue(approvedMessagesQuery, (snapshot) => {
+        const scrollY = window.scrollY;
         hideFirebaseStatus();
         const data = snapshot.val();
 
@@ -913,6 +914,7 @@
                     <p class="text-sm font-medium text-slate-400">Jadilah yang pertama mengirimkan pesan positif.</p>
                 </div>
             `;
+            window.scrollTo(0, scrollY);
             return;
         }
 
@@ -936,6 +938,7 @@
                 renderRotatingBatch();
             }, 5000);
         }
+        window.scrollTo(0, scrollY);
     });
 
     function renderRotatingBatch() {
@@ -1057,7 +1060,7 @@
     });
 
     // =====================================================
-    // 5. RUANG CURHAT PUBLIK & BALASAN DENGAN MODERASI EDISI LENGKAP
+    // 5. RUANG CURHAT PUBLIK (GAYA CARD PESAN KEHANGATAN)
     // =====================================================
     const curhatForm = document.getElementById("curhat-form");
     const curhatInput = document.getElementById("curhat-input");
@@ -1087,18 +1090,20 @@
     const curhatRefAll = ref(database, "clover/curhat_publik");
 
     onValue(curhatRefAll, (snapshot) => {
+        const scrollY = window.scrollY;
         hideCurhatStatus();
         const data = snapshot.val();
         curhatsContainer.innerHTML = "";
 
         if (!data) {
             curhatsContainer.innerHTML = `
-                <div class="bg-white rounded-3xl p-10 border-2 border-dashed border-teal-100 text-center">
+                <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
                     <div class="text-4xl text-teal-200 mb-3"><i class="fa-solid fa-comments"></i></div>
                     <h4 class="font-extrabold text-slate-800 mb-1">Belum ada curhat publik.</h4>
                     <p class="text-sm font-medium text-slate-400">Jadilah yang pertama berbagi cerita di ruang ini.</p>
                 </div>
             `;
+            window.scrollTo(0, scrollY);
             return;
         }
 
@@ -1107,12 +1112,13 @@
 
         if (visibleCurhats.length === 0) {
             curhatsContainer.innerHTML = `
-                <div class="bg-white rounded-3xl p-10 border-2 border-dashed border-teal-100 text-center">
+                <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
                     <div class="text-4xl text-teal-200 mb-3"><i class="fa-solid fa-comments"></i></div>
                     <h4 class="font-extrabold text-slate-800 mb-1">Belum ada curhat publik yang disetujui.</h4>
                     <p class="text-sm font-medium text-slate-400">Curhat Anda sedang menunggu peninjauan admin.</p>
                 </div>
             `;
+            window.scrollTo(0, scrollY);
             return;
         }
 
@@ -1121,11 +1127,14 @@
         visibleCurhats.forEach(curhat => {
             renderCurhatCard(curhat);
         });
+
+        window.scrollTo(0, scrollY);
     });
 
     function renderCurhatCard(curhat) {
         const card = document.createElement("article");
-        card.className = "bg-white p-7 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-md transition-all space-y-4 relative overflow-hidden";
+        // Desain card disamakan dengan pesan kehangatan (.message-card)
+        card.className = "message-card bg-white p-7 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col h-full relative overflow-hidden";
 
         const sender = escapeHTML(curhat.sender?.trim() || "Pejuang Tenang");
         const text = escapeHTML(curhat.text?.trim() || "");
@@ -1134,11 +1143,11 @@
 
         let statusBadge = "";
         if (curhat.status === "pending") {
-            statusBadge = `<span class="bg-amber-100 text-amber-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-amber-200"><i class="fa-solid fa-clock mr-1"></i> Menunggu Persetujuan Admin</span>`;
+            statusBadge = `<span class="bg-amber-100 text-amber-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-amber-200"><i class="fa-solid fa-clock mr-1"></i> Menunggu Persetujuan</span>`;
         } else if (curhat.status === "rejected") {
-            statusBadge = `<span class="bg-rose-100 text-rose-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-rose-200"><i class="fa-solid fa-circle-xmark mr-1"></i> Ditolak Admin</span>`;
+            statusBadge = `<span class="bg-rose-100 text-rose-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-rose-200"><i class="fa-solid fa-circle-xmark mr-1"></i> Ditolak</span>`;
         } else {
-            statusBadge = `<span class="bg-teal-50 text-teal-700 font-extrabold text-[10px] px-3 py-1 rounded-full border border-teal-100"><i class="fa-solid fa-earth-americas mr-1"></i> Curhat Publik</span>`;
+            statusBadge = `<span class="bg-teal-50 text-teal-700 font-extrabold text-[10px] px-3 py-1 rounded-full border border-teal-100"><i class="fa-solid fa-earth-americas mr-1"></i> Publik</span>`;
         }
 
         let editButtonHTML = "";
@@ -1189,7 +1198,7 @@
         }
 
         card.innerHTML = `
-            <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold shrink-0">
                         ${sender.charAt(0).toUpperCase()}
@@ -1205,33 +1214,40 @@
                 </div>
             </div>
 
-            <div id="curhat_content_area_${curhat.id}">
-                <p class="text-sm text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap break-words mt-3">
-                    "${text}"
-                </p>
+            <div class="flex-1 space-y-4">
+                <div id="curhat_content_area_${curhat.id}">
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap break-words">
+                        "${text}"
+                    </p>
+                </div>
+
+                <form id="curhat_edit_form_${curhat.id}" class="hidden space-y-3">
+                    <textarea rows="3" maxlength="400" class="w-full p-3 bg-slate-50 rounded-xl border border-teal-300 text-xs text-slate-800 font-medium focus:outline-none">${curhat.text}</textarea>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" class="cancel-edit-curhat bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl">Batal</button>
+                        <button type="submit" class="save-edit-curhat bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">Simpan & Minta Persetujuan</button>
+                    </div>
+                </form>
+
+                <div class="pt-4 border-t border-slate-50 space-y-3">
+                    <p class="text-xs font-black text-slate-500 uppercase tracking-wider">Tanggapan & Dukungan</p>
+                    <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        ${repliesHTML}
+                    </div>
+
+                    <form class="reply-form flex gap-2 pt-2" data-curhat-id="${curhat.id}">
+                        <input type="text" placeholder="Tulis balasan semangat..." maxlength="250" required
+                               class="reply-input flex-1 px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-teal-400 text-xs text-slate-800 font-medium">
+                        <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-colors shrink-0">
+                            Kirim
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <form id="curhat_edit_form_${curhat.id}" class="hidden space-y-3 mt-3 pt-3 border-t border-slate-100">
-                <textarea rows="3" maxlength="400" class="w-full p-3 bg-slate-50 rounded-xl border border-teal-300 text-xs text-slate-800 font-medium focus:outline-none">${curhat.text}</textarea>
-                <div class="flex justify-end gap-2">
-                    <button type="button" class="cancel-edit-curhat bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl">Batal</button>
-                    <button type="submit" class="save-edit-curhat bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">Simpan & Minta Persetujuan</button>
-                </div>
-            </form>
-
-            <div class="pt-3 border-t border-slate-100 space-y-3">
-                <p class="text-xs font-black text-slate-500 uppercase tracking-wider">Tanggapan & Dukungan</p>
-                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                    ${repliesHTML}
-                </div>
-
-                <form class="reply-form flex gap-2 pt-2" data-curhat-id="${curhat.id}">
-                    <input type="text" placeholder="Tulis balasan semangat (perlu moderasi admin)..." maxlength="250" required
-                           class="reply-input flex-1 px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-teal-400 text-xs text-slate-800 font-medium">
-                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-colors shrink-0">
-                        Kirim Balasan
-                    </button>
-                </form>
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-teal-600 mt-5 pt-4 border-t border-slate-50">
+                <i class="fa-solid fa-comments"></i>
+                <span>Ruang Curhat Bersama Clover</span>
             </div>
         `;
 
@@ -1368,7 +1384,7 @@
     });
 
     // =====================================================
-    // 6. MASUKAN WEB & TANGGAPAN ADMIN
+    // 6. MASUKAN WEB & Tanggapan Admin
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -1807,7 +1823,7 @@
         }
 
         currentStreakElement.textContent = Number(localStorage.getItem(STREAK_KEY) || 0);
-        bestStreakElement.textContent = Number(localStorage.getItem(BEST_STREAK_KEY) || 0);
+        bestStreakElement.textContent = Number(localStorage.getItem(BEST_ST_REAK_KEY || 0));
         localStorage.setItem(STORAGE_TASKS, JSON.stringify(challengeCheckboxes.map(cb => cb.checked)));
     }
 
