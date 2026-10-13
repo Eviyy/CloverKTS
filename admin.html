@@ -76,24 +76,14 @@
         <!-- DASHBOARD CONTENT -->
         <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
 
-            <!-- TAB NAVIGATION -->
-            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
-                <button id="tabBtnMessages" class="tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-envelope-open-text"></i> Pesan Kehangatan
-                </button>
-                <button id="tabBtnCurhat" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-comments"></i> Ruang Curhat Publik
-                </button>
-                <button id="tabBtnFeedback" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-comment-dots"></i> Masukan Web
-                </button>
-                <button id="tabBtnBroadcast" class="tab-btn hidden bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn text-amber-500"></i> Broadcast (Owner)
-                </button>
-            </div>
-
-            <!-- TAB 1: MODERASI PESAN KEHANGATAN -->
-            <div id="tabContentMessages" class="space-y-6">
+            <!-- STATISTIK UTAMA (TAMPIL DI SEMUA TAB) + TOMBOL EKSPOR STATISTIK -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between flex-wrap gap-3">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Overview Statistik Real-Time</h3>
+                    <button onclick="window.exportStatsCSV()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-file-arrow-down"></i> Ekspor Data Statistik (CSV)
+                    </button>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-eye"></i></div>
@@ -117,7 +107,26 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- TAB NAVIGATION -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                <button id="tabBtnMessages" class="tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-envelope-open-text"></i> Pesan Kehangatan
+                </button>
+                <button id="tabBtnCurhat" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-comments"></i> Ruang Curhat Publik
+                </button>
+                <button id="tabBtnFeedback" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-comment-dots"></i> Masukan Web
+                </button>
+                <button id="tabBtnBroadcast" class="tab-btn hidden bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-amber-500"></i> Broadcast (Owner)
+                </button>
+            </div>
+
+            <!-- TAB 1: MODERASI PESAN KEHANGATAN -->
+            <div id="tabContentMessages" class="space-y-6">
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
                         <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Pesan</p>
@@ -154,7 +163,8 @@
                     </select>
                 </div>
 
-                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
+                <!-- Aksi Massal Pesan (Hanya untuk Owner) -->
+                <div id="bulkActionMsgContainer" class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
                     <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
                         <input type="checkbox" id="selectAllMessages" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500">
                         <span>Pilih Semua (<span id="selectedCountMsg">0</span> dipilih)</span>
@@ -205,7 +215,8 @@
                     </select>
                 </div>
 
-                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
+                <!-- Aksi Massal Curhat (Hanya Owner) -->
+                <div id="bulkActionCurhatContainer" class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
                     <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
                         <input type="checkbox" id="selectAllCurhat" class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500">
                         <span>Pilih Semua (<span id="selectedCountCurhat">0</span> dipilih)</span>
@@ -382,35 +393,34 @@
 
         logoutBtn.addEventListener("click", async () => { await signOut(auth); });
 
-        // Verifikasi Peran Owner vs Admin berdasarkan path clover/owners & clover/admins
+        // Verifikasi Peran Owner vs Admin
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // 1. Cek apakah user adalah Owner
                     const ownerSnap = await get(ref(database, `clover/owners/${user.uid}`));
                     if (ownerSnap.exists() && ownerSnap.val() === true) {
                         currentUserRole = "owner";
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
                         adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Owner") + " (Owner Utama)";
-                        tabBtnBroadcast.classList.remove("hidden"); // Tampilkan tab broadcast untuk owner
+                        tabBtnBroadcast.classList.remove("hidden"); 
+                        applyRolePermissions();
                         initAdminPanel();
                         return;
                     }
 
-                    // 2. Cek apakah user adalah Admin biasa
                     const adminSnap = await get(ref(database, `clover/admins/${user.uid}`));
                     if (adminSnap.exists() && adminSnap.val() === true) {
                         currentUserRole = "admin";
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
                         adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Admin") + " (Moderator)";
-                        tabBtnBroadcast.classList.add("hidden"); // Sembunyikan tab broadcast untuk admin biasa
+                        tabBtnBroadcast.classList.add("hidden"); 
+                        applyRolePermissions();
                         initAdminPanel();
                         return;
                     }
 
-                    // Jika tidak terdaftar di keduanya
                     signOut(auth);
                     loginError.textContent = "Akses ditolak. Akun ini tidak terdaftar sebagai Owner atau Admin.";
                     loginError.classList.remove("hidden");
@@ -426,6 +436,22 @@
                 adminDashboard.classList.add("hidden");
             }
         });
+
+        // Terapkan batasan visual berdasarkan peran
+        function applyRolePermissions() {
+            if (currentUserRole === "admin") {
+                // Admin tidak memiliki hak untuk aksi massal hapus & tombol hapus
+                const bulkMsg = document.getElementById("bulkActionMsgContainer");
+                if (bulkMsg) {
+                    // Sembunyikan tombol hapus terpilih tapi biarkan tombol setujui/tolak jika diperlukan atau sesuaikan
+                    document.getElementById("bulkDeleteMsgBtn").style.display = "none";
+                }
+                const bulkCurhat = document.getElementById("bulkActionCurhatContainer");
+                if (bulkCurhat) {
+                    document.getElementById("bulkDeleteCurhatBtn").style.display = "none";
+                }
+            }
+        }
 
         let cachedMessages = [];
         let cachedCurhats = [];
@@ -544,11 +570,14 @@
 
             document.getElementById("bulkApproveMsgBtn").addEventListener("click", () => bulkUpdateMessages("approved"));
             document.getElementById("bulkRejectMsgBtn").addEventListener("click", () => bulkUpdateMessages("rejected"));
-            document.getElementById("bulkDeleteMsgBtn").addEventListener("click", bulkDeleteMessages);
+            
+            if (currentUserRole === "owner") {
+                document.getElementById("bulkDeleteMsgBtn").addEventListener("click", bulkDeleteMessages);
+                document.getElementById("bulkDeleteCurhatBtn").addEventListener("click", bulkDeleteCurhats);
+            }
 
             document.getElementById("bulkApproveCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("approved"));
             document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
-            document.getElementById("bulkDeleteCurhatBtn").addEventListener("click", bulkDeleteCurhats);
 
             // Broadcast Form (Hanya untuk Owner)
             if (currentUserRole === "owner") {
@@ -597,7 +626,9 @@
             const hasSelection = selectedMessageIds.size > 0;
             document.getElementById("bulkApproveMsgBtn").disabled = !hasSelection;
             document.getElementById("bulkRejectMsgBtn").disabled = !hasSelection;
-            document.getElementById("bulkDeleteMsgBtn").disabled = !hasSelection;
+            if (currentUserRole === "owner") {
+                document.getElementById("bulkDeleteMsgBtn").disabled = !hasSelection;
+            }
 
             currentFilteredMessages.forEach(msg => {
                 const card = document.createElement("div");
@@ -607,6 +638,10 @@
                                   '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
 
                 const isChecked = selectedMessageIds.has(msg.id);
+
+                // Tombol Hapus hanya muncul untuk Owner
+                const deleteButtonHTML = currentUserRole === "owner" ? 
+                    `<button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 card.innerHTML = `
                     <div>
@@ -622,7 +657,7 @@
                     <div class="pt-3 border-t border-slate-100 flex gap-2">
                         <button onclick="window.approveMsg('${msg.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui</button>
                         <button onclick="window.rejectMsg('${msg.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
-                        <button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                        ${deleteButtonHTML}
                     </div>
                 `;
                 
@@ -652,7 +687,9 @@
             const hasSelection = selectedCurhatIds.size > 0;
             document.getElementById("bulkApproveCurhatBtn").disabled = !hasSelection;
             document.getElementById("bulkRejectCurhatBtn").disabled = !hasSelection;
-            document.getElementById("bulkDeleteCurhatBtn").disabled = !hasSelection;
+            if (currentUserRole === "owner") {
+                document.getElementById("bulkDeleteCurhatBtn").disabled = !hasSelection;
+            }
 
             currentFilteredCurhats.forEach(c => {
                 const card = document.createElement("div");
@@ -674,6 +711,9 @@
                                        repStatus === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full">Ditolak</span>' :
                                        '<span class="bg-amber-100 text-amber-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full">Pending</span>';
 
+                        const deleteReplyBtn = currentUserRole === "owner" ? 
+                            `<button onclick="window.deleteReply('${c.id}', '${repId}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-bold px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>` : '';
+
                         adminRepliesHTML += `
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs space-y-2">
                                 <div class="flex items-center justify-between">
@@ -684,7 +724,7 @@
                                 <div class="flex gap-2 pt-1">
                                     <button onclick="window.approveReply('${c.id}', '${repId}')" class="bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-bold px-3 py-1 rounded-lg">Setujui</button>
                                     <button onclick="window.rejectReply('${c.id}', '${repId}')" class="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-lg">Tolak</button>
-                                    <button onclick="window.deleteReply('${c.id}', '${repId}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-bold px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                                    ${deleteReplyBtn}
                                 </div>
                             </div>
                         `;
@@ -692,6 +732,9 @@
                 } else {
                     adminRepliesHTML = `<p class="text-[11px] text-slate-400 italic">Belum ada balasan pada curhat ini.</p>`;
                 }
+
+                const deleteCurhatBtn = currentUserRole === "owner" ? 
+                    `<button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-3 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
@@ -705,7 +748,7 @@
                     <div class="pt-2 flex gap-2">
                         <button onclick="window.approveCurhat('${c.id}')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui Curhat</button>
                         <button onclick="window.rejectCurhat('${c.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
-                        <button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-3 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                        ${deleteCurhatBtn}
                     </div>
 
                     <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
@@ -739,6 +782,10 @@
             filtered.forEach(fb => {
                 const card = document.createElement("div");
                 card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3";
+                
+                const deleteFeedbackBtn = currentUserRole === "owner" ? 
+                    `<button onclick="window.deleteFeedback('${fb.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
+
                 card.innerHTML = `
                     <div class="flex justify-between items-center text-xs font-bold text-slate-400">
                         <span>${escapeHTML(fb.sender || "Anonim")}</span>
@@ -749,13 +796,41 @@
                         <textarea id="replyInput_${fb.id}" rows="2" placeholder="Tulis balasan..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(fb.reply || "")}</textarea>
                         <div class="flex justify-end gap-2">
                             <button onclick="window.sendFeedbackReply('${fb.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"><i class="fa-solid fa-reply mr-1"></i> Kirim Balasan</button>
-                            <button onclick="window.deleteFeedback('${fb.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            ${deleteFeedbackBtn}
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
+
+        // Fitur Ekspor Data Statistik ke CSV
+        window.exportStatsCSV = function() {
+            const statsData = [
+                ["Metrik Statistik", "Nilai"],
+                ["Total Kunjungan Web", document.getElementById("statTotalVisits").textContent],
+                ["Pengunjung Online", document.getElementById("statActiveUsers").textContent],
+                ["Total Pesan Kehangatan", document.getElementById("statTotalMsg").textContent],
+                ["Pesan Kehangatan Hari Ini", document.getElementById("statTodayMsg").textContent],
+                ["Pesan Kehangatan Disetujui", document.getElementById("statApprovedMsg").textContent],
+                ["Pesan Kehangatan Pending", document.getElementById("statPendingMsg").textContent],
+                ["Pesan Kehangatan Ditolak", document.getElementById("statRejectedMsg").textContent],
+                ["Total Curhat Publik", document.getElementById("statTotalCurhat").textContent],
+                ["Curhat Disetujui", document.getElementById("statApprovedCurhat").textContent],
+                ["Curhat Pending", document.getElementById("statPendingCurhat").textContent],
+                ["Curhat Ditolak", document.getElementById("statRejectedCurhat").textContent],
+                ["Total Masukan Web", document.getElementById("statTotalFb").textContent],
+            ];
+
+            let csvContent = "data:text/csv;charset=utf-8," + statsData.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `statistik_clover_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
 
         async function bulkUpdateMessages(status) {
             if (selectedMessageIds.size === 0) return;
@@ -769,6 +844,7 @@
         }
 
         async function bulkDeleteMessages() {
+            if (currentUserRole !== "owner") return;
             if (selectedMessageIds.size === 0) return;
             if (!confirm(`Hapus ${selectedMessageIds.size} pesan terpilih?`)) return;
             const updates = {};
@@ -792,6 +868,7 @@
         }
 
         async function bulkDeleteCurhats() {
+            if (currentUserRole !== "owner") return;
             if (selectedCurhatIds.size === 0) return;
             if (!confirm(`Hapus ${selectedCurhatIds.size} curhat terpilih?`)) return;
             const updates = {};
@@ -805,17 +882,30 @@
 
         window.approveMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "approved" });
         window.rejectMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "rejected" });
-        window.deleteMsg = (id) => { if(confirm("Hapus pesan ini?")) remove(ref(database, `clover/messages/${id}`)); };
+        window.deleteMsg = (id) => { 
+            if (currentUserRole !== "owner") { alert("Akses ditolak: Hanya Owner yang dapat menghapus pesan."); return; }
+            if(confirm("Hapus pesan ini?")) remove(ref(database, `clover/messages/${id}`)); 
+        };
 
         window.approveCurhat = (id) => update(ref(database, `clover/curhat_publik/${id}`), { status: "approved" });
         window.rejectCurhat = (id) => update(ref(database, `clover/curhat_publik/${id}`), { status: "rejected" });
-        window.deleteCurhat = (id) => { if(confirm("Hapus curhat ini?")) remove(ref(database, `clover/curhat_publik/${id}`)); };
+        window.deleteCurhat = (id) => { 
+            if (currentUserRole !== "owner") { alert("Akses ditolak: Hanya Owner yang dapat menghapus curhat."); return; }
+            if(confirm("Hapus curhat ini?")) remove(ref(database, `clover/curhat_publik/${id}`)); 
+        };
 
         window.approveReply = (curhatId, replyId) => update(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`), { status: "approved" });
         window.rejectReply = (curhatId, replyId) => update(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`), { status: "rejected" });
-        window.deleteReply = (curhatId, replyId) => { if(confirm("Hapus balasan ini?")) remove(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`)); };
+        window.deleteReply = (curhatId, replyId) => { 
+            if (currentUserRole !== "owner") { alert("Akses ditolak: Hanya Owner yang dapat menghapus balasan."); return; }
+            if(confirm("Hapus balasan ini?")) remove(ref(database, `clover/curhat_publik/${curhatId}/replies/${replyId}`)); 
+        };
 
-        window.deleteFeedback = (id) => { if(confirm("Hapus masukan ini?")) remove(ref(database, `clover/feedback/${id}`)); };
+        window.deleteFeedback = (id) => { 
+            if (currentUserRole !== "owner") { alert("Akses ditolak: Hanya Owner yang dapat menghapus masukan."); return; }
+            if(confirm("Hapus masukan ini?")) remove(ref(database, `clover/feedback/${id}`)); 
+        };
+
         window.sendFeedbackReply = (id) => {
             const replyText = document.getElementById(`replyInput_${id}`).value.trim();
             update(ref(database, `clover/feedback/${id}`), { reply: replyText, repliedAt: Date.now() })
