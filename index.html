@@ -787,7 +787,7 @@
     const database = getDatabase(app);
 
     // =====================================================
-    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif (Diperbaiki)
+    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif (Diperbarui Unik per Tab)
     // =====================================================
     if (!sessionStorage.getItem("clover_visited")) {
         sessionStorage.setItem("clover_visited", "true");
@@ -799,11 +799,7 @@
         });
     }
 
-    let cloverSessionId = sessionStorage.getItem("clover_session_id");
-    if (!cloverSessionId) {
-        cloverSessionId = 'session_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        sessionStorage.setItem("clover_session_id", cloverSessionId);
-    }
+    const cloverSessionId = 'session_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 15);
 
     const activeUsersRef = ref(database, `clover/active_users/${cloverSessionId}`);
     set(activeUsersRef, { joinedAt: Date.now() });
