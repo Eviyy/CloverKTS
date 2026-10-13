@@ -29,7 +29,7 @@
                 <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div>
-                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Dashboard Control Panel</h2>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Dashboard Owner & Admin</h2>
                 <p class="text-xs text-slate-500 font-medium leading-relaxed">Masuk menggunakan email atau username admin Anda.</p>
             </div>
             
@@ -42,8 +42,8 @@
                     <label class="block text-xs font-extrabold text-slate-700 mb-2">Password</label>
                     <input type="password" id="adminPasswordInput" required placeholder="••••••••" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 shadow-inner">
                 </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-900/15">
-                    Masuk
+                <button type="submit" id="loginBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-900/15 flex items-center justify-center gap-2">
+                    <span>Masuk</span>
                 </button>
             </form>
 
@@ -163,7 +163,7 @@
                     </select>
                 </div>
 
-                <!-- Aksi Massal Pesan (Hanya untuk Owner) -->
+                <!-- Aksi Massal Pesan -->
                 <div id="bulkActionMsgContainer" class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
                     <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
                         <input type="checkbox" id="selectAllMessages" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500">
@@ -215,7 +215,7 @@
                     </select>
                 </div>
 
-                <!-- Aksi Massal Curhat (Hanya Owner) -->
+                <!-- Aksi Massal Curhat -->
                 <div id="bulkActionCurhatContainer" class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
                     <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
                         <input type="checkbox" id="selectAllCurhat" class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500">
@@ -330,6 +330,7 @@
         const loginForm = document.getElementById("loginForm");
         const adminUsernameInput = document.getElementById("adminUsernameInput");
         const adminPasswordInput = document.getElementById("adminPasswordInput");
+        const loginBtn = document.getElementById("loginBtn");
         const logoutBtn = document.getElementById("logoutBtn");
         const loginError = document.getElementById("loginError");
         const adminEmailDisplay = document.getElementById("adminEmailDisplay");
@@ -375,6 +376,7 @@
         tabBtnFeedback.addEventListener("click", () => switchTab('feedback'));
         tabBtnBroadcast.addEventListener("click", () => switchTab('broadcast'));
 
+        // Proses Login dengan Indikator Loading & Detail Error
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             loginError.classList.add("hidden");
@@ -383,11 +385,20 @@
             const password = adminPasswordInput.value;
             let emailToUse = userInput.includes("@") ? userInput : userInput + "@clover.admin";
 
+            // Ubah tombol jadi loading spinner
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses...`;
+
             try {
                 await signInWithEmailAndPassword(auth, emailToUse, password);
             } catch (err) {
-                loginError.textContent = "Gagal masuk: Username/Email atau password salah.";
+                console.error("Firebase Login Error:", err);
+                loginError.textContent = `Gagal masuk: ${err.message || "Username/Email atau password salah."}`;
                 loginError.classList.remove("hidden");
+                
+                // Kembalikan tombol ke semula jika gagal
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `<span>Masuk</span>`;
             }
         });
 
@@ -424,26 +435,31 @@
                     signOut(auth);
                     loginError.textContent = "Akses ditolak. Akun ini tidak terdaftar sebagai Owner atau Admin.";
                     loginError.classList.remove("hidden");
+                    
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = `<span>Masuk</span>`;
 
                 } catch (err) {
                     console.error("Error verifikasi:", err);
                     signOut(auth);
                     loginError.textContent = "Terjadi kesalahan saat verifikasi hak akses.";
                     loginError.classList.remove("hidden");
+                    
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = `<span>Masuk</span>`;
                 }
             } else {
                 loginScreen.classList.remove("hidden");
                 adminDashboard.classList.add("hidden");
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `<span>Masuk</span>`;
             }
         });
 
-        // Terapkan batasan visual berdasarkan peran
         function applyRolePermissions() {
             if (currentUserRole === "admin") {
-                // Admin tidak memiliki hak untuk aksi massal hapus & tombol hapus
                 const bulkMsg = document.getElementById("bulkActionMsgContainer");
                 if (bulkMsg) {
-                    // Sembunyikan tombol hapus terpilih tapi biarkan tombol setujui/tolak jika diperlukan atau sesuaikan
                     document.getElementById("bulkDeleteMsgBtn").style.display = "none";
                 }
                 const bulkCurhat = document.getElementById("bulkActionCurhatContainer");
@@ -530,7 +546,7 @@
             // Feedback
             onValue(ref(database, "clover/feedback"), (snapshot) => {
                 const data = snapshot.val();
-                cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
+                cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })) : [];
 
                 const todayStr = getTodayKey(Date.now());
                 let todayFbCount = 0, repliedCount = 0, unrepliedCount = 0;
@@ -579,7 +595,6 @@
             document.getElementById("bulkApproveCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("approved"));
             document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
 
-            // Broadcast Form (Hanya untuk Owner)
             if (currentUserRole === "owner") {
                 onValue(ref(database, "clover/broadcast"), (snapshot) => {
                     const data = snapshot.val();
@@ -638,8 +653,6 @@
                                   '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
 
                 const isChecked = selectedMessageIds.has(msg.id);
-
-                // Tombol Hapus hanya muncul untuk Owner
                 const deleteButtonHTML = currentUserRole === "owner" ? 
                     `<button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
 
@@ -804,7 +817,6 @@
             });
         }
 
-        // Fitur Ekspor Data Statistik ke CSV
         window.exportStatsCSV = function() {
             const statsData = [
                 ["Metrik Statistik", "Nilai"],
