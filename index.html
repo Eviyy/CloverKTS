@@ -402,7 +402,7 @@
     </section>
 
     <!-- =================================================
-         2. RUANG CURHAT PUBLIK (HANYA TAMPIL 2 CARD & ROTASI)
+         2. RUANG CURHAT PUBLIK (PAUSE ROTASI SAAT MENULIS/INTERAKSI)
     ================================================== -->
     <section id="curhat-publik" class="space-y-8 pt-6 relative">
         <div class="text-center max-w-2xl mx-auto mb-10">
@@ -1060,7 +1060,7 @@
     });
 
     // =====================================================
-    // 5. RUANG CURHAT PUBLIK (TAMPIL HANYA 2 CARD & ROTASI)
+    // 5. RUANG CURHAT PUBLIK (DENGAN PAUSE ROTASI SAAT MENULIS)
     // =====================================================
     const curhatForm = document.getElementById("curhat-form");
     const curhatInput = document.getElementById("curhat-input");
@@ -1069,6 +1069,19 @@
     const curhatFirebaseStatus = document.getElementById("curhat-firebase-status");
     const curhatCharCount = document.getElementById("curhat-char-count");
     const curhatsContainer = document.getElementById("curhats-container");
+    const curhatPublikSection = document.getElementById("curhat-publik");
+
+    let isCurhatInteracting = false;
+    curhatPublikSection.addEventListener("mouseenter", () => { isCurhatInteracting = true; });
+    curhatPublikSection.addEventListener("mouseleave", () => { isCurhatInteracting = false; });
+    curhatPublikSection.addEventListener("focusin", () => { isCurhatInteracting = true; });
+    curhatPublikSection.addEventListener("focusout", () => {
+        setTimeout(() => {
+            if (!curhatPublikSection.contains(document.activeElement)) {
+                isCurhatInteracting = false;
+            }
+        }, 150);
+    });
 
     function showCurhatStatus(message, type = "info") {
         curhatFirebaseStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-teal-50", "text-teal-700", "border-teal-200", "bg-amber-50", "text-amber-700", "border-amber-200");
@@ -1148,8 +1161,11 @@
 
         if (curhatsCache.length > 2) {
             curhatRotationTimer = setInterval(() => {
-                curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
-                renderCurhatBatch();
+                // Rotasi hanya berjalan jika pengguna sedang tidak mengetik / berinteraksi di area curhat
+                if (!isCurhatInteracting) {
+                    curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
+                    renderCurhatBatch();
+                }
             }, 5000);
         }
         window.scrollTo(0, scrollY);
