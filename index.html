@@ -787,7 +787,7 @@
     const database = getDatabase(app);
 
     // =====================================================
-    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif
+    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif (Diperbaiki)
     // =====================================================
     if (!sessionStorage.getItem("clover_visited")) {
         sessionStorage.setItem("clover_visited", "true");
@@ -799,10 +799,15 @@
         });
     }
 
-    const activeUsersRef = ref(database, "clover/active_users");
-    const userSessionRef = push(activeUsersRef);
-    set(userSessionRef, { joinedAt: Date.now() });
-    onDisconnect(userSessionRef).remove();
+    let cloverSessionId = sessionStorage.getItem("clover_session_id");
+    if (!cloverSessionId) {
+        cloverSessionId = 'session_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem("clover_session_id", cloverSessionId);
+    }
+
+    const activeUsersRef = ref(database, `clover/active_users/${cloverSessionId}`);
+    set(activeUsersRef, { joinedAt: Date.now() });
+    onDisconnect(activeUsersRef).remove();
 
     // =====================================================
     // 2. DEVICE ID PRIVAT
@@ -1161,7 +1166,6 @@
 
         if (curhatsCache.length > 2) {
             curhatRotationTimer = setInterval(() => {
-                // Rotasi hanya berjalan jika pengguna sedang tidak mengetik / berinteraksi di area curhat
                 if (!isCurhatInteracting) {
                     curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
                     renderCurhatBatch();
