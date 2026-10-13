@@ -163,6 +163,19 @@
                     </select>
                 </div>
 
+                <!-- Aksi Massal Pesan -->
+                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="selectAllMessages" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500">
+                        <span>Pilih Semua (<span id="selectedCountMsg">0</span> dipilih)</span>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <button id="bulkApproveMsgBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>Setujui Terpilih</button>
+                        <button id="bulkRejectMsgBtn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>Tolak Terpilih</button>
+                        <button id="bulkDeleteMsgBtn" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled><i class="fa-solid fa-trash"></i> Hapus Terpilih</button>
+                    </div>
+                </div>
+
                 <div id="adminMessagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <p class="text-xs text-slate-400 font-bold">Memuat pesan...</p>
                 </div>
@@ -202,6 +215,19 @@
                         <option value="approved">Disetujui</option>
                         <option value="rejected">Ditolak</option>
                     </select>
+                </div>
+
+                <!-- Aksi Massal Curhat -->
+                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="selectAllCurhat" class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500">
+                        <span>Pilih Semua (<span id="selectedCountCurhat">0</span> dipilih)</span>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <button id="bulkApproveCurhatBtn" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>Setujui Terpilih</button>
+                        <button id="bulkRejectCurhatBtn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>Tolak Terpilih</button>
+                        <button id="bulkDeleteCurhatBtn" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled><i class="fa-solid fa-trash"></i> Hapus Terpilih</button>
+                    </div>
                 </div>
 
                 <div id="adminCurhatsContainer" class="space-y-4">
@@ -394,6 +420,12 @@
         let cachedCurhats = [];
         let cachedFeedback = [];
 
+        // Selection States for Bulk Actions
+        let selectedMessageIds = new Set();
+        let selectedCurhatIds = new Set();
+        let currentFilteredMessages = [];
+        let currentFilteredCurhats = [];
+
         function getTodayKey(timestamp) {
             const date = new Date(Number(timestamp));
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -487,6 +519,36 @@
             document.getElementById("filterCurhatStatusSelect").addEventListener("change", renderCurhats);
             document.getElementById("searchFeedbackInput").addEventListener("input", renderFeedback);
 
+            // Select All Listeners
+            document.getElementById("selectAllMessages").addEventListener("change", (e) => {
+                const isChecked = e.target.checked;
+                if (isChecked) {
+                    currentFilteredMessages.forEach(msg => selectedMessageIds.add(msg.id));
+                } else {
+                    selectedMessageIds.clear();
+                }
+                renderMessages();
+            });
+
+            document.getElementById("selectAllCurhat").addEventListener("change", (e) => {
+                const isChecked = e.target.checked;
+                if (isChecked) {
+                    currentFilteredCurhats.forEach(c => selectedCurhatIds.add(c.id));
+                } else {
+                    selectedCurhatIds.clear();
+                }
+                renderCurhats();
+            });
+
+            // Bulk Action Button Listeners
+            document.getElementById("bulkApproveMsgBtn").addEventListener("click", () => bulkUpdateMessages("approved"));
+            document.getElementById("bulkRejectMsgBtn").addEventListener("click", () => bulkUpdateMessages("rejected"));
+            document.getElementById("bulkDeleteMsgBtn").addEventListener("click", bulkDeleteMessages);
+
+            document.getElementById("bulkApproveCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("approved"));
+            document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
+            document.getElementById("bulkDeleteCurhatBtn").addEventListener("click", bulkDeleteCurhats);
+
             // Broadcast Form
             onValue(ref(database, "clover/broadcast"), (snapshot) => {
                 const data = snapshot.val();
@@ -522,28 +584,48 @@
             const statusFilter = document.getElementById("filterStatusSelect").value;
             container.innerHTML = "";
 
-            const filtered = cachedMessages.filter(msg => {
+            currentFilteredMessages = cachedMessages.filter(msg => {
                 const matchesKeyword = (msg.text || "").toLowerCase().includes(keyword) || (msg.sender || "").toLowerCase().includes(keyword);
                 const matchesStatus = statusFilter === 'all' || msg.status === statusFilter;
                 return matchesKeyword && matchesStatus;
             });
 
-            if (filtered.length === 0) {
+            // Update UI bulk state
+            document.getElementById("selectedCountMsg").textContent = selectedMessageIds.size;
+            const hasSelection = selectedMessageIds.size > 0;
+            document.getElementById("bulkApproveMsgBtn").disabled = !hasSelection;
+            document.getElementById("bulkRejectMsgBtn").disabled = !hasSelection;
+            document.getElementById("bulkDeleteMsgBtn").disabled = !hasSelection;
+
+            const selectAllCheckbox = document.getElementById("selectAllMessages");
+            if (currentFilteredMessages.length > 0) {
+                const allSelected = currentFilteredMessages.every(msg => selectedMessageIds.has(msg.id));
+                selectAllCheckbox.checked = allSelected;
+            } else {
+                selectAllCheckbox.checked = false;
+            }
+
+            if (currentFilteredMessages.length === 0) {
                 container.innerHTML = `<p class="text-xs text-slate-400 font-bold col-span-2">Tidak ada pesan ditemukan.</p>`;
                 return;
             }
 
-            filtered.forEach(msg => {
+            currentFilteredMessages.forEach(msg => {
                 const card = document.createElement("div");
                 card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between";
                 let statusBadge = msg.status === "approved" ? '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>' :
                                   msg.status === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>' :
                                   '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
 
+                const isChecked = selectedMessageIds.has(msg.id);
+
                 card.innerHTML = `
                     <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-extrabold text-sm text-slate-800">${escapeHTML(msg.sender || "Anonim")}</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="message-checkbox w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" data-id="${msg.id}" ${isChecked ? 'checked' : ''}>
+                                <span class="font-extrabold text-sm text-slate-800">${escapeHTML(msg.sender || "Anonim")}</span>
+                            </label>
                             ${statusBadge}
                         </div>
                         <p class="text-xs text-slate-600 font-medium italic mb-4">"${escapeHTML(msg.text)}"</p>
@@ -554,6 +636,17 @@
                         <button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
+                
+                // Checkbox event listener
+                card.querySelector(".message-checkbox").addEventListener("change", (e) => {
+                    if (e.target.checked) {
+                        selectedMessageIds.add(msg.id);
+                    } else {
+                        selectedMessageIds.delete(msg.id);
+                    }
+                    renderMessages();
+                });
+
                 container.appendChild(card);
             });
         }
@@ -564,23 +657,40 @@
             const statusFilter = document.getElementById("filterCurhatStatusSelect").value;
             container.innerHTML = "";
 
-            const filtered = cachedCurhats.filter(c => {
+            currentFilteredCurhats = cachedCurhats.filter(c => {
                 const matchesKeyword = (c.text || "").toLowerCase().includes(keyword) || (c.sender || "").toLowerCase().includes(keyword);
                 const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
                 return matchesKeyword && matchesStatus;
             });
 
-            if (filtered.length === 0) {
+            // Update UI bulk state for curhat
+            document.getElementById("selectedCountCurhat").textContent = selectedCurhatIds.size;
+            const hasSelection = selectedCurhatIds.size > 0;
+            document.getElementById("bulkApproveCurhatBtn").disabled = !hasSelection;
+            document.getElementById("bulkRejectCurhatBtn").disabled = !hasSelection;
+            document.getElementById("bulkDeleteCurhatBtn").disabled = !hasSelection;
+
+            const selectAllCurhatCheckbox = document.getElementById("selectAllCurhat");
+            if (currentFilteredCurhats.length > 0) {
+                const allSelected = currentFilteredCurhats.every(c => selectedCurhatIds.has(c.id));
+                selectAllCurhatCheckbox.checked = allSelected;
+            } else {
+                selectAllCurhatCheckbox.checked = false;
+            }
+
+            if (currentFilteredCurhats.length === 0) {
                 container.innerHTML = `<p class="text-xs text-slate-400 font-bold">Tidak ada curhat publik ditemukan.</p>`;
                 return;
             }
 
-            filtered.forEach(c => {
+            currentFilteredCurhats.forEach(c => {
                 const card = document.createElement("div");
                 card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4";
                 let statusBadge = c.status === "approved" ? '<span class="bg-teal-100 text-teal-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>' :
                                   c.status === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>' :
                                   '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
+
+                const isChecked = selectedCurhatIds.has(c.id);
 
                 // Render Replies for Moderation
                 let adminRepliesHTML = "";
@@ -615,14 +725,17 @@
 
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
-                        <span class="font-extrabold text-sm text-slate-800">${escapeHTML(c.sender || "Pejuang Tenang")}</span>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="curhat-checkbox w-4 h-4 rounded text-teal-600 focus:ring-teal-500" data-id="${c.id}" ${isChecked ? 'checked' : ''}>
+                            <span class="font-extrabold text-sm text-slate-800">${escapeHTML(c.sender || "Pejuang Tenang")}</span>
+                        </label>
                         ${statusBadge}
                     </div>
                     <p class="text-xs text-slate-700 font-medium italic">"${escapeHTML(c.text)}"</p>
                     <div class="pt-2 flex gap-2">
                         <button onclick="window.approveCurhat('${c.id}')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui Curhat</button>
                         <button onclick="window.rejectCurhat('${c.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
-                        <button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-3 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <!-- Moderasi Balasan -->
@@ -633,6 +746,17 @@
                         </div>
                     </div>
                 `;
+
+                // Checkbox event listener
+                card.querySelector(".curhat-checkbox").addEventListener("change", (e) => {
+                    if (e.target.checked) {
+                        selectedCurhatIds.add(c.id);
+                    } else {
+                        selectedCurhatIds.delete(c.id);
+                    }
+                    renderCurhats();
+                });
+
                 container.appendChild(card);
             });
         }
@@ -670,6 +794,69 @@
             });
         }
 
+        // Bulk Action Helper Functions
+        async function bulkUpdateMessages(status) {
+            if (selectedMessageIds.size === 0) return;
+            const updates = {};
+            selectedMessageIds.forEach(id => {
+                updates[`clover/messages/${id}/status`] = status;
+            });
+            try {
+                await update(ref(database), updates);
+                selectedMessageIds.clear();
+                renderMessages();
+            } catch (err) {
+                alert("Gagal memperbarui pesan massal: " + err.message);
+            }
+        }
+
+        async function bulkDeleteMessages() {
+            if (selectedMessageIds.size === 0) return;
+            if (!confirm(`Hapus ${selectedMessageIds.size} pesan yang dipilih?`)) return;
+            const updates = {};
+            selectedMessageIds.forEach(id => {
+                updates[`clover/messages/${id}`] = null;
+            });
+            try {
+                await update(ref(database), updates);
+                selectedMessageIds.clear();
+                renderMessages();
+            } catch (err) {
+                alert("Gagal menghapus pesan massal: " + err.message);
+            }
+        }
+
+        async function bulkUpdateCurhats(status) {
+            if (selectedCurhatIds.size === 0) return;
+            const updates = {};
+            selectedCurhatIds.forEach(id => {
+                updates[`clover/curhat_publik/${id}/status`] = status;
+            });
+            try {
+                await update(ref(database), updates);
+                selectedCurhatIds.clear();
+                renderCurhats();
+            } catch (err) {
+                alert("Gagal memperbarui curhat massal: " + err.message);
+            }
+        }
+
+        async function bulkDeleteCurhats() {
+            if (selectedCurhatIds.size === 0) return;
+            if (!confirm(`Hapus ${selectedCurhatIds.size} curhat yang dipilih?`)) return;
+            const updates = {};
+            selectedCurhatIds.forEach(id => {
+                updates[`clover/curhat_publik/${id}`] = null;
+            });
+            try {
+                await update(ref(database), updates);
+                selectedCurhatIds.clear();
+                renderCurhats();
+            } catch (err) {
+                alert("Gagal menghapus curhat massal: " + err.message);
+            }
+        }
+
         // Global Action Functions
         window.approveMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "approved" });
         window.rejectMsg = (id) => update(ref(database, `clover/messages/${id}`), { status: "rejected" });
@@ -694,7 +881,7 @@
 
         function escapeHTML(value) {
             const div = document.createElement("div");
-            div.textContent = String(value ?? "");
+            div.textContent = String(value ?? **"");
             return div.innerHTML;
         }
     </script>
