@@ -402,7 +402,7 @@
     </section>
 
     <!-- =================================================
-         2. RUANG CURHAT PUBLIK (BISA DITANGGAPI & DIEDIT DENGAN MODERASI)
+         2. RUANG CURHAT PUBLIK (HANYA TAMPIL 2 CARD & ROTASI)
     ================================================== -->
     <section id="curhat-publik" class="space-y-8 pt-6 relative">
         <div class="text-center max-w-2xl mx-auto mb-10">
@@ -449,7 +449,7 @@
             </p>
         </form>
 
-        <!-- Daftar Curhat Publik dari Komunitas -->
+        <!-- Daftar Curhat Publik (Tampil Maksimal 2 Card) -->
         <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
             <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
                 <div class="loading-spinner mb-4"></div>
@@ -1060,7 +1060,7 @@
     });
 
     // =====================================================
-    // 5. RUANG CURHAT PUBLIK (GAYA CARD PESAN KEHANGATAN)
+    // 5. RUANG CURHAT PUBLIK (TAMPIL HANYA 2 CARD & ROTASI)
     // =====================================================
     const curhatForm = document.getElementById("curhat-form");
     const curhatInput = document.getElementById("curhat-input");
@@ -1088,11 +1088,21 @@
     });
 
     const curhatRefAll = ref(database, "clover/curhat_publik");
+    let curhatsCache = [];
+    let curhatRotationTimer = null;
+    let curhatStartIndex = 0;
+    let isCurhatInitialLoad = true;
 
     onValue(curhatRefAll, (snapshot) => {
         const scrollY = window.scrollY;
         hideCurhatStatus();
         const data = snapshot.val();
+
+        if (curhatRotationTimer) {
+            clearInterval(curhatRotationTimer);
+            curhatRotationTimer = null;
+        }
+
         curhatsContainer.innerHTML = "";
 
         if (!data) {
@@ -1122,18 +1132,47 @@
             return;
         }
 
-        visibleCurhats.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+        curhatsCache = visibleCurhats;
+        curhatsCache.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
 
-        visibleCurhats.forEach(curhat => {
-            renderCurhatCard(curhat);
-        });
+        if (isCurhatInitialLoad) {
+            curhatStartIndex = 0;
+            isCurhatInitialLoad = false;
+        } else {
+            if (curhatStartIndex >= curhatsCache.length) {
+                curhatStartIndex = 0;
+            }
+        }
 
+        renderCurhatBatch();
+
+        if (curhatsCache.length > 2) {
+            curhatRotationTimer = setInterval(() => {
+                curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
+                renderCurhatBatch();
+            }, 5000);
+        }
         window.scrollTo(0, scrollY);
     });
 
+    function renderCurhatBatch() {
+        curhatsContainer.innerHTML = "";
+        curhatsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto";
+
+        const total = curhatsCache.length;
+        const countToDisplay = Math.min(2, total);
+
+        for (let i = 0; i < countToDisplay; i++) {
+            const curhatIndex = (curhatStartIndex + i) % total;
+            const curhat = curhatsCache[curhatIndex];
+            if (curhat) {
+                renderCurhatCard(curhat);
+            }
+        }
+    }
+
     function renderCurhatCard(curhat) {
         const card = document.createElement("article");
-        // Desain card disamakan dengan pesan kehangatan (.message-card)
         card.className = "message-card bg-white p-7 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col h-full relative overflow-hidden";
 
         const sender = escapeHTML(curhat.sender?.trim() || "Pejuang Tenang");
@@ -1823,7 +1862,7 @@
         }
 
         currentStreakElement.textContent = Number(localStorage.getItem(STREAK_KEY) || 0);
-        bestStreakElement.textContent = Number(localStorage.getItem(BEST_ST_REAK_KEY || 0));
+        bestStreakElement.textContent = Number(localStorage.getItem(BEST_STREAK_KEY) || 0);
         localStorage.setItem(STORAGE_TASKS, JSON.stringify(challengeCheckboxes.map(cb => cb.checked)));
     }
 
