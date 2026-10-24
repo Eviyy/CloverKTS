@@ -839,15 +839,23 @@
     const papanSection = document.getElementById("papan");
 
     let isMessageInteracting = false;
-    papanSection.addEventListener("mouseenter", () => { isMessageInteracting = true; });
-    papanSection.addEventListener("mouseleave", () => { if (!document.activeElement.closest('#papan')) isMessageInteracting = false; });
-    papanSection.addEventListener("focusin", () => { isMessageInteracting = true; });
-    papanSection.addEventListener("focusout", () => {
-        setTimeout(() => {
-            if (!papanSection.contains(document.activeElement)) {
+    let messagePauseTimeout = null;
+
+    function pauseMessageRotationShort() {
+        isMessageInteracting = true;
+        if (messagePauseTimeout) clearTimeout(messagePauseTimeout);
+        messagePauseTimeout = setTimeout(() => {
+            if (!document.activeElement.closest('#papan .msg-reply-form-wrapper')) {
                 isMessageInteracting = false;
             }
-        }, 200);
+        }, 3000); // Jeda singkat 3 detik saat like ditekan
+    }
+
+    papanSection.addEventListener("mouseenter", () => { isMessageInteracting = true; });
+    papanSection.addEventListener("mouseleave", () => { 
+        if (!document.activeElement.closest('#papan .msg-reply-form-wrapper') && !messagePauseTimeout) {
+            isMessageInteracting = false; 
+        }
     });
 
     function showFirebaseStatus(message, type = "info") {
@@ -956,7 +964,6 @@
     function renderMessage(message, cardIndex) {
         const card = document.createElement("article");
         
-        // Desain variasi kartu yang estetik dan bervariasi
         const variants = [
             "bg-white border-emerald-200/90 shadow-lg shadow-emerald-500/5 ring-1 ring-emerald-100/50",
             "bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/50 border-emerald-200/70 shadow-lg shadow-teal-500/5",
@@ -1006,7 +1013,6 @@
             });
         }
 
-        // Tombol dan Form diposisikan persis di bagian bawah kartu
         card.innerHTML = `
             <div class="flex items-start justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3">
@@ -1031,7 +1037,6 @@
                 </div>
             </div>
             
-            <!-- BAGIAN BAWAH KARTU (TOMBOL & FOOTER) -->
             <div class="mt-auto pt-4 border-t border-slate-200/60 space-y-3">
                 <button type="button" class="toggle-msg-reply-form w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold py-2.5 px-4 rounded-xl border border-emerald-200 transition-all flex items-center justify-center gap-2 shadow-sm">
                     <i class="fa-solid fa-reply"></i> Balas Kehangatannya!
@@ -1049,6 +1054,7 @@
         `;
 
         card.querySelector(".like-btn").addEventListener("click", async () => {
+            pauseMessageRotationShort();
             const likeRef = ref(database, `clover/messages/${message.id}/likes/${userDeviceId}`);
             try {
                 if (hasLiked) {
@@ -1154,15 +1160,23 @@
     const curhatPublikSection = document.getElementById("curhat-publik");
 
     let isCurhatInteracting = false;
-    curhatPublikSection.addEventListener("mouseenter", () => { isCurhatInteracting = true; });
-    curhatPublikSection.addEventListener("mouseleave", () => { if (!document.activeElement.closest('#curhat-publik')) isCurhatInteracting = false; });
-    curhatPublikSection.addEventListener("focusin", () => { isCurhatInteracting = true; });
-    curhatPublikSection.addEventListener("focusout", () => {
-        setTimeout(() => {
-            if (!curhatPublikSection.contains(document.activeElement)) {
+    let curhatPauseTimeout = null;
+
+    function pauseCurhatRotationShort() {
+        isCurhatInteracting = true;
+        if (curhatPauseTimeout) clearTimeout(curhatPauseTimeout);
+        curhatPauseTimeout = setTimeout(() => {
+            if (!document.activeElement.closest('#curhat-publik .reply-form-wrapper')) {
                 isCurhatInteracting = false;
             }
-        }, 200);
+        }, 3000); // Jeda singkat 3 detik saat like ditekan
+    }
+
+    curhatPublikSection.addEventListener("mouseenter", () => { isCurhatInteracting = true; });
+    curhatPublikSection.addEventListener("mouseleave", () => { 
+        if (!document.activeElement.closest('#curhat-publik .reply-form-wrapper') && !curhatPauseTimeout) {
+            isCurhatInteracting = false; 
+        }
     });
 
     function showCurhatStatus(message, type = "info") {
@@ -1270,7 +1284,6 @@
     function renderCurhatCard(curhat, cardIndex) {
         const card = document.createElement("article");
         
-        // Varian gaya warna kartu curhat
         const curhatVariants = [
             "bg-white border-teal-200/90 shadow-lg shadow-teal-500/5 ring-1 ring-teal-100/50",
             "bg-gradient-to-br from-teal-50/70 via-white to-cyan-50/50 border-teal-200/70 shadow-lg shadow-cyan-500/5",
@@ -1307,7 +1320,6 @@
             });
         }
 
-        // Tombol dan Form diposisikan persis di bagian bawah kartu
         card.innerHTML = `
             <div class="flex items-start justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3">
@@ -1332,7 +1344,6 @@
                 </div>
             </div>
 
-            <!-- BAGIAN BAWAH KARTU (TOMBOL & FOOTER) -->
             <div class="mt-auto pt-4 border-t border-slate-200/60 space-y-3">
                 <button type="button" class="toggle-reply-form w-full bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold py-2.5 px-4 rounded-xl border border-teal-200 transition-all flex items-center justify-center gap-2 shadow-sm">
                     <i class="fa-solid fa-reply"></i> Kasih Dukungan!
@@ -1350,6 +1361,7 @@
         `;
 
         card.querySelector(".curhat-like-btn").addEventListener("click", async () => {
+            pauseCurhatRotationShort();
             const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${userDeviceId}`);
             try {
                 if (hasLiked) {
