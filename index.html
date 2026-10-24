@@ -1053,11 +1053,29 @@
             </div>
         `;
 
-        card.querySelector(".like-btn").addEventListener("click", async () => {
+        const likeBtn = card.querySelector(".like-btn");
+        likeBtn.addEventListener("click", async () => {
             pauseMessageRotationShort();
             const likeRef = ref(database, `clover/messages/${message.id}/likes/${userDeviceId}`);
+            
+            // Optimistic UI Update agar instan tanpa lag
+            const icon = likeBtn.querySelector("i");
+            const spanCount = likeBtn.querySelector("span");
+            let count = parseInt(spanCount.textContent) || 0;
+            const isCurrentlyLiked = likeBtn.classList.contains("bg-rose-50");
+
+            if (isCurrentlyLiked) {
+                likeBtn.className = "like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-white hover:bg-emerald-50 text-slate-600 border border-slate-200";
+                icon.className = "fa-regular text-slate-400 fa-heart";
+                spanCount.textContent = Math.max(0, count - 1);
+            } else {
+                likeBtn.className = "like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-rose-50 text-rose-600 border border-rose-200";
+                icon.className = "fa-solid text-rose-500 fa-heart";
+                spanCount.textContent = count + 1;
+            }
+
             try {
-                if (hasLiked) {
+                if (isCurrentlyLiked) {
                     await set(likeRef, null);
                 } else {
                     await set(likeRef, true);
@@ -1360,11 +1378,29 @@
             </div>
         `;
 
-        card.querySelector(".curhat-like-btn").addEventListener("click", async () => {
+        const curhatLikeBtn = card.querySelector(".curhat-like-btn");
+        curhatLikeBtn.addEventListener("click", async () => {
             pauseCurhatRotationShort();
             const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${userDeviceId}`);
+            
+            // Optimistic UI Update agar instan tanpa lag
+            const icon = curhatLikeBtn.querySelector("i");
+            const spanCount = curhatLikeBtn.querySelector("span");
+            let count = parseInt(spanCount.textContent) || 0;
+            const isCurrentlyLiked = curhatLikeBtn.classList.contains("bg-rose-50");
+
+            if (isCurrentlyLiked) {
+                curhatLikeBtn.className = "curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-white hover:bg-teal-50 text-slate-600 border border-slate-200";
+                icon.className = "fa-regular text-slate-400 fa-heart";
+                spanCount.textContent = Math.max(0, count - 1);
+            } else {
+                curhatLikeBtn.className = "curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-rose-50 text-rose-600 border border-rose-200";
+                icon.className = "fa-solid text-rose-500 fa-heart";
+                spanCount.textContent = count + 1;
+            }
+
             try {
-                if (hasLiked) {
+                if (isCurrentlyLiked) {
                     await set(likeRef, null);
                 } else {
                     await set(likeRef, true);
