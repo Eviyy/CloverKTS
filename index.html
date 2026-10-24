@@ -785,6 +785,7 @@
 
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
+    const GEMINI_API_KEY = "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk";
 
     // =====================================================
     // 1. TRACKING: Total Kunjungan & Pengunjung Aktif (Diperbarui Unik per Tab)
@@ -846,7 +847,7 @@
     });
 
     // =====================================================
-    // 4. PAPAN KEHANGATAN
+    // 4. PAPAN KEHANGATAN (DENGAN AI PRE-SCREENING)
     // =====================================================
     const messageForm = document.getElementById("message-form");
     const messageInput = document.getElementById("message-input");
@@ -1037,9 +1038,31 @@
         }
 
         submitButton.disabled = true;
-        submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
+        submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memeriksa konten...`;
 
         try {
+            const aiCheckResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ 
+                            text: `Analisis teks berikut untuk platform komunitas aman "Clover". Apakah teks ini mengandung kata-kata kasar, kotor, vulgar, ujaran kebencian, atau toxic? Jawab HANYA dengan kata "AMAN" atau "TIDAK_AMAN" tanpa teks tambahan.\n\nTeks: "${text}"` 
+                        }]
+                    }]
+                })
+            });
+
+            const aiData = await aiCheckResponse.json();
+            const aiVerdict = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "AMAN";
+
+            if (aiVerdict.includes("TIDAK_AMAN")) {
+                showFirebaseStatus("Pesan mengandung kata-kata yang tidak sesuai dengan pedoman komunitas Clover. Mohon gunakan bahasa yang sopan. 🍀", "error");
+                submitButton.disabled = false;
+                submitButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Kehangatan`;
+                return;
+            }
+
             const messagesRef = ref(database, "clover/messages");
             await set(push(messagesRef), {
                 text, sender, uid: "anonymous", createdAt: Date.now(), status: "pending"
@@ -1061,7 +1084,7 @@
     });
 
     // =====================================================
-    // 5. RUANG CURHAT PUBLIK (DENGAN PAUSE ROTASI SAAT MENULIS)
+    // 5. RUANG CURHAT PUBLIK (DENGAN AI PRE-SCREENING & PAUSE ROTASI)
     // =====================================================
     const curhatForm = document.getElementById("curhat-form");
     const curhatInput = document.getElementById("curhat-input");
@@ -1419,9 +1442,31 @@
         }
 
         submitCurhatButton.disabled = true;
-        submitCurhatButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
+        submitCurhatButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memeriksa konten...`;
 
         try {
+            const aiCheckResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ 
+                            text: `Analisis teks berikut untuk platform komunitas aman "Clover". Apakah teks ini mengandung kata-kata kasar, kotor, vulgar, ujaran kebencian, atau toxic? Jawab HANYA dengan kata "AMAN" atau "TIDAK_AMAN" tanpa teks tambahan.\n\nTeks: "${text}"` 
+                        }]
+                    }]
+                })
+            });
+
+            const aiData = await aiCheckResponse.json();
+            const aiVerdict = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "AMAN";
+
+            if (aiVerdict.includes("TIDAK_AMAN")) {
+                showCurhatStatus("Pesan mengandung kata-kata yang tidak sesuai dengan pedoman komunitas Clover. Mohon gunakan bahasa yang sopan. 🍀", "error");
+                submitCurhatButton.disabled = false;
+                submitCurhatButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik`;
+                return;
+            }
+
             const curhatRef = ref(database, "clover/curhat_publik");
             await set(push(curhatRef), {
                 text, sender, userId: userDeviceId, createdAt: Date.now(), status: "pending"
@@ -1431,7 +1476,8 @@
             showCurhatStatus("Curhat berhasil dikirim! Akan muncul di ruang publik setelah disetujui admin 🍀", "success");
             setTimeout(hideCurhatStatus, 6000);
         } catch (error) {
-            showCurhatStatus("Gagal mengirim curhat.", "error");
+            console.error("Error AI Check:", error);
+            showCurhatStatus("Gagal memproses pemeriksaan konten. Coba lagi.", "error");
         } finally {
             submitCurhatButton.disabled = false;
             submitCurhatButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik`;
