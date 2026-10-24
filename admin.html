@@ -325,7 +325,6 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Kunci Gemini API (Gunakan kunci API Anda di sini)
         const GEMINI_API_KEY = "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk";
 
         const loginScreen = document.getElementById("loginScreen");
@@ -349,7 +348,7 @@
         const tabContentFeedback = document.getElementById("tabContentFeedback");
         const tabContentBroadcast = document.getElementById("tabContentBroadcast");
 
-        let currentUserRole = "user"; // "owner" atau "admin"
+        let currentUserRole = "user";
 
         function switchTab(activeTab) {
             [tabBtnMessages, tabBtnCurhat, tabBtnFeedback, tabBtnBroadcast].forEach(btn => {
@@ -379,7 +378,6 @@
         tabBtnFeedback.addEventListener("click", () => switchTab('feedback'));
         tabBtnBroadcast.addEventListener("click", () => switchTab('broadcast'));
 
-        // Proses Login dengan Indikator Loading & Detail Error
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             loginError.classList.add("hidden");
@@ -405,7 +403,6 @@
 
         logoutBtn.addEventListener("click", async () => { await signOut(auth); });
 
-        // Verifikasi Peran Owner vs Admin
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -501,7 +498,6 @@
                 document.getElementById("statActiveUsers").textContent = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
             });
 
-            // Messages
             onValue(ref(database, "clover/messages"), (snapshot) => {
                 const data = snapshot.val();
                 cachedMessages = data ? Object.entries(data).map(([id, msg]) => ({ id, ...msg })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
@@ -524,7 +520,6 @@
                 renderMessages();
             });
 
-            // Curhat Publik
             onValue(ref(database, "clover/curhat_publik"), (snapshot) => {
                 const data = snapshot.val();
                 cachedCurhats = data ? Object.entries(data).map(([id, val]) => ({ id, ...val })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
@@ -544,7 +539,6 @@
                 renderCurhats();
             });
 
-            // Feedback
             onValue(ref(database, "clover/feedback"), (snapshot) => {
                 const data = snapshot.val();
                 cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })) : [];
@@ -594,7 +588,7 @@
             }
 
             document.getElementById("bulkApproveCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("approved"));
-            document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
+            document.getElementById("bulkRejectCurhatBtn", () => bulkUpdateCurhats("rejected"));
 
             if (currentUserRole === "owner") {
                 onValue(ref(database, "clover/broadcast"), (snapshot) => {
@@ -627,7 +621,7 @@
         }
 
         // ==========================================
-        // INTEGRASI GEMINI AI DI ADMIN PANEL
+        // INTEGRASI GEMINI AI DI ADMIN PANEL (AMAN)
         // ==========================================
         async function askGeminiForDraft(promptText, targetInputId, btnElement) {
             const originalHTML = btnElement.innerHTML;
@@ -658,24 +652,32 @@
                 }
             } catch (err) {
                 console.error("Gemini AI Error:", err);
-                alert("Terjadi kesalahan saat menghubungi Gemini AI.");
+                alert("Terjadi kesalahan saat menghubungi Gemini AI: " + err.message);
             } finally {
                 btnElement.disabled = false;
                 btnElement.innerHTML = originalHTML;
             }
         }
 
-        window.generateAiReplyForMsg = function(msgId, text, btn) {
-            // Bisa diperluas jika ingin menampilkan balasan admin langsung pada pesan
-            askGeminiForDraft(text, `adminReplyInput_${msgId}`, btn);
+        window.generateAiReplyForMsg = function(msgId, btn) {
+            const msg = cachedMessages.find(m => m.id === msgId);
+            if (msg) {
+                askGeminiForDraft(msg.text, `adminReplyInput_${msgId}`, btn);
+            }
         };
 
-        window.generateAiReplyForCurhat = function(curhatId, text, btn) {
-            // Mengisi form balasan atau membuat input baru
-            const inputField = document.querySelector(`[data-curhat-reply-input="${curhatId}"]`);
-            if (inputField) {
-                askGeminiForDraft(text, inputField.id, btn);
+        window.generateAiReplyForFeedback = function(fbId, btn) {
+            const fb = cachedFeedback.find(f => f.id === fbId);
+            if (fb) {
+                askGeminiForDraft(fb.text, `replyInput_${fbId}`, btn);
             }
+        };
+
+        window.sendMsgReply = function(id) {
+            const replyText = document.getElementById(`adminReplyInput_${id}`).value.trim();
+            update(ref(database, `clover/messages/${id}`), { reply: replyText, repliedAt: Date.now() })
+                .then(() => alert("Tanggapan pesan kehangatan berhasil dikirim!"))
+                .catch(err => alert("Gagal: " + err.message));
         };
 
         function renderMessages() {
@@ -723,10 +725,18 @@
                         </div>
                         <p class="text-xs text-slate-600 font-medium italic mb-4">"${escapeHTML(msg.text)}"</p>
                     </div>
-                    <div class="space-y-2">
-                        <button type="button" onclick="window.generateAiReplyForMsg('${msg.id}', '${encodeURIComponent(msg.text)}', this)" class="w-full bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 border border-teal-200">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Buat Draf Tanggapan AI
-                        </button>
+                    <div class="space-y-3 pt-3 border-t border-slate-100">
+                        <div>
+                            <textarea id="adminReplyInput_${msg.id}" rows="2" placeholder="Tulis tanggapan admin..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(msg.reply || "")}</textarea>
+                            <div class="flex justify-between gap-2">
+                                <button type="button" onclick="window.generateAiReplyForMsg('${msg.id}', this)" class="bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 border border-teal-200">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Draf
+                                </button>
+                                <button onclick="window.sendMsgReply('${msg.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors">
+                                    <i class="fa-solid fa-reply mr-1"></i> Kirim Tanggapan
+                                </button>
+                            </div>
+                        </div>
                         <div class="pt-2 border-t border-slate-100 flex gap-2">
                             <button onclick="window.approveMsg('${msg.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui</button>
                             <button onclick="window.rejectMsg('${msg.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
@@ -823,10 +833,6 @@
                     </div>
                     <p class="text-xs text-slate-700 font-medium italic">"${escapeHTML(c.text)}"</p>
                     
-                    <button type="button" onclick="window.generateAiReplyForCurhat('${c.id}', '${encodeURIComponent(c.text)}', this)" class="w-full bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 border border-teal-200">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Analisis & Rekomendasi AI
-                    </button>
-
                     <div class="pt-2 flex gap-2">
                         <button onclick="window.approveCurhat('${c.id}')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui Curhat</button>
                         <button onclick="window.rejectCurhat('${c.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
@@ -877,7 +883,7 @@
                     <div class="pt-2">
                         <textarea id="replyInput_${fb.id}" rows="2" placeholder="Tulis balasan..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(fb.reply || "")}</textarea>
                         <div class="flex justify-end gap-2">
-                            <button type="button" onclick="askGeminiForDraft('${encodeURIComponent(fb.text)}', 'replyInput_${fb.id}', this)" class="bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 border border-teal-200">
+                            <button type="button" onclick="window.generateAiReplyForFeedback('${fb.id}', this)" class="bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 border border-teal-200">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i> AI Draf
                             </button>
                             <button onclick="window.sendFeedbackReply('${fb.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"><i class="fa-solid fa-reply mr-1"></i> Kirim Balasan</button>
