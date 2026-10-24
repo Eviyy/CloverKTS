@@ -402,7 +402,7 @@
     </section>
 
     <!-- =================================================
-         2. RUANG CURHAT PUBLIK (PAUSE ROTASI SAAT MENULIS/INTERAKSI)
+         2. RUANG CURHAT PUBLIK
     ================================================== -->
     <section id="curhat-publik" class="space-y-8 pt-6 relative">
         <div class="text-center max-w-2xl mx-auto mb-10">
@@ -449,7 +449,7 @@
             </p>
         </form>
 
-        <!-- Daftar Curhat Publik (Tampil Maksimal 2 Card) -->
+        <!-- Daftar Curhat Publik -->
         <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
             <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
                 <div class="loading-spinner mb-4"></div>
@@ -787,7 +787,7 @@
     const database = getDatabase(app);
 
     // =====================================================
-    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif (Diperbarui Unik per Tab)
+    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif
     // =====================================================
     if (!sessionStorage.getItem("clover_visited")) {
         sessionStorage.setItem("clover_visited", "true");
@@ -1109,4 +1109,665 @@
 
     onValue(curhatRefAll, (snapshot) => {
         const scrollY = window.scrollY;
-        hideCurhatS
+        hideCurhatStatus();
+        const data = snapshot.val();
+
+        if (curhatRotationTimer) {
+            clearInterval(curhatRotationTimer);
+            curhatRotationTimer = null;
+        }
+
+        curhatsContainer.innerHTML = "";
+
+        if (!data) {
+            curhatsContainer.innerHTML = `
+                <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-teal-100 text-center">
+                    <div class="text-5xl text-teal-200 mb-4"><i class="fa-solid fa-comments"></i></div>
+                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada curhat publik.</h4>
+                    <p class="text-sm font-medium text-slate-400">Jadilah yang pertama berbagi cerita di sini.</p>
+                </div>
+            `;
+            window.scrollTo(0, scrollY);
+            return;
+        }
+
+        curhatsCache = Object.entries(data)
+            .map(([id, val]) => ({ id, ...val }))
+            .filter(c => c.status === "approved");
+
+        curhatsCache.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+        if (curhatsCache.length === 0) {
+            curhatsContainer.innerHTML = `
+                <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-teal-100 text-center">
+                    <div class="text-5xl text-teal-200 mb-4"><i class="fa-solid fa-comments"></i></div>
+                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada curhat yang disetujui.</h4>
+                    <p class="text-sm font-medium text-slate-400">Silakan tunggu moderasi admin.</p>
+                </div>
+            `;
+            window.scrollTo(0, scrollY);
+            return;
+        }
+
+        if (isCurhatInitialLoad) {
+            curhatStartIndex = 0;
+            isCurhatInitialLoad = false;
+        } else {
+            if (curhatStartIndex >= curhatsCache.length) {
+                curhatStartIndex = 0;
+            }
+        }
+
+        renderRotatingCurhats();
+
+        if (curhatsCache.length > 2) {
+            curhatRotationTimer = setInterval(() => {
+                if (!isCurhatInteracting) {
+                    curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
+                    renderRotatingCurhats();
+                }
+            }, 6000);
+        }
+        window.scrollTo(0, scrollY);
+    });
+
+    function renderRotatingCurhats() {
+        curhatsContainer.innerHTML = "";
+        curhatsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto";
+
+        const total = curhatsCache.length;
+        const countToDisplay = Math.min(2, total);
+
+        for (let i = 0; i < countToDisplay; i++) {
+            const idx = (curhatStartIndex + i) % total;
+            const curhat = curhatsCache[idx];
+            if (curhat) {
+                renderCurhatCard(curhat);
+            }
+        }
+    }
+
+    function renderCurhatCard(curhat) {
+        const card = document.createElement("article");
+        card.className = "message-card bg-white p-7 rounded-[2rem] border border-teal-100/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col h-full";
+
+        const sender = curhat.sender?.trim() || "Pejuang Tenang";
+        const text = curhat.text?.trim() || "";
+
+        const likesObj = curhat.likes || {};
+        const likeCount = Object.keys(likesObj).length;
+        const hasLiked = Boolean(likesObj[userDeviceId]);
+
+        let repliesHTML = "";
+        const repliesObj = curhat.replies || {};
+        const approvedReplies = Object.entries(repliesObj)
+            .map(([repId, rep]) => ({ repId, ...rep }))
+            .filter(rep => rep.status === "approved");
+
+        if (approvedReplies.length > 0) {
+            approvedReplies.forEach(rep => {
+                repliesHTML += `
+                    <div class="mt-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1">
+                        <div class="font-bold text-slate-700 flex items-center justify-between">
+                            <span>${escapeHTML(rep.sender || "Sahabat Baik")}</span>
+                        </div>
+                        <p class="text-slate-600 italic">"${escapeHTML(rep.text)}"</p>
+                    </div>
+                `;
+            });
+        }
+
+        card.innerHTML = `
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0 font-bold">
+                        ${sender.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <p class="text-sm font-extrabold text-slate-800">${escapeHTML(sender)}</p>
+                    </div>
+                </div>
+                <button type="button" class="curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all ${hasLiked ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-50 hover:bg-teal-50 text-slate-600 border border-slate-200'}" title="Sukai curhat ini">
+                    <i class="${hasLiked ? 'fa-solid text-rose-500' : 'fa-regular text-slate-400'} fa-heart"></i>
+                    <span>${likeCount}</span>
+                </button>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap break-words italic mb-4">
+                    "${escapeHTML(text)}"
+                </p>
+                <div class="space-y-2">
+                    ${repliesHTML}
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <button type="button" class="toggle-reply-form text-xs font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-reply"></i> Balas Dukungan
+                    </button>
+                    <div class="reply-form-wrapper hidden mt-3 space-y-2">
+                        <input type="text" class="reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium" placeholder="Nama / Panggilan (opsional)" maxlength="30">
+                        <textarea class="reply-text-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium resize-none" rows="2" placeholder="Tulis kata dukungan..." maxlength="200"></textarea>
+                        <button type="button" class="send-reply-btn bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-xl w-full transition-colors">Kirim Balasan</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        card.querySelector(".curhat-like-btn").addEventListener("click", async () => {
+            const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${userDeviceId}`);
+            try {
+                if (hasLiked) {
+                    await set(likeRef, null);
+                } else {
+                    await set(likeRef, true);
+                }
+            } catch (err) {
+                console.error("Gagal mengubah like curhat:", err);
+            }
+        });
+
+        const toggleBtn = card.querySelector(".toggle-reply-form");
+        const replyWrapper = card.querySelector(".reply-form-wrapper");
+        const sendReplyBtn = card.querySelector(".send-reply-btn");
+        const replySenderInput = card.querySelector(".reply-sender-input");
+        const replyTextInput = card.querySelector(".reply-text-input");
+
+        toggleBtn.addEventListener("click", () => {
+            replyWrapper.classList.toggle("hidden");
+        });
+
+        sendReplyBtn.addEventListener("click", async () => {
+            const rText = replyTextInput.value.trim();
+            const rSender = replySenderInput.value.trim() || "Sahabat Baik";
+            if (!rText) return;
+
+            sendReplyBtn.disabled = true;
+            sendReplyBtn.textContent = "Mengirim...";
+
+            try {
+                const repliesRef = ref(database, `clover/curhat_publik/${curhat.id}/replies`);
+                await set(push(repliesRef), {
+                    text: rText,
+                    sender: rSender,
+                    createdAt: Date.now(),
+                    status: "pending"
+                });
+                replyTextInput.value = "";
+                replySenderInput.value = "";
+                replyWrapper.classList.add("hidden");
+                alert("Balasan terkirim dan menunggu moderasi admin 🍀");
+            } catch (err) {
+                alert("Gagal mengirim balasan.");
+            } finally {
+                sendReplyBtn.disabled = false;
+                sendReplyBtn.textContent = "Kirim Balasan";
+            }
+        });
+
+        curhatsContainer.appendChild(card);
+    }
+
+    curhatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = curhatInput.value.trim();
+        const sender = curhatSenderInput.value.trim() || "Pejuang Tenang";
+
+        if (!text || text.length > 400) {
+            showCurhatStatus("Curhat wajib diisi (maksimal 400 karakter).", "error");
+            return;
+        }
+
+        submitCurhatButton.disabled = true;
+        submitCurhatButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
+
+        try {
+            const curhatRef = ref(database, "clover/curhat_publik");
+            await set(push(curhatRef), {
+                text, sender, createdAt: Date.now(), status: "pending"
+            });
+            curhatForm.reset();
+            curhatCharCount.textContent = "0/400";
+            showCurhatStatus("Curhat terkirim! Akan muncul setelah disetujui admin 🍀", "success");
+            setTimeout(hideCurhatStatus, 6000);
+        } catch (err) {
+            showCurhatStatus("Gagal mengirim curhat.", "error");
+        } finally {
+            submitCurhatButton.disabled = false;
+            submitCurhatButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik`;
+        }
+    });
+
+    // =====================================================
+    // 6. KELUHAN PRIBADI & AUDIO RECORDER (LOCALSTORAGE)
+    // =====================================================
+    const complaintInput = document.getElementById("complaintInput");
+    const saveComplaintButton = document.getElementById("saveComplaintButton");
+    const clearComplaintButton = document.getElementById("clearComplaintButton");
+    const editComplaintButton = document.getElementById("editComplaintButton");
+    const complaintStatus = document.getElementById("complaintStatus");
+    const complaintCount = document.getElementById("complaintCount");
+
+    const savedComplaintCard = document.getElementById("savedComplaintCard");
+    const savedTextCardWrapper = document.getElementById("savedTextCardWrapper");
+    const savedComplaintText = document.getElementById("savedComplaintText");
+    const textEncouragementContainer = document.getElementById("textEncouragementContainer");
+    const textEncouragementText = document.getElementById("textEncouragementText");
+
+    const savedAudioCardWrapper = document.getElementById("savedAudioCardWrapper");
+    const savedAudioPlayback = document.getElementById("savedAudioPlayback");
+    const deleteAudioOnlyButton = document.getElementById("deleteAudioOnlyButton");
+    const audioEncouragementContainer = document.getElementById("audioEncouragementContainer");
+    const audioEncouragementText = document.getElementById("audioEncouragementText");
+
+    const recordVoiceBtn = document.getElementById("recordVoiceBtn");
+    const recordBtnText = document.getElementById("recordBtnText");
+    const voiceTimer = document.getElementById("voiceTimer");
+    const audioPreviewWrapper = document.getElementById("audioPreviewWrapper");
+    const audioPlayback = document.getElementById("audioPlayback");
+    const deleteVoiceBtn = document.getElementById("deleteVoiceBtn");
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordedAudioBlob = null;
+    let recordingTimerInterval = null;
+    let recordingSeconds = 0;
+
+    const encouragements = [
+        "Tidak apa-apa merasa lelah. Istirahatlah sejenak, kamu sudah berjuang sangat keras sampai hari ini. 🍀",
+        "Perasaan berat ini tidak akan selamanya ada. Tarik napas dalam-dalam, hembuskan perlahan.",
+        "Kamu berharga dan kehadiranmu berarti. Peluk erat dirimu sendiri ya.",
+        "Setiap langkah kecil adalah kemajuan. Jangan terlalu keras pada dirimu sendiri.",
+        "Badai pasti berlalu. Izinkan dirimu untuk tenang hari ini."
+    ];
+
+    function getRandomEncouragement() {
+        const idx = Math.floor(Math.random() * encouragements.length);
+        return encouragements[idx];
+    }
+
+    function loadSavedComplaintData() {
+        const savedText = localStorage.getItem("clover_saved_complaint");
+        const savedAudio = localStorage.getItem("clover_saved_audio");
+        const savedTextEnc = localStorage.getItem("clover_text_encouragement");
+        const savedAudioEnc = localStorage.getItem("clover_audio_encouragement");
+
+        let hasData = false;
+
+        if (savedText) {
+            savedComplaintText.textContent = savedText;
+            savedTextCardWrapper.classList.remove("hidden");
+            if (savedTextEnc) {
+                textEncouragementText.textContent = savedTextEnc;
+                textEncouragementContainer.classList.remove("hidden");
+            } else {
+                textEncouragementContainer.classList.add("hidden");
+            }
+            hasData = true;
+        } else {
+            savedTextCardWrapper.classList.add("hidden");
+        }
+
+        if (savedAudio) {
+            savedAudioPlayback.src = savedAudio;
+            savedAudioCardWrapper.classList.remove("hidden");
+            if (savedAudioEnc) {
+                audioEncouragementText.textContent = savedAudioEnc;
+                audioEncouragementContainer.classList.remove("hidden");
+            } else {
+                audioEncouragementContainer.classList.add("hidden");
+            }
+            hasData = true;
+        } else {
+            savedAudioCardWrapper.classList.add("hidden");
+        }
+
+        if (hasData) {
+            savedComplaintCard.classList.remove("hidden");
+        } else {
+            savedComplaintCard.classList.add("hidden");
+        }
+    }
+
+    loadSavedComplaintData();
+
+    complaintInput.addEventListener("input", () => {
+        complaintCount.textContent = `${complaintInput.value.length}/1000`;
+    });
+
+    saveComplaintButton.addEventListener("click", () => {
+        const textVal = complaintInput.value.trim();
+        if (!textVal && !recordedAudioBlob) {
+            complaintStatus.textContent = "Tulis keluhan atau rekam suara terlebih dahulu.";
+            setTimeout(() => { complaintStatus.textContent = ""; }, 4000);
+            return;
+        }
+
+        if (textVal) {
+            localStorage.setItem("clover_saved_complaint", textVal);
+            const enc = getRandomEncouragement();
+            localStorage.setItem("clover_text_encouragement", enc);
+        }
+
+        if (recordedAudioBlob) {
+            const reader = new FileReader();
+            reader.readAsDataURL(recordedAudioBlob);
+            reader.onloadend = () => {
+                localStorage.setItem("clover_saved_audio", reader.result);
+                const enc = getRandomEncouragement();
+                localStorage.setItem("clover_audio_encouragement", enc);
+                loadSavedComplaintData();
+            };
+        } else {
+            loadSavedComplaintData();
+        }
+
+        complaintInput.value = "";
+        complaintCount.textContent = "0/1000";
+        recordedAudioBlob = null;
+        audioPreviewWrapper.classList.add("hidden");
+
+        complaintStatus.textContent = "Keluhan pribadi berhasil disimpan secara aman di perangkatmu! 🍀";
+        setTimeout(() => { complaintStatus.textContent = ""; }, 5000);
+    });
+
+    editComplaintButton.addEventListener("click", () => {
+        const savedText = localStorage.getItem("clover_saved_complaint");
+        if (savedText) {
+            complaintInput.value = savedText;
+            complaintCount.textContent = `${savedText.length}/1000`;
+            window.scrollTo({ top: complaintInput.offsetTop - 120, behavior: 'smooth' });
+        }
+    });
+
+    clearComplaintButton.addEventListener("click", () => {
+        if (confirm("Hapus seluruh catatan dan rekaman privat di perangkat ini?")) {
+            localStorage.removeItem("clover_saved_complaint");
+            localStorage.removeItem("clover_saved_audio");
+            localStorage.removeItem("clover_text_encouragement");
+            localStorage.removeItem("clover_audio_encouragement");
+            complaintInput.value = "";
+            complaintCount.textContent = "0/1000";
+            recordedAudioBlob = null;
+            audioPreviewWrapper.classList.add("hidden");
+            loadSavedComplaintData();
+            complaintStatus.textContent = "Data privat berhasil dihapus.";
+            setTimeout(() => { complaintStatus.textContent = ""; }, 4000);
+        }
+    });
+
+    deleteAudioOnlyButton.addEventListener("click", () => {
+        if (confirm("Hapus rekaman suara privat ini?")) {
+            localStorage.removeItem("clover_saved_audio");
+            localStorage.removeItem("clover_audio_encouragement");
+            loadSavedComplaintData();
+        }
+    });
+
+    // Voice Recorder implementation
+    recordVoiceBtn.addEventListener("click", async () => {
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(recordedAudioBlob);
+                    audioPlayback.src = audioUrl;
+                    audioPreviewWrapper.classList.remove("hidden");
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                recordBtnText.textContent = "Berhenti Rekam";
+                recordVoiceBtn.classList.add("bg-rose-50", "text-rose-600", "border-rose-200");
+                voiceTimer.classList.remove("hidden");
+                recordingSeconds = 0;
+                voiceTimer.textContent = "00:00";
+                recordingTimerInterval = setInterval(() => {
+                    recordingSeconds++;
+                    const m = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
+                    const s = String(recordingSeconds % 60).padStart(2, '0');
+                    voiceTimer.textContent = `${m}:${s}`;
+                }, 1000);
+
+            } catch (err) {
+                alert("Tidak dapat mengakses mikrofon. Pastikan izin mikrofon diaktifkan.");
+            }
+        } else if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+            clearInterval(recordingTimerInterval);
+            recordBtnText.textContent = "Rekam Suara";
+            recordVoiceBtn.classList.remove("bg-rose-50", "text-rose-600", "border-rose-200");
+            voiceTimer.classList.add("hidden");
+        }
+    });
+
+    deleteVoiceBtn.addEventListener("click", () => {
+        recordedAudioBlob = null;
+        audioPlayback.src = "";
+        audioPreviewWrapper.classList.add("hidden");
+    });
+
+    // =====================================================
+    // 7. TANTANGAN HARIAN & STREAK
+    // =====================================================
+    const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
+    const challengeProgressBar = document.getElementById("challengeProgressBar");
+    const challengeProgressText = document.getElementById("challengeProgressText");
+    const completedTodaySpan = document.getElementById("completedToday");
+    const currentStreakSpan = document.getElementById("currentStreak");
+    const bestStreakSpan = document.getElementById("bestStreak");
+    const resetChallengesButton = document.getElementById("resetChallengesButton");
+
+    function getTodayDateString() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function loadChallengeState() {
+        const todayStr = getTodayDateString();
+        const storedDate = localStorage.getItem("clover_challenge_date");
+        let completedMap = JSON.parse(localStorage.getItem("clover_challenge_map") || "{}");
+
+        if (storedDate !== todayStr) {
+            completedMap = {};
+            localStorage.setItem("clover_challenge_date", todayStr);
+            localStorage.setItem("clover_challenge_map", JSON.stringify(completedMap));
+        }
+
+        let completedCount = 0;
+        challengeCheckboxes.forEach((cb, idx) => {
+            const isDone = Boolean(completedMap[idx]);
+            cb.checked = isDone;
+            const itemContainer = cb.closest(".challenge-item");
+            if (isDone) {
+                itemContainer.classList.add("task-done");
+                completedCount++;
+            } else {
+                itemContainer.classList.remove("task-done");
+            }
+        });
+
+        updateChallengeProgress(completedCount);
+        loadStreakData();
+    }
+
+    function updateChallengeProgress(count) {
+        const total = challengeCheckboxes.length;
+        const percent = Math.round((count / total) * 100);
+        challengeProgressBar.style.clipPath = `inset(${100 - percent}% 0 0 0)`;
+        challengeProgressText.textContent = `${percent}%`;
+        completedTodaySpan.textContent = count;
+    }
+
+    function loadStreakData() {
+        const currentStreak = parseInt(localStorage.getItem("clover_current_streak") || "0", 10);
+        const bestStreak = parseInt(localStorage.getItem("clover_best_streak") || "0", 10);
+        currentStreakSpan.textContent = currentStreak;
+        bestStreakSpan.textContent = bestStreak;
+    }
+
+    challengeCheckboxes.forEach((cb, idx) => {
+        cb.addEventListener("change", () => {
+            let completedMap = JSON.parse(localStorage.getItem("clover_challenge_map") || "{}");
+            completedMap[idx] = cb.checked;
+            localStorage.setItem("clover_challenge_map", JSON.stringify(completedMap));
+
+            const itemContainer = cb.closest(".challenge-item");
+            if (cb.checked) {
+                itemContainer.classList.add("task-done");
+            } else {
+                itemContainer.classList.remove("task-done");
+            }
+
+            let completedCount = 0;
+            challengeCheckboxes.forEach((box, i) => {
+                if (completedMap[i]) completedCount++;
+            });
+
+            updateChallengeProgress(completedCount);
+
+            if (completedCount === challengeCheckboxes.length) {
+                const todayStr = getTodayDateString();
+                const lastStreakDate = localStorage.getItem("clover_last_streak_date");
+                if (lastStreakDate !== todayStr) {
+                    let cur = parseInt(localStorage.getItem("clover_current_streak") || "0", 10) + 1;
+                    let best = parseInt(localStorage.getItem("clover_best_streak") || "0", 10);
+                    if (cur > best) best = cur;
+                    localStorage.setItem("clover_current_streak", cur);
+                    localStorage.setItem("clover_best_streak", best);
+                    localStorage.setItem("clover_last_streak_date", todayStr);
+                    loadStreakData();
+                }
+            }
+        });
+    });
+
+    resetChallengesButton.addEventListener("click", () => {
+        localStorage.setItem("clover_challenge_map", JSON.stringify({}));
+        loadChallengeState();
+    });
+
+    loadChallengeState();
+
+    // =====================================================
+    // 8. MASUKAN & SARAN WEB
+    // =====================================================
+    const feedbackForm = document.getElementById("feedback-form");
+    const feedbackInput = document.getElementById("feedback-input");
+    const feedbackSenderInput = document.getElementById("feedback-sender-input");
+    const submitFeedbackButton = document.getElementById("submit-feedback-button");
+    const feedbackStatus = document.getElementById("feedback-status");
+    const feedbackCharCount = document.getElementById("feedback-char-count");
+    const myFeedbackContainer = document.getElementById("myFeedbackContainer");
+    const myFeedbackList = document.getElementById("myFeedbackList");
+
+    function showFeedbackStatus(message, type = "info") {
+        feedbackStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200", "bg-amber-50", "text-amber-700", "border-amber-200");
+        feedbackStatus.classList.add("border-2");
+        if (type === "error") feedbackStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+        else if (type === "success") feedbackStatus.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
+        else feedbackStatus.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
+        feedbackStatus.textContent = message;
+    }
+
+    function hideFeedbackStatus() {
+        feedbackStatus.classList.add("hidden");
+    }
+
+    feedbackInput.addEventListener("input", () => {
+        feedbackCharCount.textContent = `${feedbackInput.value.length}/500`;
+    });
+
+    feedbackForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = feedbackInput.value.trim();
+        const sender = feedbackSenderInput.value.trim() || "Anonim";
+
+        if (!text || text.length > 500) {
+            showFeedbackStatus("Masukan wajib diisi (maksimal 500 karakter).", "error");
+            return;
+        }
+
+        submitFeedbackButton.disabled = true;
+        submitFeedbackButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
+
+        try {
+            const feedbackRef = ref(database, "clover/feedback");
+            const newFbRef = push(feedbackRef);
+            await set(newFbRef, {
+                text, sender, deviceId: userDeviceId, createdAt: Date.now(), reply: ""
+            });
+
+            let myFbIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
+            myFbIds.push(newFbRef.key);
+            localStorage.setItem("clover_my_feedback_ids", JSON.stringify(myFbIds));
+
+            feedbackForm.reset();
+            feedbackCharCount.textContent = "0/500";
+            showFeedbackStatus("Terima kasih! Masukan Anda telah berhasil dikirim ke admin 🍀", "success");
+            setTimeout(hideFeedbackStatus, 6000);
+            loadMyFeedback();
+        } catch (err) {
+            showFeedbackStatus("Gagal mengirim masukan.", "error");
+        } finally {
+            submitFeedbackButton.disabled = false;
+            submitFeedbackButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan`;
+        }
+    });
+
+    function loadMyFeedback() {
+        const myFbIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
+        if (myFbIds.length === 0) {
+            myFeedbackContainer.classList.add("hidden");
+            return;
+        }
+
+        myFeedbackContainer.classList.remove("hidden");
+        myFeedbackList.innerHTML = "";
+
+        myFbIds.forEach(fbId => {
+            const fbRef = ref(database, `clover/feedback/${fbId}`);
+            onValue(fbRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2";
+
+                let replyHTML = `<p class="text-[11px] text-amber-600 font-semibold italic">Menunggu tanggapan admin...</p>`;
+                if (data.reply && data.reply.trim().length > 0) {
+                    replyHTML = `
+                        <div class="mt-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-slate-700">
+                            <span class="font-extrabold text-emerald-800 block mb-0.5"><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin:</span>
+                            <p class="italic">"${escapeHTML(data.reply)}"</p>
+                        </div>
+                    `;
+                }
+
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-center text-slate-400 font-bold">
+                        <span>${escapeHTML(data.sender)}</span>
+                        <span>${formatDate(data.createdAt)}</span>
+                    </div>
+                    <p class="text-slate-700 font-medium italic">"${escapeHTML(data.text)}"</p>
+                    ${replyHTML}
+                `;
+                myFeedbackList.appendChild(itemDiv);
+            }, { onlyOnce: true });
+        });
+    }
+
+    loadMyFeedback();
+
+    // Footer Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+</script>
+</body>
+</html>
