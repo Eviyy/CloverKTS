@@ -11,8 +11,19 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- manifest -->
-    <link rel="manifest" href="manifest.json">
+    <!-- Manifest (Diperbarui dengan path relatif ./ ) -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Registrasi Service Worker untuk PWA Standalone -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then((reg) => console.log('Service Worker terdaftar!', reg))
+            .catch((err) => console.log('Gagal daftar Service Worker:', err));
+        });
+      }
+    </script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -848,7 +859,7 @@
             if (!document.activeElement.closest('#papan .msg-reply-form-wrapper')) {
                 isMessageInteracting = false;
             }
-        }, 3000); // Jeda singkat 3 detik saat like ditekan
+        }, 3000);
     }
 
     papanSection.addEventListener("mouseenter", () => { isMessageInteracting = true; });
@@ -1058,7 +1069,6 @@
             pauseMessageRotationShort();
             const likeRef = ref(database, `clover/messages/${message.id}/likes/${userDeviceId}`);
             
-            // Optimistic UI Update agar instan tanpa lag
             const icon = likeBtn.querySelector("i");
             const spanCount = likeBtn.querySelector("span");
             let count = parseInt(spanCount.textContent) || 0;
@@ -1187,7 +1197,7 @@
             if (!document.activeElement.closest('#curhat-publik .reply-form-wrapper')) {
                 isCurhatInteracting = false;
             }
-        }, 3000); // Jeda singkat 3 detik saat like ditekan
+        }, 3000);
     }
 
     curhatPublikSection.addEventListener("mouseenter", () => { isCurhatInteracting = true; });
@@ -1383,7 +1393,6 @@
             pauseCurhatRotationShort();
             const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${userDeviceId}`);
             
-            // Optimistic UI Update agar instan tanpa lag
             const icon = curhatLikeBtn.querySelector("i");
             const spanCount = curhatLikeBtn.querySelector("span");
             let count = parseInt(spanCount.textContent) || 0;
