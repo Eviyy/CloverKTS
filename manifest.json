@@ -2,7 +2,7 @@
   "name": "Clover — Kamu Tidak Sendirian",
   "short_name": "Clover",
   "description": "Ruang kecil untuk terhubung, berbagi, dan saling menguatkan.",
-  "start_url": "/BK/",
+  "start_url": "/CloverKTS/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#10b981",
