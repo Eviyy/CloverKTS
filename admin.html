@@ -168,6 +168,19 @@
                     </select>
                 </div>
 
+                <!-- Banner Ringkasan Tanggal Terpilih -->
+                <div id="dateSummaryMessage" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-3xl text-xs text-emerald-900 font-bold flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day text-emerald-600 text-base"></i>
+                        <span>Ringkasan Tanggal <strong id="dateTextMsg"></strong>:</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <span>Total Pesan: <strong id="dateCountMsg" class="text-emerald-700">0</strong></span>
+                        <span>Disetujui: <strong id="dateApprovedMsg" class="text-emerald-700">0</strong></span>
+                        <span>Pending: <strong id="datePendingMsg" class="text-amber-600">0</strong></span>
+                    </div>
+                </div>
+
                 <!-- Aksi Massal Pesan -->
                 <div id="bulkActionMsgContainer" class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
                     <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
@@ -225,6 +238,19 @@
                     </select>
                 </div>
 
+                <!-- Banner Ringkasan Tanggal Terpilih Curhat -->
+                <div id="dateSummaryCurhat" class="hidden bg-teal-50 border border-teal-200 p-4 rounded-3xl text-xs text-teal-900 font-bold flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day text-teal-600 text-base"></i>
+                        <span>Ringkasan Tanggal <strong id="dateTextCurhat"></strong>:</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <span>Total Curhat: <strong id="dateCountCurhat" class="text-teal-700">0</strong></span>
+                        <span>Disetujui: <strong id="dateApprovedCurhat" class="text-teal-700">0</strong></span>
+                        <span>Pending: <strong id="datePendingCurhat" class="text-amber-600">0</strong></span>
+                    </div>
+                </div>
+
                 <!-- Aksi Massal Curhat -->
                 <div id="bulkActionCurhatContainer" class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
                     <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
@@ -273,6 +299,18 @@
                     <div class="flex items-center gap-2">
                         <input type="date" id="filterDateFeedback" title="Filter berdasarkan tanggal" class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
                         <button type="button" id="resetDateFeedback" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold px-3 py-3 rounded-2xl transition-colors" title="Reset Tanggal">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Banner Ringkasan Tanggal Terpilih Feedback -->
+                <div id="dateSummaryFeedback" class="hidden bg-indigo-50 border border-indigo-200 p-4 rounded-3xl text-xs text-indigo-900 font-bold flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day text-indigo-600 text-base"></i>
+                        <span>Ringkasan Tanggal <strong id="dateTextFeedback"></strong>:</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <span>Total Masukan: <strong id="dateCountFeedback" class="text-indigo-700">0</strong></span>
+                        <span>Sudah Dibalas: <strong id="dateRepliedFeedback" class="text-emerald-700">0</strong></span>
                     </div>
                 </div>
 
@@ -663,6 +701,22 @@
             const statusFilter = document.getElementById("filterStatusSelect").value;
             container.innerHTML = "";
 
+            // Update Ringkasan Tanggal jika tanggal dipilih
+            const dateSummaryEl = document.getElementById("dateSummaryMessage");
+            if (selectedDate) {
+                const dayMsgs = cachedMessages.filter(m => m.createdAt && getTodayKey(m.createdAt) === selectedDate);
+                const approvedDay = dayMsgs.filter(m => m.status === 'approved').length;
+                const pendingDay = dayMsgs.filter(m => m.status === 'pending').length;
+
+                document.getElementById("dateTextMsg").textContent = selectedDate;
+                document.getElementById("dateCountMsg").textContent = dayMsgs.length;
+                document.getElementById("dateApprovedMsg").textContent = approvedDay;
+                document.getElementById("datePendingMsg").textContent = pendingDay;
+                dateSummaryEl.classList.remove("hidden");
+            } else {
+                dateSummaryEl.classList.add("hidden");
+            }
+
             currentFilteredMessages = cachedMessages.filter(msg => {
                 const matchesKeyword = (msg.text || "").toLowerCase().includes(keyword) || (msg.sender || "").toLowerCase().includes(keyword);
                 const matchesStatus = statusFilter === 'all' || msg.status === statusFilter;
@@ -730,6 +784,22 @@
             const selectedDate = document.getElementById("filterDateCurhat").value;
             const statusFilter = document.getElementById("filterCurhatStatusSelect").value;
             container.innerHTML = "";
+
+            // Update Ringkasan Tanggal Curhat
+            const dateSummaryCurhatEl = document.getElementById("dateSummaryCurhat");
+            if (selectedDate) {
+                const dayCurhats = cachedCurhats.filter(c => c.createdAt && getTodayKey(c.createdAt) === selectedDate);
+                const approvedDayC = dayCurhats.filter(c => c.status === 'approved').length;
+                const pendingDayC = dayCurhats.filter(c => c.status === 'pending').length;
+
+                document.getElementById("dateTextCurhat").textContent = selectedDate;
+                document.getElementById("dateCountCurhat").textContent = dayCurhats.length;
+                document.getElementById("dateApprovedCurhat").textContent = approvedDayC;
+                document.getElementById("datePendingCurhat").textContent = pendingDayC;
+                dateSummaryCurhatEl.classList.remove("hidden");
+            } else {
+                dateSummaryCurhatEl.classList.add("hidden");
+            }
 
             currentFilteredCurhats = cachedCurhats.filter(c => {
                 const matchesKeyword = (c.text || "").toLowerCase().includes(keyword) || (c.sender || "").toLowerCase().includes(keyword);
@@ -834,6 +904,20 @@
             const keyword = document.getElementById("searchFeedbackInput").value.toLowerCase();
             const selectedDate = document.getElementById("filterDateFeedback").value;
             container.innerHTML = "";
+
+            // Update Ringkasan Tanggal Feedback
+            const dateSummaryFeedbackEl = document.getElementById("dateSummaryFeedback");
+            if (selectedDate) {
+                const dayFb = cachedFeedback.filter(fb => fb.createdAt && getTodayKey(fb.createdAt) === selectedDate);
+                const repliedDay = dayFb.filter(fb => fb.reply && fb.reply.trim().length > 0).length;
+
+                document.getElementById("dateTextFeedback").textContent = selectedDate;
+                document.getElementById("dateCountFeedback").textContent = dayFb.length;
+                document.getElementById("dateRepliedFeedback").textContent = repliedDay;
+                dateSummaryFeedbackEl.classList.remove("hidden");
+            } else {
+                dateSummaryFeedbackEl.classList.add("hidden");
+            }
 
             const filtered = cachedFeedback.filter(fb => {
                 const matchesKeyword = (fb.text || "").toLowerCase().includes(keyword) || (fb.sender || "").toLowerCase().includes(keyword);
