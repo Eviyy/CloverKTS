@@ -11,7 +11,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Manifest (Diperbarui dengan path relatif ./ ) -->
+    <!-- Manifest -->
     <link rel="manifest" href="./manifest.json">
 
     <!-- Registrasi Service Worker untuk PWA Standalone -->
@@ -793,24 +793,70 @@
         return Math.floor(diffTime / (1000 * 60 * 60 * 24));
     }
 
+    function escapeHTML(value) {
+        const div = document.createElement("div");
+        div.textContent = String(value ?? "");
+        return div.innerHTML;
+    }
+
     // =====================================================
-    // 1. TRACKING: Total Kunjungan & Pengunjung Aktif
+    // 1. TRACKING: Total Kunjungan, Kunjungan Harian & Pengunjung Aktif
     // =====================================================
     if (!sessionStorage.getItem("clover_visited")) {
         sessionStorage.setItem("clover_visited", "true");
+        
+        // Catat Total Kunjungan Global
         const visitRef = ref(database, "clover/stats/totalVisits");
         runTransaction(visitRef, (currentVisits) => {
             return (currentVisits || 0) + 1;
         }).catch((error) => {
             console.error("Gagal memperbarui jumlah kunjungan:", error);
         });
+
+        // Catat Kunjungan Harian (Format: YYYY-MM-DD)
+        const todayDateKey = getTodayDateString();
+        const dailyVisitRef = ref(database, `clover/stats/dailyVisits/${todayDateKey}`);
+        runTransaction(dailyVisitRef, (currentDaily) => {
+            return (currentDaily || 0) + 1;
+        }).catch((error) => {
+            console.error("Gagal memperbarui kunjungan harian:", error);
+        });
     }
 
     const cloverSessionId = 'session_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 15);
-
     const activeUsersRef = ref(database, `clover/active_users/${cloverSessionId}`);
     set(activeUsersRef, { joinedAt: Date.now() });
     onDisconnect(activeUsersRef).remove();
+
+    // =====================================================
+    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN)
+    // =====================================================
+    const maintenanceRef = ref(database, "clover/maintenance");
+    onValue(maintenanceRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.active === true) {
+            document.body.innerHTML = `
+                <div class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4 text-center">
+                    <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full shadow-2xl space-y-6 border border-slate-100">
+                        <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-lg shadow-rose-500/10">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Sedang Dalam Pemeliharaan</h1>
+                            <p class="text-xs text-slate-600 font-medium leading-relaxed">
+                                ${escapeHTML(data.message || "Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi.")}
+                            </p>
+                        </div>
+                        <div class="pt-2">
+                            <a href="admin.html" class="inline-block bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all shadow-md">
+                                <i class="fa-solid fa-shield-halved mr-1.5"></i> Masuk ke Panel Admin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    });
 
     // =====================================================
     // 2. DEVICE ID PRIVAT
@@ -900,12 +946,6 @@
 
     function hideFirebaseStatus() {
         firebaseStatus.classList.add("hidden");
-    }
-
-    function escapeHTML(value) {
-        const div = document.createElement("div");
-        div.textContent = String(value ?? "");
-        return div.innerHTML;
     }
 
     function formatDate(timestamp) {
@@ -1727,7 +1767,7 @@
     });
 
     // =====================================================
-    // 7. TANTANGAN HARIAN & STREAK (DIPERBARUI OTOMATIS)
+    // 7. TANTANGAN HARIAN & STREAK
     // =====================================================
     const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
     const challengeProgressBar = document.getElementById("challengeProgressBar");
@@ -1743,7 +1783,6 @@
         const streakData = snapshot.val() || { current: 0, best: 0, lastDate: "" };
         const todayStr = getTodayDateString();
 
-        // Validasi otomatis: Jika terakhir aktif bukan hari ini dan selisih > 1 hari, reset streak!
         if (streakData.lastDate && streakData.lastDate !== todayStr) {
             const diffDays = getDaysDifference(streakData.lastDate, todayStr);
             if (diffDays > 1 && streakData.current > 0) {
@@ -1848,7 +1887,6 @@
         loadChallengeState();
     });
 
-    // Deteksi otomatis saat aplikasi/tab kembali aktif (berguna untuk PWA/Mobile saat berganti hari)
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") {
             loadChallengeState();
