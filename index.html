@@ -829,7 +829,7 @@
     onDisconnect(activeUsersRef).remove();
 
     // =====================================================
-    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN)
+    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN) - TANPA TOMBOL
     // =====================================================
     const maintenanceRef = ref(database, "clover/maintenance");
     onValue(maintenanceRef, (snapshot) => {
@@ -846,11 +846,6 @@
                             <p class="text-xs text-slate-600 font-medium leading-relaxed">
                                 ${escapeHTML(data.message || "Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi.")}
                             </p>
-                        </div>
-                        <div class="pt-2">
-                            <a href="admin.html" class="inline-block bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all shadow-md">
-                                <i class="fa-solid fa-shield-halved mr-1.5"></i> Masuk ke Panel Admin
-                            </a>
                         </div>
                     </div>
                 </div>
