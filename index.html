@@ -1371,6 +1371,9 @@
     let currentNickname = "";
     let currentCleanNick = "";
     let authMode = "login"; // "login" | "register"
+    let isRegistering = false;
+    let unsubscribeBanListener = null;
+    let unsubscribeProfileListener = null;
 
     // =====================================================
     // ELEMEN DOM MODAL MASUK / DAFTAR & NAVBAR AKUN
@@ -1484,6 +1487,7 @@
 
         try {
             if (authMode === "register") {
+                isRegistering = true;
                 const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
                 await updateProfile(cred.user, { displayName: rawNick });
 
@@ -1494,23 +1498,39 @@
                     createdAt: Date.now()
                 });
 
+                isRegistering = false;
                 currentNickname = rawNick;
                 currentCleanNick = cleanNick;
                 authGateForm.reset();
                 closeAuthModal();
             } else {
                 const cred = await signInWithEmailAndPassword(auth, virtualEmail, password);
-                currentCleanNick = cleanNick;
-                if (!cred.user.displayName) {
-                    const snap = await get(ref(database, `clover/users/${cleanNick}/nickname`));
-                    currentNickname = snap.exists() ? snap.val() : rawNick;
-                } else {
-                    currentNickname = cred.user.displayName;
+
+                // Cek apakah akun diblokir oleh Owner
+                const banCheckSnap = await get(ref(database, `clover/banned_users/${cred.user.uid}`));
+                if (banCheckSnap.exists()) {
+                    const banReason = banCheckSnap.val().reason || "Melanggar pedoman komunitas Clover.";
+                    await signOut(auth);
+                    showAuthStatus(`Akun ini sedang diblokir oleh Owner. Alasan: ${banReason}`);
+                    return;
                 }
+
+                // Cek apakah data profil masih tersedia (belum dihapus Owner)
+                const profileSnap = await get(ref(database, `clover/users/${cleanNick}`));
+                if (!profileSnap.exists()) {
+                    await signOut(auth);
+                    showAuthStatus("Akun tidak ditemukan atau telah dihapus oleh pengelola Clover.");
+                    return;
+                }
+
+                currentCleanNick = cleanNick;
+                const profileData = profileSnap.val();
+                currentNickname = profileData.nickname || cred.user.displayName || rawNick;
                 authGateForm.reset();
                 closeAuthModal();
             }
         } catch (err) {
+            isRegistering = false;
             console.error("Auth error:", err);
             if (err.code === "auth/email-already-in-use") {
                 showAuthStatus("Nickname ini sudah dipakai. Silakan pilih nickname lain atau masuk.");
@@ -1524,6 +1544,7 @@
                 showAuthStatus("Gagal memproses akun. Pastikan metode Email/Password aktif di Firebase.");
             }
         } finally {
+            isRegistering = false;
             authSubmitBtn.disabled = false;
             setAuthMode(authMode);
         }
@@ -2580,7 +2601,7 @@
     const leaderboardMyBanner = document.getElementById("leaderboard-my-banner");
     const leaderboardList = document.getElementById("leaderboard-list");
 
-    let allUsersCache = {}; // { cleanNick: { nickname, uid, bio, createdAt } }
+    let allUsersCache = {}; // { cleanNick: { nickname, uid, bio, banned, createdAt } }
     let allStreaksCache = {}; // { uidOrDeviceId: { current, best, lastDate } }
     let leaderboardSortBy = "current"; // "current" | "best"
     let unsubscribeStreak = null;
@@ -2668,16 +2689,18 @@
     }
 
     function renderLeaderboard() {
-        const entries = Object.entries(allUsersCache).map(([cleanNick, u]) => {
-            const st = getEffectiveStreak(u.uid);
-            return {
-                uid: u.uid,
-                nickname: u.nickname || cleanNick,
-                cleanNick,
-                current: st.current,
-                best: st.best
-            };
-        });
+        const entries = Object.entries(allUsersCache)
+            .filter(([, u]) => !u.banned)
+            .map(([cleanNick, u]) => {
+                const st = getEffectiveStreak(u.uid);
+                return {
+                    uid: u.uid,
+                    nickname: u.nickname || cleanNick,
+                    cleanNick,
+                    current: st.current,
+                    best: st.best
+                };
+            });
 
         entries.sort((a, b) => {
             if (leaderboardSortBy === "best") {
@@ -3078,6 +3101,7 @@
         const matches = Object.entries(allUsersCache)
             .map(([cleanNick, u]) => ({ cleanNick, ...u }))
             .filter(u =>
+                !u.banned &&
                 u.uid !== currentUser.uid &&
                 (u.cleanNick.includes(keyword) || (u.nickname && u.nickname.toLowerCase().includes(keyword)))
             )
@@ -3917,6 +3941,15 @@
     }
 
     onAuthStateChanged(auth, async (user) => {
+        if (unsubscribeBanListener) {
+            unsubscribeBanListener();
+            unsubscribeBanListener = null;
+        }
+        if (unsubscribeProfileListener) {
+            unsubscribeProfileListener();
+            unsubscribeProfileListener = null;
+        }
+
         if (user) {
             currentUser = user;
             currentAccountId = user.uid;
@@ -3934,6 +3967,49 @@
                     currentNickname = snap.exists() ? snap.val() : currentCleanNick;
                 } catch {
                     currentNickname = currentCleanNick;
+                }
+            }
+
+            // 1. Pantau status blokir dari Owner secara real-time
+            unsubscribeBanListener = onValue(ref(database, `clover/banned_users/${user.uid}`), async (banSnap) => {
+                if (banSnap.exists()) {
+                    const banInfo = banSnap.val();
+                    await signOut(auth);
+                    alert(`Akun kamu telah diblokir oleh Owner.\nAlasan: ${banInfo.reason || "Melanggar pedoman komunitas Clover."}`);
+                }
+            });
+
+            // 2. Pantau jika profil diedit atau dihapus permanen oleh Owner
+            if (currentCleanNick) {
+                let profileInitialized = false;
+                unsubscribeProfileListener = onValue(ref(database, `clover/users/${currentCleanNick}`), async (profileSnap) => {
+                    if (!profileSnap.exists()) {
+                        if (!isRegistering && profileInitialized) {
+                            await signOut(auth);
+                            alert("Data akun ini telah dihapus oleh pengelola Clover.");
+                        }
+                        return;
+                    }
+
+                    profileInitialized = true;
+                    const updatedData = profileSnap.val();
+                    if (updatedData.nickname && updatedData.nickname !== currentNickname) {
+                        currentNickname = updatedData.nickname;
+                        updateAccountUI();
+                    }
+                });
+
+                // Cek langsung saat sesi lama dimuat ulang apakah akun sudah dihapus sebelumnya
+                if (!isRegistering) {
+                    try {
+                        const initialProfileSnap = await get(ref(database, `clover/users/${currentCleanNick}`));
+                        if (!initialProfileSnap.exists() && !isRegistering) {
+                            await signOut(auth);
+                            return;
+                        }
+                    } catch (err) {
+                        console.error("Gagal memverifikasi profil awal:", err);
+                    }
                 }
             }
 
