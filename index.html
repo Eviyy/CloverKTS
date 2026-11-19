@@ -123,20 +123,26 @@
 </div>
 
 <!-- =====================================================
-     GERBANG AWAL: MODAL MASUK / DAFTAR / TAMU
+     MODAL MASUK / DAFTAR (DIBUKA SAAT PENGGUNA MEMILIH)
 ===================================================== -->
 <div id="auth-gate-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-[2.2rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden my-auto">
+    <div id="auth-modal-card" class="bg-white rounded-[2.2rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden my-auto">
         <i class="fa-solid fa-clover clover-watermark"></i>
+
+        <!-- Tombol Tutup Modal -->
+        <button id="close-auth-modal-btn" type="button" aria-label="Tutup jendela masuk dan daftar"
+                class="absolute top-5 right-5 z-20 w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
 
         <!-- Header Modal -->
         <div class="text-center relative z-10 mb-6">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-emerald-500/25">
                 <i class="fa-solid fa-clover"></i>
             </div>
-            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Selamat Datang di Clover</h2>
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Akun Clover</h2>
             <p class="text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">
-                Masuk atau buat akun dengan nickname & password agar streak tantangan dan riwayatmu tersimpan di semua perangkat.
+                Masuk atau buat akun dengan nickname & password untuk menyimpan streak, masuk papan peringkat, menambah teman, dan mengobrol.
             </p>
         </div>
 
@@ -197,14 +203,11 @@
         </form>
 
         <!-- Pembatas & Opsi Tamu -->
-        <div class="relative z-10 mt-5 pt-4 border-t border-slate-100 text-center space-y-2.5">
+        <div class="relative z-10 mt-5 pt-4 border-t border-slate-100 text-center space-y-2">
             <button id="continue-guest-btn" type="button"
                     class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
-                <i class="fa-solid fa-user-secret text-slate-500"></i> Lanjut Tanpa Akun (Tamu)
+                <i class="fa-solid fa-user-secret text-slate-500"></i> Tetap Gunakan Mode Tamu
             </button>
-            <p class="text-[10px] text-slate-400 font-medium">
-                Mode tamu menyimpan progres hanya di browser perangkat ini.
-            </p>
         </div>
     </div>
 </div>
@@ -231,11 +234,14 @@
         </a>
 
         <!-- Desktop Links -->
-        <nav class="hidden lg:flex items-center gap-5 text-sm font-bold text-slate-600">
+        <nav class="hidden lg:flex items-center gap-3.5 xl:gap-5 text-xs xl:text-sm font-bold text-slate-600">
             <a href="#tentang" class="hover:text-emerald-600 transition-colors">Tentang</a>
-            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan Privat</a>
+            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan</a>
             <a href="#curhat-publik" class="hover:text-emerald-600 transition-colors">Curhat</a>
             <a href="#tantangan" class="hover:text-emerald-600 transition-colors">Tantangan</a>
+            <a href="#teman" class="hover:text-emerald-600 transition-colors flex items-center gap-1">
+                Teman <span id="nav-friend-dot" class="hidden w-2 h-2 rounded-full bg-rose-500"></span>
+            </a>
             <a href="#papan" class="hover:text-emerald-600 transition-colors">Kehangatan</a>
             <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan</a>
         </nav>
@@ -251,8 +257,9 @@
             </a>
 
             <button id="mobile-menu-btn" type="button" aria-label="Buka menu navigasi" aria-expanded="false"
-                    class="lg:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors">
+                    class="lg:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors relative">
                 <i id="mobile-menu-icon" class="fa-solid fa-bars text-base"></i>
+                <span id="mobile-menu-dot" class="hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500"></span>
             </button>
         </div>
     </div>
@@ -273,12 +280,15 @@
                 <i class="fa-solid fa-comments text-teal-500 w-4 text-center"></i> Curhat Publik
             </a>
             <a href="#tantangan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                <i class="fa-solid fa-leaf text-emerald-500 w-4 text-center"></i> Tantangan
+                <i class="fa-solid fa-leaf text-emerald-500 w-4 text-center"></i> Tantangan & Rank
+            </a>
+            <a href="#teman" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                <i class="fa-solid fa-user-group text-emerald-500 w-4 text-center"></i> Teman & Chat
             </a>
             <a href="#papan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                 <i class="fa-solid fa-envelope-open-text text-emerald-500 w-4 text-center"></i> Kehangatan
             </a>
-            <a href="#masukan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+            <a href="#masukan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors col-span-2">
                 <i class="fa-solid fa-lightbulb text-amber-500 w-4 text-center"></i> Masukan Web
             </a>
         </nav>
@@ -331,10 +341,10 @@
                 <i class="fa-solid fa-comments"></i> Ruang Keluhan & Curhat
             </a>
             <a href="#tantangan" class="bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-teal-700/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-leaf"></i> Tantangan
+                <i class="fa-solid fa-leaf"></i> Tantangan & Peringkat
             </a>
-            <a href="#papan" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-slate-900/15 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-envelope-open-text"></i> Pesan Kehangatan
+            <a href="#teman" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-slate-900/15 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-user-group"></i> Teman & Obrolan
             </a>
         </div>
     </div>
@@ -377,17 +387,17 @@
                 <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-6 text-2xl shadow-lg shadow-emerald-500/30 relative z-10">
                     <i class="fa-solid fa-leaf"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Tantangan Melawan Sepi</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Lakukan aksi kecil harian untuk menjaga streak semangatmu dan perlahan memecah rasa isolasi diri.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Tantangan & Peringkat</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Lakukan aksi kecil harian untuk menjaga streak semangatmu dan lihat papan peringkat konsistensi bersama.</p>
             </div>
 
             <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <i class="fa-solid fa-envelope-open-text clover-watermark"></i>
+                <i class="fa-solid fa-user-group clover-watermark"></i>
                 <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-6 text-2xl relative z-10">
-                    <i class="fa-solid fa-envelope-open-text"></i>
+                    <i class="fa-solid fa-user-group"></i>
                 </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Pesan Hangat Bagi Sesama</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Tinggalkan kata-kata positif dan dukungan semangat di papan kehangatan untuk mencerahkan hari orang lain.</p>
+                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Teman & Obrolan Hangat</h4>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Tambahkan teman lewat nickname dan saling bertukar sapaan hangat secara privat dan aman.</p>
             </div>
         </div>
     </section>
@@ -578,10 +588,10 @@
     </section>
 
     <!-- =================================================
-         3. TANTANGAN
+         3. TANTANGAN HARIAN & PAPAN PERINGKAT
     ================================================== -->
-    <section id="tantangan">
-        <div class="text-center max-w-2xl mx-auto mb-10">
+    <section id="tantangan" class="space-y-10">
+        <div class="text-center max-w-2xl mx-auto">
             <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
                 <i class="fa-solid fa-clover"></i> Tantangan Harian
             </span>
@@ -721,10 +731,190 @@
                 </div>
             </div>
         </div>
+
+        <!-- PAPAN PERINGKAT TANTANGAN (LEADERBOARD) -->
+        <div class="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-100/80 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+            <i class="fa-solid fa-trophy clover-watermark"></i>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 relative z-10">
+                <div>
+                    <span class="text-amber-500 text-xs font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">
+                        <i class="fa-solid fa-trophy"></i> Papan Peringkat Tantangan
+                    </span>
+                    <h4 class="text-xl md:text-2xl font-extrabold text-slate-900">
+                        Pejuang Konsisten Clover
+                    </h4>
+                </div>
+
+                <!-- Pilihan Urutan Peringkat -->
+                <div class="inline-flex bg-slate-100 p-1 rounded-2xl self-start sm:self-auto">
+                    <button id="lb-sort-current" type="button" class="px-3.5 py-2 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all">
+                        🔥 Streak Saat Ini
+                    </button>
+                    <button id="lb-sort-best" type="button" class="px-3.5 py-2 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all">
+                        🏆 Rekor Terbaik
+                    </button>
+                </div>
+            </div>
+
+            <!-- Banner Status Peringkat Saya / Ajakan Daftar -->
+            <div id="leaderboard-my-banner" class="mb-5 relative z-10"></div>
+
+            <!-- Daftar Top 10 -->
+            <div id="leaderboard-list" class="space-y-2.5 relative z-10">
+                <div class="py-8 text-center text-xs font-bold text-slate-400">
+                    Memuat papan peringkat...
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- =================================================
-         4. PAPAN KEHANGATAN
+         4. TEMAN & OBROLAN HANGAT (KOMUNIKASI SEDERHANA)
+    ================================================== -->
+    <section id="teman" class="space-y-8 pt-6 border-t border-slate-200/60 relative">
+        <div class="text-center max-w-2xl mx-auto">
+            <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                <i class="fa-solid fa-user-group"></i> Lingkar Teman Clover
+            </span>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                Add Teman & Obrolan Hangat
+            </h3>
+            <p class="text-slate-500 leading-relaxed font-medium">
+                Temukan teman seperjuangan lewat nickname, lihat streak harian mereka, dan saling bertukar sapaan hangat secara privat.
+            </p>
+        </div>
+
+        <!-- Tampilan Jika Mode Tamu -->
+        <div id="friends-guest-gate" class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-emerald-100/80 shadow-xl shadow-slate-200/40 text-center max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+            <i class="fa-solid fa-user-group clover-watermark"></i>
+            <div class="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-sm relative z-10">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <div class="space-y-2 relative z-10">
+                <h4 class="text-xl font-extrabold text-slate-900">Masuk atau Daftar untuk Menambah Teman</h4>
+                <p class="text-xs md:text-sm text-slate-500 font-medium leading-relaxed max-w-md mx-auto">
+                    Saat ini kamu sedang menjelajah sebagai <strong>Tamu</strong>. Buat akun dengan nickname & password agar bisa menambah teman dan mengirim pesan pribadi.
+                </p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-3 pt-2 relative z-10">
+                <button type="button" id="friends-open-register-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 transition-all">
+                    <i class="fa-solid fa-user-plus mr-1.5"></i> Daftar Akun Baru
+                </button>
+                <button type="button" id="friends-open-login-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs md:text-sm font-bold px-6 py-3.5 rounded-2xl transition-all">
+                    <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Sudah Punya Akun
+                </button>
+            </div>
+        </div>
+
+        <!-- Tampilan Jika Sudah Login -->
+        <div id="friends-logged-in-area" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Kolom Kiri: Cari Teman, Permintaan Masuk, & Daftar Teman -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Kartu Cari & Add Teman -->
+                <div class="bg-white rounded-[2rem] p-6 border border-emerald-100/80 shadow-lg shadow-slate-200/30 space-y-4">
+                    <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-emerald-600"></i> Cari & Tambah Teman
+                    </h4>
+                    <form id="friend-search-form" class="flex gap-2">
+                        <input type="text" id="friend-search-input" maxlength="25" required placeholder="Ketik nickname teman..."
+                               class="flex-1 px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs font-semibold text-slate-800">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-colors shrink-0">
+                            Cari
+                        </button>
+                    </form>
+                    <div id="friend-search-results" class="space-y-2"></div>
+                </div>
+
+                <!-- Kartu Permintaan Pertemanan Masuk -->
+                <div id="incoming-requests-card" class="hidden bg-amber-50/70 rounded-[2rem] p-6 border border-amber-200/80 shadow-sm space-y-3">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-amber-800 flex items-center justify-between">
+                        <span><i class="fa-solid fa-bell mr-1.5"></i> Permintaan Pertemanan</span>
+                        <span id="incoming-requests-count" class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px]">0</span>
+                    </h4>
+                    <div id="incoming-requests-list" class="space-y-2.5"></div>
+                </div>
+
+                <!-- Kartu Daftar Teman -->
+                <div class="bg-white rounded-[2rem] p-6 border border-emerald-100/80 shadow-lg shadow-slate-200/30 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-user-check text-teal-600"></i> Daftar Teman
+                        </h4>
+                        <span id="friends-total-badge" class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">0 teman</span>
+                    </div>
+                    <div id="friends-list" class="space-y-2.5">
+                        <p class="text-xs text-slate-400 font-medium text-center py-6">
+                            Belum ada teman. Cari nickname temanmu di atas untuk mulai terhubung!
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Kolom Kanan: Ruang Obrolan Sederhana 1-on-1 -->
+            <div class="lg:col-span-7 bg-white rounded-[2.2rem] border border-emerald-100/80 shadow-xl shadow-slate-200/40 flex flex-col h-[540px] overflow-hidden">
+                
+                <!-- Header Chat -->
+                <div id="chat-header" class="px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50/70 border-b border-emerald-100 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div id="chat-partner-avatar" class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 id="chat-partner-name" class="text-sm font-extrabold text-slate-900 truncate">Pilih Teman untuk Mengobrol</h4>
+                            <p id="chat-partner-sub" class="text-[11px] font-semibold text-slate-500 truncate">Obrolan privat antar teman Clover</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Area Pesan Chat -->
+                <div id="chat-messages-box" class="flex-1 p-5 overflow-y-auto space-y-3 bg-slate-50/60">
+                    <div class="h-full flex flex-col items-center justify-center text-center px-6">
+                        <div class="w-14 h-14 rounded-3xl bg-white border border-emerald-100 text-emerald-500 flex items-center justify-center text-xl mb-3 shadow-sm">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </div>
+                        <p class="text-sm font-extrabold text-slate-700">Mulai Percakapan Hangat</p>
+                        <p class="text-xs text-slate-400 font-medium mt-1 max-w-xs">
+                            Klik salah satu teman di sebelah kiri untuk saling menyapa dan memberi semangat.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sapaan Cepat (Icebreaker) & Input Pesan -->
+                <div id="chat-composer-area" class="hidden border-t border-slate-100 bg-white p-3.5 space-y-2.5">
+                    <!-- Tombol Sapaan Cepat -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                        <button type="button" class="quick-chat-btn shrink-0 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-200/70 transition-colors" data-msg="Halo! Semangat menjalani hari ini ya 🍀">
+                            👋 Semangat hari ini! 🍀
+                        </button>
+                        <button type="button" class="quick-chat-btn shrink-0 bg-teal-50 hover:bg-teal-100 text-teal-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-teal-200/70 transition-colors" data-msg="Sudah selesai tantangan hari ini belum? 🔥">
+                            🔥 Cek tantangan
+                        </button>
+                        <button type="button" class="quick-chat-btn shrink-0 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-cyan-200/70 transition-colors" data-msg="Kalau butuh teman cerita, aku di sini ya">
+                            💬 Aku di sini
+                        </button>
+                        <button type="button" class="quick-chat-btn shrink-0 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-amber-200/70 transition-colors" data-msg="Jangan lupa istirahat dan minum air putih 😊">
+                            ☕ Jangan lupa istirahat
+                        </button>
+                    </div>
+
+                    <form id="chat-send-form" class="flex items-center gap-2">
+                        <input type="text" id="chat-message-input" maxlength="250" required placeholder="Tulis pesan singkat (maks. 250 karakter)..."
+                               class="flex-1 px-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs sm:text-sm font-medium text-slate-800">
+                        <button type="submit" id="chat-send-btn" class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl transition-all shadow-md shadow-emerald-600/20 shrink-0">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================
+         5. PAPAN KEHANGATAN
     ================================================== -->
     <section id="papan" class="space-y-8 pt-10 border-t border-slate-200/60 relative">
         <div class="text-center max-w-2xl mx-auto">
@@ -779,7 +969,7 @@
     </section>
 
     <!-- =================================================
-         5. BANTUAN
+         6. BANTUAN
     ================================================== -->
     <section id="bantuan" class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-rose-100 shadow-inner mt-12">
         <div class="text-center max-w-2xl mx-auto mb-8">
@@ -815,7 +1005,7 @@
     </section>
 
     <!-- =================================================
-         6. MASUKAN & SARAN WEB
+         7. MASUKAN & SARAN WEB
     ================================================== -->
     <section id="masukan" class="bg-white rounded-[2.5rem] p-6 md:p-10 lg:p-14 border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-3xl mx-auto relative overflow-hidden">
         <i class="fa-solid fa-clover clover-watermark"></i>
@@ -940,8 +1130,15 @@
         };
     }
 
+    function formatTimeShort(timestamp) {
+        if (!timestamp) return "";
+        const d = new Date(Number(timestamp));
+        if (Number.isNaN(d.getTime())) return "";
+        return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    }
+
     // =====================================================
-    // IDENTITAS PENGGUNA (AKUN TERDAFTAR ATAU TAMU)
+    // IDENTITAS PENGGUNA (DEFAULT TAMU SAAT PERTAMA BUKA)
     // =====================================================
     let guestDeviceId = localStorage.getItem("clover_user_device_id");
     if (!guestDeviceId) {
@@ -952,12 +1149,14 @@
     let currentUser = null;
     let currentAccountId = guestDeviceId;
     let currentNickname = "";
+    let currentCleanNick = "";
     let authMode = "login"; // "login" | "register"
 
     // =====================================================
-    // ELEMEN DOM GERBANG AUTH & NAVBAR AKUN
+    // ELEMEN DOM MODAL MASUK / DAFTAR & NAVBAR AKUN
     // =====================================================
     const authGateModal = document.getElementById("auth-gate-modal");
+    const closeAuthModalBtn = document.getElementById("close-auth-modal-btn");
     const tabLoginBtn = document.getElementById("tab-login-btn");
     const tabRegisterBtn = document.getElementById("tab-register-btn");
     const authModalStatus = document.getElementById("auth-modal-status");
@@ -1019,6 +1218,17 @@
         hideAuthStatus();
     }
 
+    closeAuthModalBtn.addEventListener("click", closeAuthModal);
+    continueGuestBtn.addEventListener("click", closeAuthModal);
+    authGateModal.addEventListener("click", (e) => {
+        if (e.target === authGateModal) closeAuthModal();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !authGateModal.classList.contains("hidden")) {
+            closeAuthModal();
+        }
+    });
+
     tabLoginBtn.addEventListener("click", () => setAuthMode("login"));
     tabRegisterBtn.addEventListener("click", () => setAuthMode("register"));
 
@@ -1026,12 +1236,6 @@
         const isPassword = authPassInput.type === "password";
         authPassInput.type = isPassword ? "text" : "password";
         toggleAuthPassIcon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
-    });
-
-    continueGuestBtn.addEventListener("click", () => {
-        localStorage.setItem("clover_guest_mode", "true");
-        closeAuthModal();
-        updateAccountUI();
     });
 
     authGateForm.addEventListener("submit", async (e) => {
@@ -1072,18 +1276,18 @@
                 });
 
                 currentNickname = rawNick;
-                localStorage.removeItem("clover_guest_mode");
+                currentCleanNick = cleanNick;
                 authGateForm.reset();
                 closeAuthModal();
             } else {
                 const cred = await signInWithEmailAndPassword(auth, virtualEmail, password);
+                currentCleanNick = cleanNick;
                 if (!cred.user.displayName) {
                     const snap = await get(ref(database, `clover/users/${cleanNick}/nickname`));
                     currentNickname = snap.exists() ? snap.val() : rawNick;
                 } else {
                     currentNickname = cred.user.displayName;
                 }
-                localStorage.removeItem("clover_guest_mode");
                 authGateForm.reset();
                 closeAuthModal();
             }
@@ -1109,9 +1313,7 @@
     async function handleLogout() {
         try {
             await signOut(auth);
-            localStorage.removeItem("clover_guest_mode");
             closeMobileMenu();
-            openAuthModal("login");
         } catch (err) {
             alert("Gagal keluar dari akun.");
         }
@@ -2125,7 +2327,7 @@
     });
 
     // =====================================================
-    // 6. TANTANGAN HARIAN & STREAK (TERSINKRONISASI PER AKUN)
+    // 6. TANTANGAN HARIAN, STREAK & PAPAN PERINGKAT (LEADERBOARD)
     // =====================================================
     const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
     const challengeProgressBar = document.getElementById("challengeProgressBar");
@@ -2136,6 +2338,14 @@
     const bestStreakSpan = document.getElementById("bestStreak");
     const resetChallengesButton = document.getElementById("resetChallengesButton");
 
+    const lbSortCurrentBtn = document.getElementById("lb-sort-current");
+    const lbSortBestBtn = document.getElementById("lb-sort-best");
+    const leaderboardMyBanner = document.getElementById("leaderboard-my-banner");
+    const leaderboardList = document.getElementById("leaderboard-list");
+
+    let allUsersCache = {}; // { cleanNick: { nickname, uid, createdAt } }
+    let allStreaksCache = {}; // { uidOrDeviceId: { current, best, lastDate } }
+    let leaderboardSortBy = "current"; // "current" | "best"
     let unsubscribeStreak = null;
 
     function getStreakRef() {
@@ -2167,6 +2377,170 @@
 
             currentStreakSpan.textContent = streakData.current || 0;
             bestStreakSpan.textContent = streakData.best || 0;
+        });
+    }
+
+    // Pantau daftar pengguna & streak secara real-time untuk Leaderboard dan Fitur Teman
+    onValue(ref(database, "clover/users"), (snapshot) => {
+        allUsersCache = snapshot.val() || {};
+        renderLeaderboard();
+        renderFriendsUI();
+    });
+
+    onValue(ref(database, "clover/streaks"), (snapshot) => {
+        allStreaksCache = snapshot.val() || {};
+        renderLeaderboard();
+        renderFriendsUI();
+    });
+
+    lbSortCurrentBtn.addEventListener("click", () => {
+        leaderboardSortBy = "current";
+        lbSortCurrentBtn.className = "px-3.5 py-2 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
+        lbSortBestBtn.className = "px-3.5 py-2 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all";
+        renderLeaderboard();
+    });
+
+    lbSortBestBtn.addEventListener("click", () => {
+        leaderboardSortBy = "best";
+        lbSortBestBtn.className = "px-3.5 py-2 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
+        lbSortCurrentBtn.className = "px-3.5 py-2 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all";
+        renderLeaderboard();
+    });
+
+    function getEffectiveStreak(uid) {
+        const s = allStreaksCache[uid];
+        if (!s) return { current: 0, best: 0 };
+        const todayStr = getTodayDateString();
+        let cur = Number(s.current || 0);
+        if (s.lastDate && s.lastDate !== todayStr) {
+            const diff = getDaysDifference(s.lastDate, todayStr);
+            if (diff > 1) cur = 0;
+        }
+        return {
+            current: cur,
+            best: Number(s.best || 0)
+        };
+    }
+
+    function renderLeaderboard() {
+        const todayStr = getTodayDateString();
+        const entries = Object.entries(allUsersCache).map(([cleanNick, u]) => {
+            const st = getEffectiveStreak(u.uid);
+            return {
+                uid: u.uid,
+                nickname: u.nickname || cleanNick,
+                cleanNick,
+                current: st.current,
+                best: st.best
+            };
+        });
+
+        entries.sort((a, b) => {
+            if (leaderboardSortBy === "best") {
+                if (b.best !== a.best) return b.best - a.best;
+                return b.current - a.current;
+            } else {
+                if (b.current !== a.current) return b.current - a.current;
+                return b.best - a.best;
+            }
+        });
+
+        // Banner Status Pengguna Saat Ini
+        if (currentUser) {
+            const myRankIdx = entries.findIndex(item => item.uid === currentUser.uid);
+            const myItem = myRankIdx >= 0 ? entries[myRankIdx] : null;
+            const rankNum = myRankIdx >= 0 ? `#${myRankIdx + 1}` : "-";
+            const scoreText = myItem
+                ? (leaderboardSortBy === "best" ? `${myItem.best} hari rekor terbaik` : `${myItem.current} hari streak aktif`)
+                : "0 hari";
+
+            leaderboardMyBanner.innerHTML = `
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl p-3.5 px-4 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                            ${rankNum}
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-xs font-extrabold text-slate-800 truncate">Posisi Kamu (${escapeHTML(currentNickname)})</p>
+                            <p class="text-[11px] font-semibold text-emerald-700">${scoreText}</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-bold text-emerald-600 bg-white px-2.5 py-1 rounded-xl border border-emerald-100 shrink-0">
+                        Tersinkronisasi
+                    </span>
+                </div>
+            `;
+        } else {
+            leaderboardMyBanner.innerHTML = `
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <p class="text-xs font-medium text-slate-600">
+                        <i class="fa-solid fa-circle-info text-emerald-600 mr-1"></i> Masuk atau daftar akun agar streak-mu tercatat di papan peringkat!
+                    </p>
+                    <button type="button" id="lb-login-prompt-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors self-start sm:self-auto shrink-0">
+                        Masuk / Daftar
+                    </button>
+                </div>
+            `;
+            const promptBtn = document.getElementById("lb-login-prompt-btn");
+            if (promptBtn) promptBtn.addEventListener("click", () => openAuthModal("register"));
+        }
+
+        const top10 = entries.slice(0, 10);
+        if (top10.length === 0) {
+            leaderboardList.innerHTML = `
+                <div class="py-8 text-center text-xs font-bold text-slate-400">
+                    Belum ada peserta terdaftar di papan peringkat. Jadilah yang pertama!
+                </div>
+            `;
+            return;
+        }
+
+        leaderboardList.innerHTML = "";
+        top10.forEach((item, idx) => {
+            const rank = idx + 1;
+            const isMe = currentUser && item.uid === currentUser.uid;
+            let badgeHTML = `<span class="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 font-extrabold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
+            if (rank === 1) {
+                badgeHTML = `<span class="w-7 h-7 rounded-xl bg-amber-400 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm"><i class="fa-solid fa-crown"></i></span>`;
+            } else if (rank === 2) {
+                badgeHTML = `<span class="w-7 h-7 rounded-xl bg-slate-300 text-slate-800 font-black text-xs flex items-center justify-center shrink-0">2</span>`;
+            } else if (rank === 3) {
+                badgeHTML = `<span class="w-7 h-7 rounded-xl bg-amber-600/80 text-white font-black text-xs flex items-center justify-center shrink-0">3</span>`;
+            }
+
+            const row = document.createElement("div");
+            row.className = `flex items-center justify-between gap-3 p-3 rounded-2xl border transition-all ${
+                isMe
+                    ? "bg-emerald-50/90 border-emerald-300 shadow-sm"
+                    : "bg-slate-50/70 border-slate-100 hover:bg-white"
+            }`;
+
+            const mainScore = leaderboardSortBy === "best" ? item.best : item.current;
+            const subScore = leaderboardSortBy === "best"
+                ? `Streak saat ini: ${item.current} hari`
+                : `Rekor terbaik: ${item.best} hari`;
+
+            row.innerHTML = `
+                <div class="flex items-center gap-3 min-w-0">
+                    ${badgeHTML}
+                    <div class="min-w-0">
+                        <p class="text-xs sm:text-sm font-extrabold text-slate-800 truncate">
+                            ${escapeHTML(item.nickname)} ${isMe ? '<span class="text-[10px] font-bold text-emerald-600 ml-1">(Kamu)</span>' : ''}
+                        </p>
+                        <p class="text-[10px] font-semibold text-slate-400">${subScore}</p>
+                    </div>
+                </div>
+                <div class="text-right shrink-0">
+                    <span class="inline-flex items-center gap-1 text-xs font-extrabold px-3 py-1 rounded-xl ${
+                        leaderboardSortBy === "best"
+                            ? "bg-amber-50 text-amber-700 border border-amber-200/80"
+                            : "bg-orange-50 text-orange-600 border border-orange-200/80"
+                    }">
+                        ${leaderboardSortBy === "best" ? "🏆" : "🔥"} ${mainScore} hari
+                    </span>
+                </div>
+            `;
+            leaderboardList.appendChild(row);
         });
     }
 
@@ -2242,7 +2616,6 @@
 
             updateChallengeProgress(completedCount);
 
-            // Minimal 1 tantangan selesai hari ini untuk menjaga / menambah streak
             if (completedCount >= 1) {
                 const streakRef = getStreakRef();
                 const snapshot = await get(streakRef);
@@ -2283,7 +2656,460 @@
     });
 
     // =====================================================
-    // 7. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
+    // 7. FITUR ADD TEMAN & OBROLAN HANGAT 1-ON-1
+    // =====================================================
+    const friendsGuestGate = document.getElementById("friends-guest-gate");
+    const friendsLoggedInArea = document.getElementById("friends-logged-in-area");
+    const friendsOpenRegisterBtn = document.getElementById("friends-open-register-btn");
+    const friendsOpenLoginBtn = document.getElementById("friends-open-login-btn");
+
+    const friendSearchForm = document.getElementById("friend-search-form");
+    const friendSearchInput = document.getElementById("friend-search-input");
+    const friendSearchResults = document.getElementById("friend-search-results");
+
+    const incomingRequestsCard = document.getElementById("incoming-requests-card");
+    const incomingRequestsCount = document.getElementById("incoming-requests-count");
+    const incomingRequestsList = document.getElementById("incoming-requests-list");
+
+    const friendsTotalBadge = document.getElementById("friends-total-badge");
+    const friendsList = document.getElementById("friends-list");
+
+    const navFriendDot = document.getElementById("nav-friend-dot");
+    const mobileMenuDot = document.getElementById("mobile-menu-dot");
+
+    const chatPartnerAvatar = document.getElementById("chat-partner-avatar");
+    const chatPartnerName = document.getElementById("chat-partner-name");
+    const chatPartnerSub = document.getElementById("chat-partner-sub");
+    const chatMessagesBox = document.getElementById("chat-messages-box");
+    const chatComposerArea = document.getElementById("chat-composer-area");
+    const chatSendForm = document.getElementById("chat-send-form");
+    const chatMessageInput = document.getElementById("chat-message-input");
+    const chatSendBtn = document.getElementById("chat-send-btn");
+
+    friendsOpenRegisterBtn.addEventListener("click", () => openAuthModal("register"));
+    friendsOpenLoginBtn.addEventListener("click", () => openAuthModal("login"));
+
+    let myFriendsMap = {}; // { friendUid: { nickname, cleanNick, status, updatedAt } }
+    let unsubscribeFriends = null;
+    let activeChatPartner = null; // { uid, nickname, cleanNick }
+    let unsubscribeActiveChat = null;
+
+    function getChatRoomId(uid1, uid2) {
+        return [uid1, uid2].sort().join("_");
+    }
+
+    function bindFriendsListener() {
+        if (unsubscribeFriends) {
+            unsubscribeFriends();
+            unsubscribeFriends = null;
+        }
+        if (unsubscribeActiveChat) {
+            unsubscribeActiveChat();
+            unsubscribeActiveChat = null;
+        }
+        activeChatPartner = null;
+        myFriendsMap = {};
+        resetChatBoxUI();
+
+        if (!currentUser) {
+            friendsGuestGate.classList.remove("hidden");
+            friendsLoggedInArea.classList.add("hidden");
+            navFriendDot.classList.add("hidden");
+            mobileMenuDot.classList.add("hidden");
+            return;
+        }
+
+        friendsGuestGate.classList.add("hidden");
+        friendsLoggedInArea.classList.remove("hidden");
+
+        const myFriendsRef = ref(database, `clover/friends/${currentUser.uid}`);
+        unsubscribeFriends = onValue(myFriendsRef, (snapshot) => {
+            myFriendsMap = snapshot.val() || {};
+            renderFriendsUI();
+        });
+    }
+
+    function resetChatBoxUI() {
+        chatPartnerAvatar.innerHTML = `<i class="fa-solid fa-comments"></i>`;
+        chatPartnerName.textContent = "Pilih Teman untuk Mengobrol";
+        chatPartnerSub.textContent = "Obrolan privat antar teman Clover";
+        chatComposerArea.classList.add("hidden");
+        chatMessagesBox.innerHTML = `
+            <div class="h-full flex flex-col items-center justify-center text-center px-6">
+                <div class="w-14 h-14 rounded-3xl bg-white border border-emerald-100 text-emerald-500 flex items-center justify-center text-xl mb-3 shadow-sm">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+                <p class="text-sm font-extrabold text-slate-700">Mulai Percakapan Hangat</p>
+                <p class="text-xs text-slate-400 font-medium mt-1 max-w-xs">
+                    Klik salah satu teman di sebelah kiri untuk saling menyapa dan memberi semangat.
+                </p>
+            </div>
+        `;
+    }
+
+    async function sendFriendRequest(targetUid, targetNick, targetCleanNick) {
+        if (!currentUser) return;
+        const myUid = currentUser.uid;
+        const myNick = currentNickname || "Sahabat Clover";
+        const myClean = currentCleanNick || formatNick(myNick).cleanNick;
+        const now = Date.now();
+
+        try {
+            await set(ref(database, `clover/friends/${myUid}/${targetUid}`), {
+                nickname: targetNick,
+                cleanNick: targetCleanNick,
+                status: "sent",
+                updatedAt: now
+            });
+            await set(ref(database, `clover/friends/${targetUid}/${myUid}`), {
+                nickname: myNick,
+                cleanNick: myClean,
+                status: "received",
+                updatedAt: now
+            });
+        } catch (err) {
+            console.error("Gagal mengirim permintaan pertemanan:", err);
+            alert("Gagal mengirim permintaan teman. Pastikan aturan database sudah diperbarui.");
+        }
+    }
+
+    async function acceptFriendRequest(friendUid, friendNick, friendCleanNick) {
+        if (!currentUser) return;
+        const myUid = currentUser.uid;
+        const myNick = currentNickname || "Sahabat Clover";
+        const myClean = currentCleanNick || formatNick(myNick).cleanNick;
+        const now = Date.now();
+
+        try {
+            await set(ref(database, `clover/friends/${myUid}/${friendUid}`), {
+                nickname: friendNick,
+                cleanNick: friendCleanNick,
+                status: "accepted",
+                updatedAt: now
+            });
+            await set(ref(database, `clover/friends/${friendUid}/${myUid}`), {
+                nickname: myNick,
+                cleanNick: myClean,
+                status: "accepted",
+                updatedAt: now
+            });
+        } catch (err) {
+            console.error("Gagal menerima teman:", err);
+            alert("Gagal menerima permintaan pertemanan.");
+        }
+    }
+
+    async function removeFriendOrRequest(friendUid) {
+        if (!currentUser) return;
+        const myUid = currentUser.uid;
+        try {
+            await set(ref(database, `clover/friends/${myUid}/${friendUid}`), null);
+            await set(ref(database, `clover/friends/${friendUid}/${myUid}`), null);
+            if (activeChatPartner && activeChatPartner.uid === friendUid) {
+                if (unsubscribeActiveChat) {
+                    unsubscribeActiveChat();
+                    unsubscribeActiveChat = null;
+                }
+                activeChatPartner = null;
+                resetChatBoxUI();
+            }
+        } catch (err) {
+            console.error("Gagal menghapus data pertemanan:", err);
+        }
+    }
+
+    friendSearchForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!currentUser) {
+            openAuthModal("login");
+            return;
+        }
+        const keyword = friendSearchInput.value.trim().toLowerCase();
+        if (!keyword) return;
+
+        const matches = Object.entries(allUsersCache)
+            .map(([cleanNick, u]) => ({ cleanNick, ...u }))
+            .filter(u =>
+                u.uid !== currentUser.uid &&
+                (u.cleanNick.includes(keyword) || (u.nickname && u.nickname.toLowerCase().includes(keyword)))
+            )
+            .slice(0, 5);
+
+        renderSearchResults(matches);
+    });
+
+    function renderSearchResults(matches) {
+        friendSearchResults.innerHTML = "";
+        if (matches.length === 0) {
+            friendSearchResults.innerHTML = `
+                <p class="text-[11px] font-semibold text-slate-400 text-center py-2">
+                    Nickname tidak ditemukan. Pastikan ejaan sudah benar.
+                </p>
+            `;
+            return;
+        }
+
+        matches.forEach((u) => {
+            const rel = myFriendsMap[u.uid];
+            const st = getEffectiveStreak(u.uid);
+            const row = document.createElement("div");
+            row.className = "flex items-center justify-between gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-100";
+
+            let actionHTML = `
+                <button type="button" class="add-friend-action-btn bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-colors">
+                    <i class="fa-solid fa-user-plus mr-1"></i> Add Teman
+                </button>
+            `;
+
+            if (rel) {
+                if (rel.status === "accepted") {
+                    actionHTML = `<span class="text-[11px] font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-100">Sudah Berteman</span>`;
+                } else if (rel.status === "sent") {
+                    actionHTML = `<span class="text-[11px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-100">Menunggu</span>`;
+                } else if (rel.status === "received") {
+                    actionHTML = `<button type="button" class="accept-search-friend-btn bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">Terima</button>`;
+                }
+            }
+
+            row.innerHTML = `
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(u.nickname)}</p>
+                    <p class="text-[10px] font-semibold text-slate-400">🔥 ${st.current} hari streak</p>
+                </div>
+                <div class="shrink-0">${actionHTML}</div>
+            `;
+
+            const addBtn = row.querySelector(".add-friend-action-btn");
+            if (addBtn) {
+                addBtn.addEventListener("click", async () => {
+                    addBtn.disabled = true;
+                    addBtn.textContent = "Mengirim...";
+                    await sendFriendRequest(u.uid, u.nickname, u.cleanNick);
+                    renderSearchResults(matches);
+                });
+            }
+
+            const accBtn = row.querySelector(".accept-search-friend-btn");
+            if (accBtn) {
+                accBtn.addEventListener("click", async () => {
+                    accBtn.disabled = true;
+                    await acceptFriendRequest(u.uid, u.nickname, u.cleanNick);
+                    renderSearchResults(matches);
+                });
+            }
+
+            friendSearchResults.appendChild(row);
+        });
+    }
+
+    function renderFriendsUI() {
+        if (!currentUser) return;
+
+        const entries = Object.entries(myFriendsMap).map(([uid, val]) => ({ uid, ...val }));
+        const incoming = entries.filter(item => item.status === "received");
+        const accepted = entries.filter(item => item.status === "accepted");
+
+        // Notifikasi titik merah di navbar jika ada permintaan teman masuk
+        if (incoming.length > 0) {
+            navFriendDot.classList.remove("hidden");
+            mobileMenuDot.classList.remove("hidden");
+            incomingRequestsCard.classList.remove("hidden");
+            incomingRequestsCount.textContent = incoming.length;
+        } else {
+            navFriendDot.classList.add("hidden");
+            mobileMenuDot.classList.add("hidden");
+            incomingRequestsCard.classList.add("hidden");
+        }
+
+        // Render Permintaan Masuk
+        incomingRequestsList.innerHTML = "";
+        incoming.forEach((req) => {
+            const div = document.createElement("div");
+            div.className = "bg-white p-3 rounded-2xl border border-amber-200/70 flex items-center justify-between gap-2";
+            div.innerHTML = `
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(req.nickname)}</p>
+                    <p class="text-[10px] font-semibold text-slate-400">Ingin berteman denganmu</p>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" class="req-accept-btn bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-xl">
+                        Terima
+                    </button>
+                    <button type="button" class="req-decline-btn bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[11px] font-bold px-2.5 py-1.5 rounded-xl">
+                        Tolak
+                    </button>
+                </div>
+            `;
+            div.querySelector(".req-accept-btn").addEventListener("click", () => {
+                acceptFriendRequest(req.uid, req.nickname, req.cleanNick);
+            });
+            div.querySelector(".req-decline-btn").addEventListener("click", () => {
+                removeFriendOrRequest(req.uid);
+            });
+            incomingRequestsList.appendChild(div);
+        });
+
+        // Render Daftar Teman Diterima
+        friendsTotalBadge.textContent = `${accepted.length} teman`;
+        if (accepted.length === 0) {
+            friendsList.innerHTML = `
+                <p class="text-xs text-slate-400 font-medium text-center py-6">
+                    Belum ada teman. Cari nickname temanmu di atas untuk mulai terhubung!
+                </p>
+            `;
+            return;
+        }
+
+        friendsList.innerHTML = "";
+        accepted.forEach((friend) => {
+            const st = getEffectiveStreak(friend.uid);
+            const isSelected = activeChatPartner && activeChatPartner.uid === friend.uid;
+            const item = document.createElement("div");
+            item.className = `p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${
+                isSelected
+                    ? "bg-emerald-50 border-emerald-300 shadow-sm"
+                    : "bg-slate-50/80 border-slate-100 hover:bg-white"
+            }`;
+
+            item.innerHTML = `
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                        ${escapeHTML(friend.nickname.charAt(0).toUpperCase())}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(friend.nickname)}</p>
+                        <p class="text-[10px] font-semibold text-orange-600">🔥 ${st.current} hari streak</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" class="open-chat-btn bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-colors">
+                        <i class="fa-solid fa-comment-dots mr-1"></i> Chat
+                    </button>
+                    <button type="button" class="unfriend-btn text-slate-400 hover:text-rose-500 p-1.5 text-xs transition-colors" title="Hapus teman">
+                        <i class="fa-solid fa-user-xmark"></i>
+                    </button>
+                </div>
+            `;
+
+            item.querySelector(".open-chat-btn").addEventListener("click", () => {
+                openChatWithFriend(friend);
+            });
+
+            item.querySelector(".unfriend-btn").addEventListener("click", () => {
+                if (confirm(`Hapus ${friend.nickname} dari daftar teman?`)) {
+                    removeFriendOrRequest(friend.uid);
+                }
+            });
+
+            friendsList.appendChild(item);
+        });
+    }
+
+    function openChatWithFriend(friend) {
+        if (!currentUser) return;
+        activeChatPartner = friend;
+        renderFriendsUI();
+
+        const st = getEffectiveStreak(friend.uid);
+        chatPartnerAvatar.textContent = friend.nickname.charAt(0).toUpperCase();
+        chatPartnerName.textContent = friend.nickname;
+        chatPartnerSub.textContent = `Teman Clover • 🔥 ${st.current} hari streak`;
+        chatComposerArea.classList.remove("hidden");
+
+        if (unsubscribeActiveChat) {
+            unsubscribeActiveChat();
+            unsubscribeActiveChat = null;
+        }
+
+        const roomId = getChatRoomId(currentUser.uid, friend.uid);
+        const roomMessagesRef = ref(database, `clover/direct_chats/${roomId}/messages`);
+
+        chatMessagesBox.innerHTML = `
+            <div class="h-full flex items-center justify-center">
+                <div class="loading-spinner"></div>
+            </div>
+        `;
+
+        unsubscribeActiveChat = onValue(roomMessagesRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                chatMessagesBox.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center px-6">
+                        <p class="text-xs font-bold text-slate-500">Belum ada pesan dengan ${escapeHTML(friend.nickname)}.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Gunakan tombol sapaan cepat di bawah untuk mulai menyapa! 🍀</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const msgs = Object.entries(data)
+                .map(([id, val]) => ({ id, ...val }))
+                .sort((a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0));
+
+            chatMessagesBox.innerHTML = "";
+            msgs.forEach((m) => {
+                const isMine = m.senderUid === currentUser.uid;
+                const bubbleWrap = document.createElement("div");
+                bubbleWrap.className = `flex flex-col ${isMine ? "items-end" : "items-start"}`;
+
+                bubbleWrap.innerHTML = `
+                    <div class="max-w-[82%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-medium leading-relaxed shadow-sm ${
+                        isMine
+                            ? "bg-emerald-600 text-white rounded-br-sm"
+                            : "bg-white text-slate-800 border border-slate-200/80 rounded-bl-sm"
+                    }">
+                        <p class="whitespace-pre-wrap break-words">${escapeHTML(m.text)}</p>
+                    </div>
+                    <span class="text-[10px] font-semibold text-slate-400 mt-1 px-1">
+                        ${isMine ? "Kamu" : escapeHTML(m.senderNick || friend.nickname)} • ${formatTimeShort(m.createdAt)}
+                    </span>
+                `;
+                chatMessagesBox.appendChild(bubbleWrap);
+            });
+
+            chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+        });
+    }
+
+    async function sendDirectChatMessage(rawText) {
+        if (!currentUser || !activeChatPartner) return;
+        const text = rawText.trim();
+        if (!text || text.length > 250) return;
+
+        const roomId = getChatRoomId(currentUser.uid, activeChatPartner.uid);
+        const roomMessagesRef = ref(database, `clover/direct_chats/${roomId}/messages`);
+
+        chatSendBtn.disabled = true;
+        try {
+            await set(push(roomMessagesRef), {
+                senderUid: currentUser.uid,
+                senderNick: (currentNickname || "Sahabat Clover").slice(0, 25),
+                text: text.slice(0, 250),
+                createdAt: Date.now()
+            });
+            chatMessageInput.value = "";
+        } catch (err) {
+            console.error("Gagal mengirim pesan chat:", err);
+            alert("Gagal mengirim pesan. Pastikan kalian sudah berteman dan aturan database sudah diperbarui.");
+        } finally {
+            chatSendBtn.disabled = false;
+        }
+    }
+
+    chatSendForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await sendDirectChatMessage(chatMessageInput.value);
+    });
+
+    document.querySelectorAll(".quick-chat-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const msg = btn.getAttribute("data-msg");
+            if (msg) sendDirectChatMessage(msg);
+        });
+    });
+
+    // =====================================================
+    // 8. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -2313,7 +3139,6 @@
         feedbackCharCount.textContent = `${feedbackInput.value.length}/500`;
     });
 
-    // Pantau feedback secara real-time agar riwayat & balasan admin tersinkronisasi di semua perangkat akun
     onValue(ref(database, "clover/feedback"), (snapshot) => {
         const data = snapshot.val();
         if (!data) {
@@ -2419,7 +3244,7 @@
     });
 
     // =====================================================
-    // 8. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
+    // 9. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
     // =====================================================
     function applyAccountAutofill() {
         senderInput.value = currentNickname || "";
@@ -2493,7 +3318,9 @@
 
         applyAccountAutofill();
         bindStreakListener();
+        bindFriendsListener();
         loadChallengeState();
+        renderLeaderboard();
         renderMyFeedback();
         renderRotatingBatch();
         renderRotatingCurhats();
@@ -2504,31 +3331,32 @@
             currentUser = user;
             currentAccountId = user.uid;
 
+            if (user.email) {
+                currentCleanNick = user.email.split("@")[0];
+            }
+
             if (user.displayName) {
                 currentNickname = user.displayName;
-            } else if (user.email) {
-                const cleanNick = user.email.split("@")[0];
+                if (!currentCleanNick) currentCleanNick = formatNick(user.displayName).cleanNick;
+            } else if (currentCleanNick) {
                 try {
-                    const snap = await get(ref(database, `clover/users/${cleanNick}/nickname`));
-                    currentNickname = snap.exists() ? snap.val() : cleanNick;
+                    const snap = await get(ref(database, `clover/users/${currentCleanNick}/nickname`));
+                    currentNickname = snap.exists() ? snap.val() : currentCleanNick;
                 } catch {
-                    currentNickname = cleanNick;
+                    currentNickname = currentCleanNick;
                 }
             }
 
             closeAuthModal();
             updateAccountUI();
         } else {
+            // Langsung masuk beranda sebagai Tamu tanpa memunculkan pop-up otomatis
             currentUser = null;
             currentAccountId = guestDeviceId;
             currentNickname = "";
+            currentCleanNick = "";
 
             updateAccountUI();
-
-            // Tampilkan gerbang awal otomatis jika belum memilih mode tamu
-            if (localStorage.getItem("clover_guest_mode") !== "true") {
-                openAuthModal("login");
-            }
         }
     });
 
