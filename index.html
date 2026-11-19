@@ -1980,7 +1980,7 @@
     loadChallengeState();
 
     // =====================================================
-    // 8. MASUKAN & SARAN WEB (TERHUBUNG KE CONTROL & VIEW PANEL)
+    // 8. MASUKAN & SARAN WEB (SESUAI RULES clover/feedback)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -2027,13 +2027,11 @@
             const feedbackRef = ref(database, "clover/feedback");
             const newFbRef = push(feedbackRef);
 
-            // Tidak menyertakan field `reply` saat penulisan awal agar tidak ditolak rules admin-only,
-            // dan menyertakan `status: "pending"` agar terbaca di Control & View Panel.
+            // Wajib memiliki ['text', 'sender', 'createdAt', 'status', 'userId'] sesuai rules
             await set(newFbRef, {
-                text,
-                sender,
-                deviceId: userDeviceId,
-                uid: "anonymous",
+                text: text.slice(0, 500),
+                sender: sender.slice(0, 40),
+                userId: userDeviceId,
                 status: "pending",
                 createdAt: Date.now()
             });
@@ -2091,9 +2089,13 @@
 
                 let replyHTML = `<p class="text-[11px] text-amber-600 font-semibold italic">Menunggu tanggapan admin...</p>`;
                 if (data.reply && data.reply.trim().length > 0) {
+                    const replyDate = data.repliedAt ? formatDate(data.repliedAt) : "";
                     replyHTML = `
                         <div class="mt-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-slate-700">
-                            <span class="font-extrabold text-emerald-800 block mb-0.5"><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin:</span>
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-extrabold text-emerald-800"><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin:</span>
+                                <span class="text-[10px] text-slate-400 font-semibold">${escapeHTML(replyDate)}</span>
+                            </div>
                             <p class="italic">"${escapeHTML(data.reply)}"</p>
                         </div>
                     `;
