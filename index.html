@@ -123,10 +123,97 @@
 </div>
 
 <!-- =====================================================
+     GERBANG AWAL: MODAL MASUK / DAFTAR / TAMU
+===================================================== -->
+<div id="auth-gate-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-[2.2rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden my-auto">
+        <i class="fa-solid fa-clover clover-watermark"></i>
+
+        <!-- Header Modal -->
+        <div class="text-center relative z-10 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-emerald-500/25">
+                <i class="fa-solid fa-clover"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Selamat Datang di Clover</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">
+                Masuk atau buat akun dengan nickname & password agar streak tantangan dan riwayatmu tersimpan di semua perangkat.
+            </p>
+        </div>
+
+        <!-- Tab Switcher -->
+        <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1.5 rounded-2xl mb-5 relative z-10">
+            <button id="tab-login-btn" type="button" class="py-2.5 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all">
+                <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Masuk
+            </button>
+            <button id="tab-register-btn" type="button" class="py-2.5 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all">
+                <i class="fa-solid fa-user-plus mr-1.5"></i> Daftar Baru
+            </button>
+        </div>
+
+        <!-- Pesan Status Auth -->
+        <div id="auth-modal-status" class="hidden rounded-2xl px-4 py-3 text-xs font-bold mb-4 relative z-10"></div>
+
+        <!-- Form Masuk / Daftar -->
+        <form id="auth-gate-form" class="space-y-4 relative z-10">
+            <div>
+                <label for="auth-nick-input" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Nickname <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-at"></i>
+                    </span>
+                    <input type="text" id="auth-nick-input" minlength="3" maxlength="25" required autocomplete="username"
+                           placeholder="Contoh: PejuangTenang"
+                           class="w-full pl-9 pr-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800 transition-all">
+                </div>
+                <p id="auth-nick-hint" class="hidden text-[10px] font-medium text-slate-400 mt-1 px-1">
+                    3–25 karakter (huruf, angka, titik, atau garis bawah).
+                </p>
+            </div>
+
+            <div>
+                <label for="auth-pass-input" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Password <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" id="auth-pass-input" minlength="6" maxlength="64" required autocomplete="current-password"
+                           placeholder="Minimal 6 karakter"
+                           class="w-full pl-9 pr-11 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800 transition-all">
+                    <button id="toggle-auth-pass" type="button" aria-label="Tampilkan atau sembunyikan password"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-emerald-600 text-xs transition-colors">
+                        <i id="toggle-auth-pass-icon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" id="auth-submit-btn"
+                    class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 text-white text-sm font-bold py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 transition-all">
+                <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Masuk ke Clover
+            </button>
+        </form>
+
+        <!-- Pembatas & Opsi Tamu -->
+        <div class="relative z-10 mt-5 pt-4 border-t border-slate-100 text-center space-y-2.5">
+            <button id="continue-guest-btn" type="button"
+                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-secret text-slate-500"></i> Lanjut Tanpa Akun (Tamu)
+            </button>
+            <p class="text-[10px] text-slate-400 font-medium">
+                Mode tamu menyimpan progres hanya di browser perangkat ini.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- =====================================================
      NAVBAR
 ===================================================== -->
 <header class="bg-white/95 backdrop-blur-md border-b border-emerald-100/60 sticky top-0 z-50 transition-all">
-    <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
         
         <!-- Logo -->
         <a href="#hero" class="flex items-center gap-3 shrink-0 group">
@@ -144,7 +231,7 @@
         </a>
 
         <!-- Desktop Links -->
-        <nav class="hidden md:flex items-center gap-5 lg:gap-6 text-sm font-bold text-slate-600">
+        <nav class="hidden lg:flex items-center gap-5 text-sm font-bold text-slate-600">
             <a href="#tentang" class="hover:text-emerald-600 transition-colors">Tentang</a>
             <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan Privat</a>
             <a href="#curhat-publik" class="hover:text-emerald-600 transition-colors">Curhat</a>
@@ -153,22 +240,28 @@
             <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan</a>
         </nav>
 
-        <!-- Right Actions (Darurat + Mobile Menu Toggle) -->
+        <!-- Right Actions (Status Akun + Darurat + Mobile Menu Toggle) -->
         <div class="flex items-center gap-2">
-            <a href="#bantuan" class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-3.5 sm:px-4 py-2.5 rounded-2xl transition-colors flex items-center gap-2 border border-rose-100 shadow-sm">
+            <!-- Status Akun Desktop/Tablet -->
+            <div id="nav-account-area" class="hidden sm:flex items-center gap-2"></div>
+
+            <a href="#bantuan" class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-3.5 py-2.5 rounded-2xl transition-colors flex items-center gap-1.5 border border-rose-100 shadow-sm">
                 <i class="fa-solid fa-phone"></i>
                 <span class="hidden sm:inline">Darurat</span>
             </a>
 
             <button id="mobile-menu-btn" type="button" aria-label="Buka menu navigasi" aria-expanded="false"
-                    class="md:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors">
+                    class="lg:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors">
                 <i id="mobile-menu-icon" class="fa-solid fa-bars text-base"></i>
             </button>
         </div>
     </div>
 
     <!-- Mobile Navigation Dropdown -->
-    <div id="mobile-menu" class="hidden md:hidden border-t border-emerald-100/70 bg-white/98 backdrop-blur-md px-4 py-4 shadow-lg">
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-emerald-100/70 bg-white/98 backdrop-blur-md px-4 py-4 shadow-lg space-y-3">
+        <!-- Info Akun Mobile -->
+        <div id="mobile-account-area" class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-center justify-between gap-2"></div>
+
         <nav class="grid grid-cols-2 gap-2 text-xs font-bold text-slate-700">
             <a href="#tentang" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                 <i class="fa-solid fa-clover text-emerald-500 w-4 text-center"></i> Tentang
@@ -218,7 +311,7 @@
 
     <div class="max-w-4xl mx-auto text-center relative z-10">
         <span class="inline-flex items-center gap-1.5 bg-emerald-100/80 backdrop-blur-sm border border-emerald-200 text-emerald-800 text-xs font-bold px-4 py-1.5 rounded-full mb-6 shadow-sm">
-            <i class="fa-solid fa-clover text-emerald-600"></i> Ruang aman untuk terhubung & bertumbuh
+            <i class="fa-solid fa-clover text-emerald-600"></i> <span id="hero-greeting">Ruang aman untuk terhubung & bertumbuh</span>
         </span>
 
         <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mb-6">
@@ -461,7 +554,7 @@
 
             <div>
                 <label for="curhat-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
-                    Nama / Panggilan <span class="font-medium text-slate-400">(opsional)</span>
+                    Nama / Panggilan <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
                 </label>
                 <input type="text" id="curhat-sender-input" maxlength="40" placeholder="Pejuang Tenang" 
                        class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
@@ -662,7 +755,7 @@
 
             <div>
                 <label for="sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
-                    Nama <span class="font-medium text-slate-400">(opsional)</span>
+                    Nama <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
                 </label>
                 <input type="text" id="sender-input" maxlength="40" placeholder="Sahabat Anonim" 
                        class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
@@ -797,7 +890,8 @@
 <script type="module">
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, set, update, onValue, query, orderByChild, equalTo, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, push, set, get, onValue, query, orderByChild, equalTo, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk",
@@ -811,7 +905,217 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const database = getDatabase(app);
+
+    // =====================================================
+    // UTILITAS UMUM & TANGGAL
+    // =====================================================
+    function getTodayDateString() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function parseDateUTC(dateStr) {
+        const [y, m, d] = String(dateStr).split("-").map(Number);
+        return Date.UTC(y, m - 1, d);
+    }
+
+    function getDaysDifference(dateStr1, dateStr2) {
+        const diffTime = parseDateUTC(dateStr2) - parseDateUTC(dateStr1);
+        return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function escapeHTML(value) {
+        const div = document.createElement("div");
+        div.textContent = String(value ?? "");
+        return div.innerHTML;
+    }
+
+    function formatNick(rawNick) {
+        const clean = rawNick.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "_");
+        return {
+            cleanNick: clean,
+            virtualEmail: `${clean}@clover.app`
+        };
+    }
+
+    // =====================================================
+    // IDENTITAS PENGGUNA (AKUN TERDAFTAR ATAU TAMU)
+    // =====================================================
+    let guestDeviceId = localStorage.getItem("clover_user_device_id");
+    if (!guestDeviceId) {
+        guestDeviceId = 'user_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem("clover_user_device_id", guestDeviceId);
+    }
+
+    let currentUser = null;
+    let currentAccountId = guestDeviceId;
+    let currentNickname = "";
+    let authMode = "login"; // "login" | "register"
+
+    // =====================================================
+    // ELEMEN DOM GERBANG AUTH & NAVBAR AKUN
+    // =====================================================
+    const authGateModal = document.getElementById("auth-gate-modal");
+    const tabLoginBtn = document.getElementById("tab-login-btn");
+    const tabRegisterBtn = document.getElementById("tab-register-btn");
+    const authModalStatus = document.getElementById("auth-modal-status");
+    const authGateForm = document.getElementById("auth-gate-form");
+    const authNickInput = document.getElementById("auth-nick-input");
+    const authNickHint = document.getElementById("auth-nick-hint");
+    const authPassInput = document.getElementById("auth-pass-input");
+    const toggleAuthPass = document.getElementById("toggle-auth-pass");
+    const toggleAuthPassIcon = document.getElementById("toggle-auth-pass-icon");
+    const authSubmitBtn = document.getElementById("auth-submit-btn");
+    const continueGuestBtn = document.getElementById("continue-guest-btn");
+
+    const navAccountArea = document.getElementById("nav-account-area");
+    const mobileAccountArea = document.getElementById("mobile-account-area");
+    const heroGreeting = document.getElementById("hero-greeting");
+
+    function showAuthStatus(message, type = "error") {
+        authModalStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200");
+        authModalStatus.classList.add("border");
+        if (type === "success") {
+            authModalStatus.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
+        } else {
+            authModalStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+        }
+        authModalStatus.textContent = message;
+    }
+
+    function hideAuthStatus() {
+        authModalStatus.classList.add("hidden");
+    }
+
+    function setAuthMode(mode) {
+        authMode = mode;
+        hideAuthStatus();
+        if (mode === "login") {
+            tabLoginBtn.className = "py-2.5 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
+            tabRegisterBtn.className = "py-2.5 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all";
+            authNickHint.classList.add("hidden");
+            authPassInput.setAttribute("autocomplete", "current-password");
+            authSubmitBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-1.5"></i> Masuk ke Clover`;
+        } else {
+            tabRegisterBtn.className = "py-2.5 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
+            tabLoginBtn.className = "py-2.5 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all";
+            authNickHint.classList.remove("hidden");
+            authPassInput.setAttribute("autocomplete", "new-password");
+            authSubmitBtn.innerHTML = `<i class="fa-solid fa-user-plus mr-1.5"></i> Daftar & Masuk`;
+        }
+    }
+
+    function openAuthModal(defaultMode = "login") {
+        setAuthMode(defaultMode);
+        authGateModal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeAuthModal() {
+        authGateModal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+        hideAuthStatus();
+    }
+
+    tabLoginBtn.addEventListener("click", () => setAuthMode("login"));
+    tabRegisterBtn.addEventListener("click", () => setAuthMode("register"));
+
+    toggleAuthPass.addEventListener("click", () => {
+        const isPassword = authPassInput.type === "password";
+        authPassInput.type = isPassword ? "text" : "password";
+        toggleAuthPassIcon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+    });
+
+    continueGuestBtn.addEventListener("click", () => {
+        localStorage.setItem("clover_guest_mode", "true");
+        closeAuthModal();
+        updateAccountUI();
+    });
+
+    authGateForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideAuthStatus();
+
+        const rawNick = authNickInput.value.trim();
+        const password = authPassInput.value;
+
+        if (rawNick.length < 3 || rawNick.length > 25) {
+            showAuthStatus("Nickname harus terdiri dari 3 hingga 25 karakter.");
+            return;
+        }
+        if (password.length < 6) {
+            showAuthStatus("Password minimal 6 karakter.");
+            return;
+        }
+
+        const { cleanNick, virtualEmail } = formatNick(rawNick);
+        if (cleanNick.length < 3) {
+            showAuthStatus("Nickname minimal mengandung 3 huruf atau angka.");
+            return;
+        }
+
+        authSubmitBtn.disabled = true;
+        authSubmitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> ${authMode === "register" ? "Mendaftarkan..." : "Memasuki..."}`;
+
+        try {
+            if (authMode === "register") {
+                const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
+                await updateProfile(cred.user, { displayName: rawNick });
+
+                // Simpan profil ringan ke Realtime Database (tanpa password)
+                await set(ref(database, `clover/users/${cleanNick}`), {
+                    nickname: rawNick,
+                    uid: cred.user.uid,
+                    createdAt: Date.now()
+                });
+
+                currentNickname = rawNick;
+                localStorage.removeItem("clover_guest_mode");
+                authGateForm.reset();
+                closeAuthModal();
+            } else {
+                const cred = await signInWithEmailAndPassword(auth, virtualEmail, password);
+                if (!cred.user.displayName) {
+                    const snap = await get(ref(database, `clover/users/${cleanNick}/nickname`));
+                    currentNickname = snap.exists() ? snap.val() : rawNick;
+                } else {
+                    currentNickname = cred.user.displayName;
+                }
+                localStorage.removeItem("clover_guest_mode");
+                authGateForm.reset();
+                closeAuthModal();
+            }
+        } catch (err) {
+            console.error("Auth error:", err);
+            if (err.code === "auth/email-already-in-use") {
+                showAuthStatus("Nickname ini sudah dipakai. Silakan pilih nickname lain atau masuk.");
+            } else if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+                showAuthStatus("Nickname atau password salah.");
+            } else if (err.code === "auth/weak-password") {
+                showAuthStatus("Password terlalu lemah (minimal 6 karakter).");
+            } else if (err.code === "auth/too-many-requests") {
+                showAuthStatus("Terlalu banyak percobaan. Tunggu beberapa saat lalu coba lagi.");
+            } else {
+                showAuthStatus("Gagal memproses akun. Pastikan metode Email/Password aktif di Firebase.");
+            }
+        } finally {
+            authSubmitBtn.disabled = false;
+            setAuthMode(authMode);
+        }
+    });
+
+    async function handleLogout() {
+        try {
+            await signOut(auth);
+            localStorage.removeItem("clover_guest_mode");
+            closeMobileMenu();
+            openAuthModal("login");
+        } catch (err) {
+            alert("Gagal keluar dari akun.");
+        }
+    }
 
     // =====================================================
     // MENU NAVIGASI MOBILE
@@ -849,30 +1153,6 @@
             closeMobileMenu();
         }
     });
-
-    // =====================================================
-    // UTILITAS TANGGAL & SELISIH HARI
-    // =====================================================
-    function getTodayDateString() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    function parseDateUTC(dateStr) {
-        const [y, m, d] = String(dateStr).split("-").map(Number);
-        return Date.UTC(y, m - 1, d);
-    }
-
-    function getDaysDifference(dateStr1, dateStr2) {
-        const diffTime = parseDateUTC(dateStr2) - parseDateUTC(dateStr1);
-        return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    }
-
-    function escapeHTML(value) {
-        const div = document.createElement("div");
-        div.textContent = String(value ?? "");
-        return div.innerHTML;
-    }
 
     // =====================================================
     // 1. TRACKING: Total Kunjungan, Kunjungan Harian & Pengunjung Aktif
@@ -927,16 +1207,7 @@
     });
 
     // =====================================================
-    // 2. DEVICE ID PRIVAT
-    // =====================================================
-    let userDeviceId = localStorage.getItem("clover_user_device_id");
-    if (!userDeviceId) {
-        userDeviceId = 'user_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        localStorage.setItem("clover_user_device_id", userDeviceId);
-    }
-
-    // =====================================================
-    // 3. FITUR BROADCAST MASSAL
+    // 2. FITUR BROADCAST MASSAL
     // =====================================================
     const broadcastBanner = document.getElementById("broadcastBanner");
     const broadcastText = document.getElementById("broadcastText");
@@ -967,7 +1238,7 @@
     });
 
     // =====================================================
-    // 4. PAPAN KEHANGATAN
+    // 3. PAPAN KEHANGATAN
     // =====================================================
     const messageForm = document.getElementById("message-form");
     const messageInput = document.getElementById("message-input");
@@ -1079,7 +1350,7 @@
     });
 
     function renderRotatingBatch() {
-        if (isMessageInteracting) return;
+        if (isMessageInteracting || approvedMessagesCache.length === 0) return;
         messagesContainer.innerHTML = "";
         messagesContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto";
 
@@ -1113,7 +1384,7 @@
 
         const likesObj = message.likes || {};
         const likeCount = Object.keys(likesObj).length;
-        const hasLiked = Boolean(likesObj[userDeviceId]);
+        const hasLiked = Boolean(likesObj[currentAccountId]);
 
         let repliesHTML = "";
         if (message.reply) {
@@ -1151,7 +1422,7 @@
             <div class="flex items-start justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 font-bold shadow-md shadow-emerald-500/20">
-                        ${sender.charAt(0).toUpperCase()}
+                        ${escapeHTML(sender.charAt(0).toUpperCase())}
                     </div>
                     <div>
                         <p class="text-sm font-extrabold text-slate-800">${escapeHTML(sender)}</p>
@@ -1176,7 +1447,7 @@
                     <i class="fa-solid fa-reply"></i> Balas Kehangatannya!
                 </button>
                 <div class="msg-reply-form-wrapper hidden space-y-2 bg-white/90 p-3 rounded-2xl border border-emerald-200 shadow-inner">
-                    <input type="text" class="msg-reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-emerald-400" placeholder="Nama / Panggilan (opsional)" maxlength="30">
+                    <input type="text" class="msg-reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-emerald-400" placeholder="Nama / Panggilan (opsional)" maxlength="30" value="${escapeHTML(currentNickname)}">
                     <textarea class="msg-reply-text-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium resize-none focus:outline-none focus:border-emerald-400" rows="2" placeholder="Tulis kata dukungan hangat..." maxlength="200"></textarea>
                     <button type="button" class="send-msg-reply-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl w-full transition-colors shadow-sm">Kirim Balasan</button>
                 </div>
@@ -1190,7 +1461,7 @@
         const likeBtn = card.querySelector(".like-btn");
         likeBtn.addEventListener("click", async () => {
             pauseMessageRotationShort();
-            const likeRef = ref(database, `clover/messages/${message.id}/likes/${userDeviceId}`);
+            const likeRef = ref(database, `clover/messages/${message.id}/likes/${currentAccountId}`);
             
             const icon = likeBtn.querySelector("i");
             const spanCount = likeBtn.querySelector("span");
@@ -1226,6 +1497,9 @@
 
         toggleBtn.addEventListener("click", () => {
             replyWrapper.classList.toggle("hidden");
+            if (!replyWrapper.classList.contains("hidden") && !replySenderInput.value && currentNickname) {
+                replySenderInput.value = currentNickname;
+            }
             isMessageInteracting = !replyWrapper.classList.contains("hidden");
         });
 
@@ -1249,7 +1523,7 @@
                     status: "pending"
                 });
                 replyTextInput.value = "";
-                replySenderInput.value = "";
+                replySenderInput.value = currentNickname || "";
                 replyWrapper.classList.add("hidden");
                 isMessageInteracting = false;
                 alert("Tanggapan terkirim dan menunggu moderasi admin 🍀");
@@ -1280,9 +1554,14 @@
         try {
             const messagesRef = ref(database, "clover/messages");
             await set(push(messagesRef), {
-                text, sender, uid: "anonymous", createdAt: Date.now(), status: "pending"
+                text,
+                sender,
+                uid: currentUser ? currentUser.uid : "anonymous",
+                createdAt: Date.now(),
+                status: "pending"
             });
             messageForm.reset();
+            if (currentNickname) senderInput.value = currentNickname;
             charCount.textContent = "0/300";
             showFirebaseStatus("Pesan terkirim! Akan muncul setelah disetujui admin 🍀", "success");
             setTimeout(hideFirebaseStatus, 6000);
@@ -1299,7 +1578,7 @@
     });
 
     // =====================================================
-    // 5. RUANG CURHAT PUBLIK
+    // 4. RUANG CURHAT PUBLIK
     // =====================================================
     const curhatForm = document.getElementById("curhat-form");
     const curhatInput = document.getElementById("curhat-input");
@@ -1416,7 +1695,7 @@
     });
 
     function renderRotatingCurhats() {
-        if (isCurhatInteracting) return;
+        if (isCurhatInteracting || curhatsCache.length === 0) return;
         curhatsContainer.innerHTML = "";
         curhatsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto";
 
@@ -1450,7 +1729,7 @@
 
         const likesObj = curhat.likes || {};
         const likeCount = Object.keys(likesObj).length;
-        const hasLiked = Boolean(likesObj[userDeviceId]);
+        const hasLiked = Boolean(likesObj[currentAccountId]);
 
         let repliesHTML = "";
         const repliesObj = curhat.replies || {};
@@ -1475,7 +1754,7 @@
             <div class="flex items-start justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white flex items-center justify-center shrink-0 font-bold shadow-md shadow-teal-500/20">
-                        ${sender.charAt(0).toUpperCase()}
+                        ${escapeHTML(sender.charAt(0).toUpperCase())}
                     </div>
                     <div>
                         <p class="text-sm font-extrabold text-slate-800">${escapeHTML(sender)}</p>
@@ -1500,7 +1779,7 @@
                     <i class="fa-solid fa-reply"></i> Kasih Dukungan!
                 </button>
                 <div class="reply-form-wrapper hidden space-y-2 bg-white/90 p-3 rounded-2xl border border-teal-200 shadow-inner">
-                    <input type="text" class="reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-teal-400" placeholder="Nama / Panggilan (opsional)" maxlength="30">
+                    <input type="text" class="reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-teal-400" placeholder="Nama / Panggilan (opsional)" maxlength="30" value="${escapeHTML(currentNickname)}">
                     <textarea class="reply-text-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium resize-none focus:outline-none focus:border-teal-400" rows="2" placeholder="Tulis kata dukungan..." maxlength="200"></textarea>
                     <button type="button" class="send-reply-btn bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-xl w-full transition-colors shadow-sm">Kirim Balasan</button>
                 </div>
@@ -1514,7 +1793,7 @@
         const curhatLikeBtn = card.querySelector(".curhat-like-btn");
         curhatLikeBtn.addEventListener("click", async () => {
             pauseCurhatRotationShort();
-            const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${userDeviceId}`);
+            const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${currentAccountId}`);
             
             const icon = curhatLikeBtn.querySelector("i");
             const spanCount = curhatLikeBtn.querySelector("span");
@@ -1550,6 +1829,9 @@
 
         toggleBtn.addEventListener("click", () => {
             replyWrapper.classList.toggle("hidden");
+            if (!replyWrapper.classList.contains("hidden") && !replySenderInput.value && currentNickname) {
+                replySenderInput.value = currentNickname;
+            }
             isCurhatInteracting = !replyWrapper.classList.contains("hidden");
         });
 
@@ -1573,7 +1855,7 @@
                     status: "pending"
                 });
                 replyTextInput.value = "";
-                replySenderInput.value = "";
+                replySenderInput.value = currentNickname || "";
                 replyWrapper.classList.add("hidden");
                 isCurhatInteracting = false;
                 alert("Balasan terkirim dan menunggu moderasi admin 🍀");
@@ -1604,9 +1886,13 @@
         try {
             const curhatRef = ref(database, "clover/curhat_publik");
             await set(push(curhatRef), {
-                text, sender, createdAt: Date.now(), status: "pending"
+                text,
+                sender,
+                createdAt: Date.now(),
+                status: "pending"
             });
             curhatForm.reset();
+            if (currentNickname) curhatSenderInput.value = currentNickname;
             curhatCharCount.textContent = "0/400";
             showCurhatStatus("Curhat terkirim! Akan muncul setelah disetujui admin 🍀", "success");
             setTimeout(hideCurhatStatus, 6000);
@@ -1619,7 +1905,7 @@
     });
 
     // =====================================================
-    // 6. KELUHAN PRIBADI & AUDIO RECORDER
+    // 5. KELUHAN PRIBADI & AUDIO RECORDER
     // =====================================================
     const complaintInput = document.getElementById("complaintInput");
     const saveComplaintButton = document.getElementById("saveComplaintButton");
@@ -1839,7 +2125,7 @@
     });
 
     // =====================================================
-    // 7. TANTANGAN HARIAN & STREAK (MINIMAL 1 TANTANGAN)
+    // 6. TANTANGAN HARIAN & STREAK (TERSINKRONISASI PER AKUN)
     // =====================================================
     const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
     const challengeProgressBar = document.getElementById("challengeProgressBar");
@@ -1850,37 +2136,52 @@
     const bestStreakSpan = document.getElementById("bestStreak");
     const resetChallengesButton = document.getElementById("resetChallengesButton");
 
-    const streakRef = ref(database, `clover/streaks/${userDeviceId}`);
+    let unsubscribeStreak = null;
 
-    onValue(streakRef, (snapshot) => {
-        const streakData = snapshot.val() || { current: 0, best: 0, lastDate: "" };
-        const todayStr = getTodayDateString();
+    function getStreakRef() {
+        return ref(database, `clover/streaks/${currentAccountId}`);
+    }
 
-        if (streakData.lastDate && streakData.lastDate !== todayStr) {
-            const diffDays = getDaysDifference(streakData.lastDate, todayStr);
-            if (diffDays > 1 && streakData.current > 0) {
-                streakData.current = 0;
-                set(streakRef, {
-                    current: 0,
-                    best: streakData.best || 0,
-                    lastDate: streakData.lastDate
-                });
-            }
+    function bindStreakListener() {
+        if (unsubscribeStreak) {
+            unsubscribeStreak();
+            unsubscribeStreak = null;
         }
 
-        currentStreakSpan.textContent = streakData.current || 0;
-        bestStreakSpan.textContent = streakData.best || 0;
-    });
+        const streakRef = getStreakRef();
+        unsubscribeStreak = onValue(streakRef, (snapshot) => {
+            const streakData = snapshot.val() || { current: 0, best: 0, lastDate: "" };
+            const todayStr = getTodayDateString();
+
+            if (streakData.lastDate && streakData.lastDate !== todayStr) {
+                const diffDays = getDaysDifference(streakData.lastDate, todayStr);
+                if (diffDays > 1 && streakData.current > 0) {
+                    streakData.current = 0;
+                    set(streakRef, {
+                        current: 0,
+                        best: streakData.best || 0,
+                        lastDate: streakData.lastDate
+                    });
+                }
+            }
+
+            currentStreakSpan.textContent = streakData.current || 0;
+            bestStreakSpan.textContent = streakData.best || 0;
+        });
+    }
 
     function loadChallengeState() {
         const todayStr = getTodayDateString();
-        const storedDate = localStorage.getItem("clover_challenge_date");
-        let completedMap = JSON.parse(localStorage.getItem("clover_challenge_map") || "{}");
+        const dateKey = `clover_challenge_date_${currentAccountId}`;
+        const mapKey = `clover_challenge_map_${currentAccountId}`;
+
+        const storedDate = localStorage.getItem(dateKey);
+        let completedMap = JSON.parse(localStorage.getItem(mapKey) || "{}");
 
         if (storedDate !== todayStr) {
             completedMap = {};
-            localStorage.setItem("clover_challenge_date", todayStr);
-            localStorage.setItem("clover_challenge_map", JSON.stringify(completedMap));
+            localStorage.setItem(dateKey, todayStr);
+            localStorage.setItem(mapKey, JSON.stringify(completedMap));
         }
 
         let completedCount = 0;
@@ -1918,11 +2219,14 @@
     challengeCheckboxes.forEach((cb, idx) => {
         cb.addEventListener("change", async () => {
             const todayStr = getTodayDateString();
-            localStorage.setItem("clover_challenge_date", todayStr);
+            const dateKey = `clover_challenge_date_${currentAccountId}`;
+            const mapKey = `clover_challenge_map_${currentAccountId}`;
 
-            let completedMap = JSON.parse(localStorage.getItem("clover_challenge_map") || "{}");
+            localStorage.setItem(dateKey, todayStr);
+
+            let completedMap = JSON.parse(localStorage.getItem(mapKey) || "{}");
             completedMap[idx] = cb.checked;
-            localStorage.setItem("clover_challenge_map", JSON.stringify(completedMap));
+            localStorage.setItem(mapKey, JSON.stringify(completedMap));
 
             const itemContainer = cb.closest(".challenge-item");
             if (cb.checked) {
@@ -1940,7 +2244,8 @@
 
             // Minimal 1 tantangan selesai hari ini untuk menjaga / menambah streak
             if (completedCount >= 1) {
-                const snapshot = await new Promise(resolve => onValue(streakRef, resolve, { onlyOnce: true }));
+                const streakRef = getStreakRef();
+                const snapshot = await get(streakRef);
                 const streakData = snapshot.val() || { current: 0, best: 0, lastDate: "" };
 
                 if (streakData.lastDate !== todayStr) {
@@ -1967,7 +2272,7 @@
     });
 
     resetChallengesButton.addEventListener("click", () => {
-        localStorage.setItem("clover_challenge_map", JSON.stringify({}));
+        localStorage.setItem(`clover_challenge_map_${currentAccountId}`, JSON.stringify({}));
         loadChallengeState();
     });
 
@@ -1977,10 +2282,8 @@
         }
     });
 
-    loadChallengeState();
-
     // =====================================================
-    // 8. MASUKAN & SARAN WEB (SESUAI RULES clover/feedback)
+    // 7. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -1991,7 +2294,7 @@
     const myFeedbackContainer = document.getElementById("myFeedbackContainer");
     const myFeedbackList = document.getElementById("myFeedbackList");
 
-    const subscribedFeedbackIds = new Set();
+    let allFeedbackCache = [];
 
     function showFeedbackStatus(message, type = "info") {
         feedbackStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200", "bg-amber-50", "text-amber-700", "border-amber-200");
@@ -2010,6 +2313,63 @@
         feedbackCharCount.textContent = `${feedbackInput.value.length}/500`;
     });
 
+    // Pantau feedback secara real-time agar riwayat & balasan admin tersinkronisasi di semua perangkat akun
+    onValue(ref(database, "clover/feedback"), (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            allFeedbackCache = [];
+        } else {
+            allFeedbackCache = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            allFeedbackCache.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+        }
+        renderMyFeedback();
+    });
+
+    function renderMyFeedback() {
+        const legacyIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
+        const myItems = allFeedbackCache.filter(item =>
+            item.userId === currentAccountId || (!currentUser && legacyIds.includes(item.id))
+        );
+
+        if (myItems.length === 0) {
+            myFeedbackContainer.classList.add("hidden");
+            myFeedbackList.innerHTML = "";
+            return;
+        }
+
+        myFeedbackContainer.classList.remove("hidden");
+        myFeedbackList.innerHTML = "";
+
+        myItems.forEach((data) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2 shadow-sm";
+
+            let replyHTML = `<p class="text-[11px] text-amber-600 font-semibold italic">Menunggu tanggapan admin...</p>`;
+            if (data.reply && data.reply.trim().length > 0) {
+                const replyDate = data.repliedAt ? formatDate(data.repliedAt) : "";
+                replyHTML = `
+                    <div class="mt-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-slate-700">
+                        <div class="flex items-center justify-between mb-0.5">
+                            <span class="font-extrabold text-emerald-800"><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin:</span>
+                            <span class="text-[10px] text-slate-400 font-semibold">${escapeHTML(replyDate)}</span>
+                        </div>
+                        <p class="italic">"${escapeHTML(data.reply)}"</p>
+                    </div>
+                `;
+            }
+
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center text-slate-400 font-bold">
+                    <span>${escapeHTML(data.sender || "Anonim")}</span>
+                    <span>${formatDate(data.createdAt)}</span>
+                </div>
+                <p class="text-slate-700 font-medium italic">"${escapeHTML(data.text)}"</p>
+                ${replyHTML}
+            `;
+            myFeedbackList.appendChild(itemDiv);
+        });
+    }
+
     feedbackForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const text = feedbackInput.value.trim();
@@ -2027,24 +2387,25 @@
             const feedbackRef = ref(database, "clover/feedback");
             const newFbRef = push(feedbackRef);
 
-            // Wajib memiliki ['text', 'sender', 'createdAt', 'status', 'userId'] sesuai rules
             await set(newFbRef, {
                 text: text.slice(0, 500),
                 sender: sender.slice(0, 40),
-                userId: userDeviceId,
+                userId: currentAccountId,
                 status: "pending",
                 createdAt: Date.now()
             });
 
-            let myFbIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
-            myFbIds.push(newFbRef.key);
-            localStorage.setItem("clover_my_feedback_ids", JSON.stringify(myFbIds));
+            if (!currentUser) {
+                let myFbIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
+                myFbIds.push(newFbRef.key);
+                localStorage.setItem("clover_my_feedback_ids", JSON.stringify(myFbIds));
+            }
 
             feedbackForm.reset();
+            if (currentNickname) feedbackSenderInput.value = currentNickname;
             feedbackCharCount.textContent = "0/500";
             showFeedbackStatus("Terima kasih! Masukan Anda telah berhasil dikirim ke admin 🍀", "success");
             setTimeout(hideFeedbackStatus, 6000);
-            loadMyFeedback();
         } catch (err) {
             console.error("Gagal mengirim masukan ke Firebase:", err);
             const reason = err?.code === "PERMISSION_DENIED"
@@ -2057,63 +2418,119 @@
         }
     });
 
-    function loadMyFeedback() {
-        const myFbIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
-        if (myFbIds.length === 0) {
-            myFeedbackContainer.classList.add("hidden");
-            return;
-        }
+    // =====================================================
+    // 8. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
+    // =====================================================
+    function applyAccountAutofill() {
+        senderInput.value = currentNickname || "";
+        curhatSenderInput.value = currentNickname || "";
+        feedbackSenderInput.value = currentNickname || "";
 
-        myFeedbackContainer.classList.remove("hidden");
-
-        myFbIds.forEach(fbId => {
-            if (subscribedFeedbackIds.has(fbId)) return;
-            subscribedFeedbackIds.add(fbId);
-
-            const fbRef = ref(database, `clover/feedback/${fbId}`);
-            onValue(fbRef, (snapshot) => {
-                const data = snapshot.val();
-                let itemDiv = myFeedbackList.querySelector(`[data-fb-id="${fbId}"]`);
-
-                if (!data) {
-                    if (itemDiv) itemDiv.remove();
-                    return;
-                }
-
-                if (!itemDiv) {
-                    itemDiv = document.createElement("div");
-                    itemDiv.dataset.fbId = fbId;
-                    itemDiv.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2 shadow-sm";
-                    myFeedbackList.prepend(itemDiv);
-                }
-
-                let replyHTML = `<p class="text-[11px] text-amber-600 font-semibold italic">Menunggu tanggapan admin...</p>`;
-                if (data.reply && data.reply.trim().length > 0) {
-                    const replyDate = data.repliedAt ? formatDate(data.repliedAt) : "";
-                    replyHTML = `
-                        <div class="mt-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-slate-700">
-                            <div class="flex items-center justify-between mb-0.5">
-                                <span class="font-extrabold text-emerald-800"><i class="fa-solid fa-reply mr-1"></i> Tanggapan Admin:</span>
-                                <span class="text-[10px] text-slate-400 font-semibold">${escapeHTML(replyDate)}</span>
-                            </div>
-                            <p class="italic">"${escapeHTML(data.reply)}"</p>
-                        </div>
-                    `;
-                }
-
-                itemDiv.innerHTML = `
-                    <div class="flex justify-between items-center text-slate-400 font-bold">
-                        <span>${escapeHTML(data.sender || "Anonim")}</span>
-                        <span>${formatDate(data.createdAt)}</span>
-                    </div>
-                    <p class="text-slate-700 font-medium italic">"${escapeHTML(data.text)}"</p>
-                    ${replyHTML}
-                `;
-            });
+        document.querySelectorAll(".msg-reply-sender-input, .reply-sender-input").forEach((el) => {
+            el.value = currentNickname || "";
         });
     }
 
-    loadMyFeedback();
+    function updateAccountUI() {
+        if (currentUser && currentNickname) {
+            heroGreeting.textContent = `Halo, ${currentNickname} — Ruang aman untuk terhubung & bertumbuh`;
+
+            navAccountArea.innerHTML = `
+                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 pl-3 pr-1.5 py-1 rounded-2xl">
+                    <span class="text-xs font-extrabold text-emerald-800 max-w-[110px] truncate" title="${escapeHTML(currentNickname)}">
+                        <i class="fa-solid fa-circle-user text-emerald-600 mr-1"></i>${escapeHTML(currentNickname)}
+                    </span>
+                    <button type="button" id="desktop-logout-btn"
+                            class="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-[11px] font-bold px-2.5 py-1.5 rounded-xl border border-slate-200/80 transition-colors">
+                        Keluar
+                    </button>
+                </div>
+            `;
+            document.getElementById("desktop-logout-btn").addEventListener("click", handleLogout);
+
+            mobileAccountArea.innerHTML = `
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-xs shrink-0">
+                        ${escapeHTML(currentNickname.charAt(0).toUpperCase())}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(currentNickname)}</p>
+                        <p class="text-[10px] font-semibold text-emerald-600">Akun tersinkronisasi</p>
+                    </div>
+                </div>
+                <button type="button" id="mobile-logout-btn"
+                        class="bg-white hover:bg-rose-50 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl border border-rose-100 shrink-0">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                </button>
+            `;
+            document.getElementById("mobile-logout-btn").addEventListener("click", handleLogout);
+        } else {
+            heroGreeting.textContent = "Ruang aman untuk terhubung & bertumbuh";
+
+            navAccountArea.innerHTML = `
+                <button type="button" id="desktop-open-auth-btn"
+                        class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs px-3.5 py-2.5 rounded-2xl border border-emerald-200/80 transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-user"></i> Masuk / Daftar
+                </button>
+            `;
+            document.getElementById("desktop-open-auth-btn").addEventListener("click", () => openAuthModal("login"));
+
+            mobileAccountArea.innerHTML = `
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-600">
+                    <i class="fa-solid fa-user-secret text-slate-400"></i>
+                    <span>Mode Tamu (Lokal)</span>
+                </div>
+                <button type="button" id="mobile-open-auth-btn"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                    Masuk / Daftar
+                </button>
+            `;
+            document.getElementById("mobile-open-auth-btn").addEventListener("click", () => {
+                closeMobileMenu();
+                openAuthModal("login");
+            });
+        }
+
+        applyAccountAutofill();
+        bindStreakListener();
+        loadChallengeState();
+        renderMyFeedback();
+        renderRotatingBatch();
+        renderRotatingCurhats();
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            currentAccountId = user.uid;
+
+            if (user.displayName) {
+                currentNickname = user.displayName;
+            } else if (user.email) {
+                const cleanNick = user.email.split("@")[0];
+                try {
+                    const snap = await get(ref(database, `clover/users/${cleanNick}/nickname`));
+                    currentNickname = snap.exists() ? snap.val() : cleanNick;
+                } catch {
+                    currentNickname = cleanNick;
+                }
+            }
+
+            closeAuthModal();
+            updateAccountUI();
+        } else {
+            currentUser = null;
+            currentAccountId = guestDeviceId;
+            currentNickname = "";
+
+            updateAccountUI();
+
+            // Tampilkan gerbang awal otomatis jika belum memilih mode tamu
+            if (localStorage.getItem("clover_guest_mode") !== "true") {
+                openAuthModal("login");
+            }
+        }
+    });
 
     // Footer Year
     document.getElementById("year").textContent = new Date().getFullYear();
