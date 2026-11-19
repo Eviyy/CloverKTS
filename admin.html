@@ -446,7 +446,7 @@
     <!-- FIREBASE + VIEW & CONTROL SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
@@ -460,9 +460,15 @@
             measurementId: "G-3TK6ZQGMDP"
         };
 
-        const app = initializeApp(firebaseConfig);
+        // Gunakan nama app instance terpisah & sessionPersistence agar sesi admin
+        // terisolasi dari tab index.html (tidak tertimpa atau auto-logout oleh index.html)
+        const app = initializeApp(firebaseConfig, "cloverAdminPanel");
         const auth = getAuth(app);
         const database = getDatabase(app);
+
+        setPersistence(auth, browserSessionPersistence).catch((err) => {
+            console.warn("Persistence fallback:", err);
+        });
 
         const loginScreen = document.getElementById("loginScreen");
         const adminDashboard = document.getElementById("adminDashboard");
@@ -489,6 +495,15 @@
 
         let currentUserRole = "user"; // "owner" atau "admin"
         let currentOwnerUid = "";
+        let isAdminPanelInitialized = false;
+        let isManualLogout = false;
+        let wasAuthenticated = false;
+
+        function hasValidRoleEntry(snap) {
+            if (!snap || !snap.exists()) return false;
+            const val = snap.val();
+            return val === true || val === "true" || val === 1 || (typeof val === "object" && val !== null && val.active !== false);
+        }
 
         function switchTab(activeTab) {
             [tabBtnMessages, tabBtnCurhat, tabBtnFeedback, tabBtnUsers, tabBtnBroadcast].forEach(btn => {
@@ -526,6 +541,7 @@
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             loginError.classList.add("hidden");
+            isManualLogout = false;
             
             let userInput = adminUsernameInput.value.trim();
             const password = adminPasswordInput.value;
@@ -535,6 +551,7 @@
             loginBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses...`;
 
             try {
+                await setPersistence(auth, browserSessionPersistence);
                 await signInWithEmailAndPassword(auth, emailToUse, password);
             } catch (err) {
                 console.error("Firebase Login Error:", err);
@@ -546,42 +563,56 @@
             }
         });
 
-        logoutBtn.addEventListener("click", async () => { await signOut(auth); });
+        logoutBtn.addEventListener("click", async () => {
+            isManualLogout = true;
+            await signOut(auth);
+        });
 
         // Verifikasi Peran Owner vs Admin
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const ownerSnap = await get(ref(database, `clover/owners/${user.uid}`));
-                    if (ownerSnap.exists() && ownerSnap.val() === true) {
+                    const [ownerSnap, adminSnap] = await Promise.all([
+                        get(ref(database, `clover/owners/${user.uid}`)),
+                        get(ref(database, `clover/admins/${user.uid}`))
+                    ]);
+
+                    if (hasValidRoleEntry(ownerSnap)) {
                         currentUserRole = "owner";
                         currentOwnerUid = user.uid;
+                        wasAuthenticated = true;
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
                         adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Owner") + " (Owner Utama)";
                         tabBtnUsers.classList.remove("hidden");
                         tabBtnBroadcast.classList.remove("hidden"); 
                         applyRolePermissions();
-                        initAdminPanel();
+                        if (!isAdminPanelInitialized) {
+                            isAdminPanelInitialized = true;
+                            initAdminPanel();
+                        }
                         return;
                     }
 
-                    const adminSnap = await get(ref(database, `clover/admins/${user.uid}`));
-                    if (adminSnap.exists() && adminSnap.val() === true) {
+                    if (hasValidRoleEntry(adminSnap)) {
                         currentUserRole = "admin";
                         currentOwnerUid = "";
+                        wasAuthenticated = true;
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
                         adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Admin") + " (Moderator)";
                         tabBtnUsers.classList.add("hidden");
                         tabBtnBroadcast.classList.add("hidden"); 
                         applyRolePermissions();
-                        initAdminPanel();
+                        if (!isAdminPanelInitialized) {
+                            isAdminPanelInitialized = true;
+                            initAdminPanel();
+                        }
                         return;
                     }
 
-                    signOut(auth);
-                    loginError.textContent = "Akses ditolak. Akun ini tidak terdaftar sebagai Owner atau Admin.";
+                    await signOut(auth);
+                    loginError.textContent = `Akses ditolak. UID (${user.uid}) tidak terdaftar di node clover/owners atau clover/admins.`;
                     loginError.classList.remove("hidden");
                     
                     loginBtn.disabled = false;
@@ -589,8 +620,8 @@
 
                 } catch (err) {
                     console.error("Error verifikasi:", err);
-                    signOut(auth);
-                    loginError.textContent = "Terjadi kesalahan saat verifikasi hak akses.";
+                    await signOut(auth);
+                    loginError.textContent = `Terjadi kesalahan saat verifikasi hak akses: ${err.message || err}`;
                     loginError.classList.remove("hidden");
                     
                     loginBtn.disabled = false;
@@ -601,6 +632,12 @@
                 adminDashboard.classList.add("hidden");
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = `<span>Masuk</span>`;
+
+                if (wasAuthenticated && !isManualLogout) {
+                    loginError.textContent = "Sesi akun berakhir. Silakan masuk kembali.";
+                    loginError.classList.remove("hidden");
+                }
+                wasAuthenticated = false;
             }
         });
 
@@ -1091,7 +1128,6 @@
                     if (currentUserRole !== "owner") return;
                     if (!confirm(`Hapus permanen data profil, teman, dan streak milik ${u.nickname}?`)) return;
                     try {
-                        // Bersihkan relasi pertemanan di akun teman-temannya
                         const userFriendsSnap = await get(ref(database, `clover/friends/${u.uid}`));
                         if (userFriendsSnap.exists()) {
                             const friendIds = Object.keys(userFriendsSnap.val());
