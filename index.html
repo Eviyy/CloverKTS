@@ -143,20 +143,52 @@
             </div>
         </a>
 
-        <!-- Uniform Links -->
-        <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
+        <!-- Desktop Links -->
+        <nav class="hidden md:flex items-center gap-5 lg:gap-6 text-sm font-bold text-slate-600">
             <a href="#tentang" class="hover:text-emerald-600 transition-colors">Tentang</a>
-            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan & Curhat</a>
+            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan Privat</a>
+            <a href="#curhat-publik" class="hover:text-emerald-600 transition-colors">Curhat</a>
             <a href="#tantangan" class="hover:text-emerald-600 transition-colors">Tantangan</a>
             <a href="#papan" class="hover:text-emerald-600 transition-colors">Kehangatan</a>
             <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan</a>
         </nav>
 
-        <!-- Bantuan Button -->
-        <a href="#bantuan" class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-4 py-2.5 rounded-2xl transition-colors flex items-center gap-2 border border-rose-100 shadow-sm">
-            <i class="fa-solid fa-phone"></i>
-            <span class="hidden sm:inline">Darurat</span>
-        </a>
+        <!-- Right Actions (Darurat + Mobile Menu Toggle) -->
+        <div class="flex items-center gap-2">
+            <a href="#bantuan" class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-3.5 sm:px-4 py-2.5 rounded-2xl transition-colors flex items-center gap-2 border border-rose-100 shadow-sm">
+                <i class="fa-solid fa-phone"></i>
+                <span class="hidden sm:inline">Darurat</span>
+            </a>
+
+            <button id="mobile-menu-btn" type="button" aria-label="Buka menu navigasi" aria-expanded="false"
+                    class="md:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors">
+                <i id="mobile-menu-icon" class="fa-solid fa-bars text-base"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-emerald-100/70 bg-white/98 backdrop-blur-md px-4 py-4 shadow-lg">
+        <nav class="grid grid-cols-2 gap-2 text-xs font-bold text-slate-700">
+            <a href="#tentang" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                <i class="fa-solid fa-clover text-emerald-500 w-4 text-center"></i> Tentang
+            </a>
+            <a href="#keluhan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                <i class="fa-solid fa-lock text-emerald-500 w-4 text-center"></i> Keluhan Privat
+            </a>
+            <a href="#curhat-publik" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-teal-50 hover:text-teal-700 transition-colors">
+                <i class="fa-solid fa-comments text-teal-500 w-4 text-center"></i> Curhat Publik
+            </a>
+            <a href="#tantangan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                <i class="fa-solid fa-leaf text-emerald-500 w-4 text-center"></i> Tantangan
+            </a>
+            <a href="#papan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                <i class="fa-solid fa-envelope-open-text text-emerald-500 w-4 text-center"></i> Kehangatan
+            </a>
+            <a href="#masukan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                <i class="fa-solid fa-lightbulb text-amber-500 w-4 text-center"></i> Masukan Web
+            </a>
+        </nav>
     </div>
 </header>
 
@@ -221,7 +253,7 @@
 <main class="max-w-5xl mx-auto px-4 py-12 flex-1 space-y-24 w-full relative z-10">
 
     <!-- =================================================
-         TENTang
+         TENTANG
     ================================================== -->
     <section id="tentang" class="relative">
         <div class="text-center max-w-2xl mx-auto mb-12">
@@ -487,6 +519,9 @@
                     <p class="text-sm font-bold text-slate-600 mt-4 relative z-10">
                         <span id="completedToday" class="text-emerald-600">0</span> dari <span class="text-slate-400">5</span> selesai
                     </p>
+                    <p id="streakStatusBadge" class="text-[11px] font-bold text-slate-400 mt-2 relative z-10">
+                        Selesaikan minimal 1 tantangan hari ini
+                    </p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -724,7 +759,7 @@
                        class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
             </div>
 
-            <button type="submit" id="submit-feedback-button" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-slate-900/15">
+            <button type="submit" id="submit-feedback-button" class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-slate-900/15">
                 <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan
             </button>
         </form>
@@ -779,6 +814,43 @@
     const database = getDatabase(app);
 
     // =====================================================
+    // MENU NAVIGASI MOBILE
+    // =====================================================
+    const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const mobileMenuIcon = document.getElementById("mobile-menu-icon");
+
+    function closeMobileMenu() {
+        mobileMenu.classList.add("hidden");
+        mobileMenuBtn.setAttribute("aria-expanded", "false");
+        mobileMenuIcon.classList.remove("fa-xmark");
+        mobileMenuIcon.classList.add("fa-bars");
+    }
+
+    mobileMenuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isHidden = mobileMenu.classList.contains("hidden");
+        if (isHidden) {
+            mobileMenu.classList.remove("hidden");
+            mobileMenuBtn.setAttribute("aria-expanded", "true");
+            mobileMenuIcon.classList.remove("fa-bars");
+            mobileMenuIcon.classList.add("fa-xmark");
+        } else {
+            closeMobileMenu();
+        }
+    });
+
+    document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+        link.addEventListener("click", closeMobileMenu);
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!mobileMenu.classList.contains("hidden") && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // =====================================================
     // UTILITAS TANGGAL & SELISIH HARI
     // =====================================================
     function getTodayDateString() {
@@ -786,10 +858,13 @@
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
+    function parseDateUTC(dateStr) {
+        const [y, m, d] = String(dateStr).split("-").map(Number);
+        return Date.UTC(y, m - 1, d);
+    }
+
     function getDaysDifference(dateStr1, dateStr2) {
-        const d1 = new Date(dateStr1);
-        const d2 = new Date(dateStr2);
-        const diffTime = d2 - d1;
+        const diffTime = parseDateUTC(dateStr2) - parseDateUTC(dateStr1);
         return Math.floor(diffTime / (1000 * 60 * 60 * 24));
     }
 
@@ -805,7 +880,6 @@
     if (!sessionStorage.getItem("clover_visited")) {
         sessionStorage.setItem("clover_visited", "true");
         
-        // Catat Total Kunjungan Global
         const visitRef = ref(database, "clover/stats/totalVisits");
         runTransaction(visitRef, (currentVisits) => {
             return (currentVisits || 0) + 1;
@@ -813,7 +887,6 @@
             console.error("Gagal memperbarui jumlah kunjungan:", error);
         });
 
-        // Catat Kunjungan Harian (Format: YYYY-MM-DD)
         const todayDateKey = getTodayDateString();
         const dailyVisitRef = ref(database, `clover/stats/dailyVisits/${todayDateKey}`);
         runTransaction(dailyVisitRef, (currentDaily) => {
@@ -829,7 +902,7 @@
     onDisconnect(activeUsersRef).remove();
 
     // =====================================================
-    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN) - TANPA TOMBOL
+    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN)
     // =====================================================
     const maintenanceRef = ref(database, "clover/maintenance");
     onValue(maintenanceRef, (snapshot) => {
@@ -1660,10 +1733,14 @@
             const reader = new FileReader();
             reader.readAsDataURL(recordedAudioBlob);
             reader.onloadend = () => {
-                localStorage.setItem("clover_saved_audio", reader.result);
-                const enc = getRandomEncouragement();
-                localStorage.setItem("clover_audio_encouragement", enc);
-                loadSavedComplaintData();
+                try {
+                    localStorage.setItem("clover_saved_audio", reader.result);
+                    const enc = getRandomEncouragement();
+                    localStorage.setItem("clover_audio_encouragement", enc);
+                    loadSavedComplaintData();
+                } catch (err) {
+                    alert("Ukuran rekaman suara terlalu besar untuk penyimpanan browser.");
+                }
             };
         } else {
             loadSavedComplaintData();
@@ -1762,12 +1839,13 @@
     });
 
     // =====================================================
-    // 7. TANTANGAN HARIAN & STREAK
+    // 7. TANTANGAN HARIAN & STREAK (MINIMAL 1 TANTANGAN)
     // =====================================================
     const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
     const challengeProgressBar = document.getElementById("challengeProgressBar");
     const challengeProgressText = document.getElementById("challengeProgressText");
     const completedTodaySpan = document.getElementById("completedToday");
+    const streakStatusBadge = document.getElementById("streakStatusBadge");
     const currentStreakSpan = document.getElementById("currentStreak");
     const bestStreakSpan = document.getElementById("bestStreak");
     const resetChallengesButton = document.getElementById("resetChallengesButton");
@@ -1784,7 +1862,7 @@
                 streakData.current = 0;
                 set(streakRef, {
                     current: 0,
-                    best: streakData.best,
+                    best: streakData.best || 0,
                     lastDate: streakData.lastDate
                 });
             }
@@ -1827,10 +1905,21 @@
         challengeProgressBar.style.clipPath = `inset(${100 - percent}% 0 0 0)`;
         challengeProgressText.textContent = `${percent}%`;
         completedTodaySpan.textContent = count;
+
+        if (count >= 1) {
+            streakStatusBadge.textContent = "Streak hari ini terjaga! 🔥";
+            streakStatusBadge.className = "text-[11px] font-extrabold text-emerald-600 mt-2 relative z-10";
+        } else {
+            streakStatusBadge.textContent = "Selesaikan minimal 1 tantangan hari ini";
+            streakStatusBadge.className = "text-[11px] font-bold text-slate-400 mt-2 relative z-10";
+        }
     }
 
     challengeCheckboxes.forEach((cb, idx) => {
         cb.addEventListener("change", async () => {
+            const todayStr = getTodayDateString();
+            localStorage.setItem("clover_challenge_date", todayStr);
+
             let completedMap = JSON.parse(localStorage.getItem("clover_challenge_map") || "{}");
             completedMap[idx] = cb.checked;
             localStorage.setItem("clover_challenge_map", JSON.stringify(completedMap));
@@ -1843,14 +1932,14 @@
             }
 
             let completedCount = 0;
-            challengeCheckboxes.forEach((box, i) => {
+            challengeCheckboxes.forEach((_, i) => {
                 if (completedMap[i]) completedCount++;
             });
 
             updateChallengeProgress(completedCount);
 
-            if (completedCount === challengeCheckboxes.length) {
-                const todayStr = getTodayDateString();
+            // Minimal 1 tantangan selesai hari ini untuk menjaga / menambah streak
+            if (completedCount >= 1) {
                 const snapshot = await new Promise(resolve => onValue(streakRef, resolve, { onlyOnce: true }));
                 const streakData = snapshot.val() || { current: 0, best: 0, lastDate: "" };
 
@@ -1866,7 +1955,7 @@
                             cur = 1;
                         }
                     }
-                    let best = Math.max(cur, streakData.best || 0);
+                    const best = Math.max(cur, streakData.best || 0);
                     await set(streakRef, {
                         current: cur,
                         best: best,
@@ -1891,7 +1980,7 @@
     loadChallengeState();
 
     // =====================================================
-    // 8. MASUKAN & SARAN WEB
+    // 8. MASUKAN & SARAN WEB (TERHUBUNG KE CONTROL & VIEW PANEL)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -1901,6 +1990,8 @@
     const feedbackCharCount = document.getElementById("feedback-char-count");
     const myFeedbackContainer = document.getElementById("myFeedbackContainer");
     const myFeedbackList = document.getElementById("myFeedbackList");
+
+    const subscribedFeedbackIds = new Set();
 
     function showFeedbackStatus(message, type = "info") {
         feedbackStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200", "bg-amber-50", "text-amber-700", "border-amber-200");
@@ -1935,8 +2026,16 @@
         try {
             const feedbackRef = ref(database, "clover/feedback");
             const newFbRef = push(feedbackRef);
+
+            // Tidak menyertakan field `reply` saat penulisan awal agar tidak ditolak rules admin-only,
+            // dan menyertakan `status: "pending"` agar terbaca di Control & View Panel.
             await set(newFbRef, {
-                text, sender, deviceId: userDeviceId, createdAt: Date.now(), reply: ""
+                text,
+                sender,
+                deviceId: userDeviceId,
+                uid: "anonymous",
+                status: "pending",
+                createdAt: Date.now()
             });
 
             let myFbIds = JSON.parse(localStorage.getItem("clover_my_feedback_ids") || "[]");
@@ -1949,7 +2048,11 @@
             setTimeout(hideFeedbackStatus, 6000);
             loadMyFeedback();
         } catch (err) {
-            showFeedbackStatus("Gagal mengirim masukan.", "error");
+            console.error("Gagal mengirim masukan ke Firebase:", err);
+            const reason = err?.code === "PERMISSION_DENIED"
+                ? "Akses ditolak oleh aturan database Firebase (PERMISSION_DENIED)."
+                : "Periksa koneksi internet Anda dan coba lagi.";
+            showFeedbackStatus(`Gagal mengirim masukan. ${reason}`, "error");
         } finally {
             submitFeedbackButton.disabled = false;
             submitFeedbackButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan`;
@@ -1964,16 +2067,27 @@
         }
 
         myFeedbackContainer.classList.remove("hidden");
-        myFeedbackList.innerHTML = "";
 
         myFbIds.forEach(fbId => {
+            if (subscribedFeedbackIds.has(fbId)) return;
+            subscribedFeedbackIds.add(fbId);
+
             const fbRef = ref(database, `clover/feedback/${fbId}`);
             onValue(fbRef, (snapshot) => {
                 const data = snapshot.val();
-                if (!data) return;
+                let itemDiv = myFeedbackList.querySelector(`[data-fb-id="${fbId}"]`);
 
-                const itemDiv = document.createElement("div");
-                itemDiv.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2 shadow-sm";
+                if (!data) {
+                    if (itemDiv) itemDiv.remove();
+                    return;
+                }
+
+                if (!itemDiv) {
+                    itemDiv = document.createElement("div");
+                    itemDiv.dataset.fbId = fbId;
+                    itemDiv.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2 shadow-sm";
+                    myFeedbackList.prepend(itemDiv);
+                }
 
                 let replyHTML = `<p class="text-[11px] text-amber-600 font-semibold italic">Menunggu tanggapan admin...</p>`;
                 if (data.reply && data.reply.trim().length > 0) {
@@ -1987,14 +2101,13 @@
 
                 itemDiv.innerHTML = `
                     <div class="flex justify-between items-center text-slate-400 font-bold">
-                        <span>${escapeHTML(data.sender)}</span>
+                        <span>${escapeHTML(data.sender || "Anonim")}</span>
                         <span>${formatDate(data.createdAt)}</span>
                     </div>
                     <p class="text-slate-700 font-medium italic">"${escapeHTML(data.text)}"</p>
                     ${replyHTML}
                 `;
-                myFeedbackList.appendChild(itemDiv);
-            }, { onlyOnce: true });
+            });
         });
     }
 
