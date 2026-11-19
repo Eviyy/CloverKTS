@@ -127,6 +127,9 @@
                 <button id="tabBtnFeedback" class="tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
                     <i class="fa-solid fa-comment-dots"></i> Masukan Web
                 </button>
+                <button id="tabBtnUsers" class="tab-btn hidden bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear text-emerald-600"></i> Manajemen Akun (Owner)
+                </button>
                 <button id="tabBtnBroadcast" class="tab-btn hidden bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2">
                     <i class="fa-solid fa-bullhorn text-amber-500"></i> Kontrol & Broadcast (Owner)
                 </button>
@@ -326,7 +329,49 @@
                 </div>
             </div>
 
-            <!-- TAB 4: BROADCAST & PEMELIHARAAN WEBSITE (KHUSUS OWNER) -->
+            <!-- TAB 4: MANAJEMEN SEMUA AKUN PENGGUNA (KHUSUS OWNER) -->
+            <div id="tabContentUsers" class="hidden space-y-6">
+                <!-- Ringkasan Statistik Akun -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Akun</p>
+                        <p id="ownerTotalUsersCount" class="text-xl font-extrabold text-slate-800 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Akun Aktif</p>
+                        <p id="ownerActiveUsersCount" class="text-xl font-extrabold text-emerald-600 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Diblokir</p>
+                        <p id="ownerBannedUsersCount" class="text-xl font-extrabold text-rose-600 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Laporan Akun</p>
+                        <p id="ownerReportsCount" class="text-xl font-extrabold text-amber-500 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Filter & Pencarian Akun -->
+                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="ownerUserSearchInput" placeholder="Cari nickname, @username, atau UID..." class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <select id="ownerUserFilterSelect" class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
+                        <option value="all">Semua Akun</option>
+                        <option value="active">Akun Aktif</option>
+                        <option value="banned">Akun Diblokir</option>
+                        <option value="reported">Pernah Dilaporkan</option>
+                    </select>
+                </div>
+
+                <!-- Daftar Semua Akun -->
+                <div id="ownerUsersList" class="space-y-4">
+                    <p class="text-xs text-slate-400 font-bold text-center py-6">Memuat daftar akun pengguna...</p>
+                </div>
+            </div>
+
+            <!-- TAB 5: BROADCAST & PEMELIHARAAN WEBSITE (KHUSUS OWNER) -->
             <div id="tabContentBroadcast" class="hidden space-y-6">
                 <!-- Mode Pemeliharaan (Tutup Web) -->
                 <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 max-w-2xl mx-auto">
@@ -433,22 +478,25 @@
         const tabBtnMessages = document.getElementById("tabBtnMessages");
         const tabBtnCurhat = document.getElementById("tabBtnCurhat");
         const tabBtnFeedback = document.getElementById("tabBtnFeedback");
+        const tabBtnUsers = document.getElementById("tabBtnUsers");
         const tabBtnBroadcast = document.getElementById("tabBtnBroadcast");
 
         const tabContentMessages = document.getElementById("tabContentMessages");
         const tabContentCurhat = document.getElementById("tabContentCurhat");
         const tabContentFeedback = document.getElementById("tabContentFeedback");
+        const tabContentUsers = document.getElementById("tabContentUsers");
         const tabContentBroadcast = document.getElementById("tabContentBroadcast");
 
         let currentUserRole = "user"; // "owner" atau "admin"
+        let currentOwnerUid = "";
 
         function switchTab(activeTab) {
-            [tabBtnMessages, tabBtnCurhat, tabBtnFeedback, tabBtnBroadcast].forEach(btn => {
+            [tabBtnMessages, tabBtnCurhat, tabBtnFeedback, tabBtnUsers, tabBtnBroadcast].forEach(btn => {
                 if (!btn.classList.contains("hidden")) {
                     btn.className = "tab-btn bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs px-5 py-3 rounded-2xl border border-slate-200 transition-all flex items-center gap-2";
                 }
             });
-            [tabContentMessages, tabContentCurhat, tabContentFeedback, tabContentBroadcast].forEach(content => content.classList.add("hidden"));
+            [tabContentMessages, tabContentCurhat, tabContentFeedback, tabContentUsers, tabContentBroadcast].forEach(content => content.classList.add("hidden"));
 
             if (activeTab === 'messages') {
                 tabBtnMessages.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
@@ -459,6 +507,9 @@
             } else if (activeTab === 'feedback') {
                 tabBtnFeedback.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
                 tabContentFeedback.classList.remove("hidden");
+            } else if (activeTab === 'users' && currentUserRole === 'owner') {
+                tabBtnUsers.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
+                tabContentUsers.classList.remove("hidden");
             } else if (activeTab === 'broadcast' && currentUserRole === 'owner') {
                 tabBtnBroadcast.className = "tab-btn bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-2";
                 tabContentBroadcast.classList.remove("hidden");
@@ -468,6 +519,7 @@
         tabBtnMessages.addEventListener("click", () => switchTab('messages'));
         tabBtnCurhat.addEventListener("click", () => switchTab('curhat'));
         tabBtnFeedback.addEventListener("click", () => switchTab('feedback'));
+        tabBtnUsers.addEventListener("click", () => switchTab('users'));
         tabBtnBroadcast.addEventListener("click", () => switchTab('broadcast'));
 
         // Proses Login
@@ -503,9 +555,11 @@
                     const ownerSnap = await get(ref(database, `clover/owners/${user.uid}`));
                     if (ownerSnap.exists() && ownerSnap.val() === true) {
                         currentUserRole = "owner";
+                        currentOwnerUid = user.uid;
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
                         adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Owner") + " (Owner Utama)";
+                        tabBtnUsers.classList.remove("hidden");
                         tabBtnBroadcast.classList.remove("hidden"); 
                         applyRolePermissions();
                         initAdminPanel();
@@ -515,9 +569,11 @@
                     const adminSnap = await get(ref(database, `clover/admins/${user.uid}`));
                     if (adminSnap.exists() && adminSnap.val() === true) {
                         currentUserRole = "admin";
+                        currentOwnerUid = "";
                         loginScreen.classList.add("hidden");
                         adminDashboard.classList.remove("hidden");
                         adminEmailDisplay.textContent = (user.email ? user.email.split('@')[0] : "Admin") + " (Moderator)";
+                        tabBtnUsers.classList.add("hidden");
                         tabBtnBroadcast.classList.add("hidden"); 
                         applyRolePermissions();
                         initAdminPanel();
@@ -585,7 +641,6 @@
                 document.getElementById("statTotalVisits").textContent = snapshot.val() || 0;
             });
 
-            // Kunjungan Hari Ini Berdasarkan Kunci Tanggal di Firebase Stats (clover/stats/dailyVisits/YYYY-MM-DD)
             const todayKey = getTodayKey(Date.now());
             onValue(ref(database, `clover/stats/dailyVisits/${todayKey}`), (snapshot) => {
                 document.getElementById("statTodayVisits").textContent = snapshot.val() || 0;
@@ -641,7 +696,7 @@
             // Feedback
             onValue(ref(database, "clover/feedback"), (snapshot) => {
                 const data = snapshot.val();
-                cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })) : [];
+                cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
 
                 const todayStr = getTodayKey(Date.now());
                 let todayFbCount = 0, repliedCount = 0, unrepliedCount = 0;
@@ -709,6 +764,9 @@
             document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
 
             if (currentUserRole === "owner") {
+                // Inisialisasi Manajemen Akun Pengguna
+                initOwnerUserControl();
+
                 // Load Maintenance Mode Status
                 onValue(ref(database, "clover/maintenance"), (snapshot) => {
                     const data = snapshot.val();
@@ -767,6 +825,302 @@
             }
         }
 
+        // =====================================================
+        // MANAJEMEN SEMUA AKUN PENGGUNA (KHUSUS OWNER)
+        // =====================================================
+        let cachedUsersData = {};
+        let cachedStreaksData = {};
+        let cachedBannedData = {};
+        let cachedReportsData = {};
+
+        function initOwnerUserControl() {
+            onValue(ref(database, "clover/users"), (snap) => {
+                cachedUsersData = snap.val() || {};
+                renderOwnerUsersList();
+            });
+
+            onValue(ref(database, "clover/streaks"), (snap) => {
+                cachedStreaksData = snap.val() || {};
+                renderOwnerUsersList();
+            });
+
+            onValue(ref(database, "clover/banned_users"), (snap) => {
+                cachedBannedData = snap.val() || {};
+                renderOwnerUsersList();
+            });
+
+            onValue(ref(database, "clover/user_reports"), (snap) => {
+                cachedReportsData = snap.val() || {};
+                renderOwnerUsersList();
+            });
+
+            document.getElementById("ownerUserSearchInput").addEventListener("input", renderOwnerUsersList);
+            document.getElementById("ownerUserFilterSelect").addEventListener("change", renderOwnerUsersList);
+        }
+
+        function renderOwnerUsersList() {
+            if (currentUserRole !== "owner") return;
+
+            const container = document.getElementById("ownerUsersList");
+            const keyword = document.getElementById("ownerUserSearchInput").value.trim().toLowerCase();
+            const filterMode = document.getElementById("ownerUserFilterSelect").value;
+
+            const reportMap = {};
+            const allReportEntries = Object.entries(cachedReportsData);
+            allReportEntries.forEach(([repId, rep]) => {
+                if (!rep.reportedUid) return;
+                if (!reportMap[rep.reportedUid]) reportMap[rep.reportedUid] = [];
+                reportMap[rep.reportedUid].push({ repId, ...rep });
+            });
+
+            const allEntries = Object.entries(cachedUsersData).map(([cleanNick, u]) => {
+                const uid = u.uid || "";
+                const st = cachedStreaksData[uid] || { current: 0, best: 0 };
+                const banInfo = cachedBannedData[uid] || null;
+                const userReports = reportMap[uid] || [];
+                return {
+                    cleanNick,
+                    uid,
+                    nickname: u.nickname || cleanNick,
+                    bio: u.bio || "",
+                    createdAt: u.createdAt || 0,
+                    currentStreak: Number(st.current || 0),
+                    bestStreak: Number(st.best || 0),
+                    banInfo,
+                    reports: userReports
+                };
+            });
+
+            const bannedCount = allEntries.filter(u => Boolean(u.banInfo)).length;
+            document.getElementById("ownerTotalUsersCount").textContent = allEntries.length;
+            document.getElementById("ownerActiveUsersCount").textContent = allEntries.length - bannedCount;
+            document.getElementById("ownerBannedUsersCount").textContent = bannedCount;
+            document.getElementById("ownerReportsCount").textContent = allReportEntries.length;
+
+            const filtered = allEntries
+                .filter((u) => {
+                    if (filterMode === "active" && u.banInfo) return false;
+                    if (filterMode === "banned" && !u.banInfo) return false;
+                    if (filterMode === "reported" && u.reports.length === 0) return false;
+
+                    if (!keyword) return true;
+                    return (
+                        u.nickname.toLowerCase().includes(keyword) ||
+                        u.cleanNick.toLowerCase().includes(keyword) ||
+                        u.uid.toLowerCase().includes(keyword)
+                    );
+                })
+                .sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-8 bg-white rounded-3xl border border-slate-200">Tidak ada akun yang cocok dengan filter pencarian.</p>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            filtered.forEach((u) => {
+                const joinedStr = u.createdAt
+                    ? new Date(Number(u.createdAt)).toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                    : "-";
+
+                const card = document.createElement("div");
+                card.className = `p-6 rounded-3xl border shadow-sm space-y-4 transition-all ${
+                    u.banInfo ? "bg-rose-50/60 border-rose-200" : "bg-white border-slate-200"
+                }`;
+
+                const statusBadge = u.banInfo
+                    ? `<span class="bg-rose-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full">DIBLOKIR</span>`
+                    : `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-3 py-1 rounded-full">AKTIF</span>`;
+
+                const reportBadge = u.reports.length > 0
+                    ? `<span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-1 rounded-full"><i class="fa-solid fa-flag mr-1"></i>${u.reports.length} Laporan</span>`
+                    : "";
+
+                const bioHTML = u.bio
+                    ? `<p class="text-xs text-slate-600 italic bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">"${escapeHTML(u.bio)}"</p>`
+                    : "";
+
+                const banReasonHTML = u.banInfo
+                    ? `<div class="p-3 rounded-2xl bg-rose-100/80 border border-rose-200 text-xs text-rose-800 font-bold">
+                           <i class="fa-solid fa-ban mr-1.5"></i> Alasan Blokir: ${escapeHTML(u.banInfo.reason)}
+                       </div>`
+                    : "";
+
+                let reportsListHTML = "";
+                if (u.reports.length > 0) {
+                    const itemsHTML = u.reports.map(r => `
+                        <div class="flex items-start justify-between gap-2 bg-amber-50/90 border border-amber-200/80 p-2.5 rounded-xl text-[11px]">
+                            <div>
+                                <p class="font-extrabold text-amber-900">${escapeHTML(r.reason)} <span class="font-medium text-amber-700">• oleh ${escapeHTML(r.reporterNick || "Pengguna")}</span></p>
+                                ${r.details ? `<p class="text-slate-600 italic mt-0.5">"${escapeHTML(r.details)}"</p>` : ""}
+                            </div>
+                            <button type="button" onclick="window.deleteUserReport('${r.repId}')" title="Hapus laporan ini" class="text-slate-400 hover:text-rose-600 px-1.5 py-0.5 shrink-0">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    `).join("");
+
+                    reportsListHTML = `
+                        <div class="pt-2 border-t border-slate-100 space-y-1.5">
+                            <p class="text-[10px] font-black uppercase tracking-wider text-amber-700">Riwayat Laporan Masuk</p>
+                            ${itemsHTML}
+                        </div>
+                    `;
+                }
+
+                const banActionBtn = u.banInfo
+                    ? `<button type="button" class="owner-unban-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                           <i class="fa-solid fa-unlock mr-1"></i> Buka Blokir
+                       </button>`
+                    : `<button type="button" class="owner-ban-btn bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                           <i class="fa-solid fa-ban mr-1"></i> Blokir Akun
+                       </button>`;
+
+                card.innerHTML = `
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="space-y-1.5 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-base font-extrabold text-slate-900">${escapeHTML(u.nickname)}</span>
+                                <span class="text-xs font-semibold text-slate-400">(@${escapeHTML(u.cleanNick)})</span>
+                                ${statusBadge}
+                                ${reportBadge}
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-semibold text-slate-500">
+                                <span>UID: <code class="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-700">${escapeHTML(u.uid)}</code></span>
+                                <span><i class="fa-regular fa-clock mr-1"></i>Bergabung: ${escapeHTML(joinedStr)}</span>
+                                <span class="text-orange-600 font-bold">🔥 Streak: ${u.currentStreak} hari (Rekor: ${u.bestStreak})</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2 shrink-0">
+                            <button type="button" class="owner-edit-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profil
+                            </button>
+                            <button type="button" class="owner-reset-streak-btn bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> Reset Streak
+                            </button>
+                            ${banActionBtn}
+                            <button type="button" class="owner-delete-btn bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Hapus Akun
+                            </button>
+                        </div>
+                    </div>
+
+                    ${bioHTML}
+                    ${banReasonHTML}
+                    ${reportsListHTML}
+                `;
+
+                // 1. Edit Profil Pengguna
+                card.querySelector(".owner-edit-btn").addEventListener("click", async () => {
+                    if (currentUserRole !== "owner") return;
+                    const newNick = prompt("Ubah Nama Tampilan (3–25 karakter):", u.nickname);
+                    if (newNick === null) return;
+                    const trimmedNick = newNick.trim();
+                    if (trimmedNick.length < 3 || trimmedNick.length > 25) {
+                        alert("Nama tampilan harus 3–25 karakter.");
+                        return;
+                    }
+
+                    const newBio = prompt("Ubah Bio pengguna (kosongkan untuk menghapus bio):", u.bio);
+                    if (newBio === null) return;
+
+                    try {
+                        await set(ref(database, `clover/users/${u.cleanNick}/nickname`), trimmedNick);
+                        await set(ref(database, `clover/users/${u.cleanNick}/bio`), newBio.trim().slice(0, 120));
+                        alert("Profil pengguna berhasil diperbarui.");
+                    } catch (err) {
+                        alert("Gagal memperbarui profil: " + err.message);
+                    }
+                });
+
+                // 2. Reset Streak Tantangan
+                card.querySelector(".owner-reset-streak-btn").addEventListener("click", async () => {
+                    if (currentUserRole !== "owner") return;
+                    if (!confirm(`Reset streak tantangan milik ${u.nickname} menjadi 0?`)) return;
+                    try {
+                        await set(ref(database, `clover/streaks/${u.uid}`), {
+                            current: 0,
+                            best: 0,
+                            lastDate: ""
+                        });
+                        alert("Streak berhasil di-reset ke 0.");
+                    } catch (err) {
+                        alert("Gagal mereset streak: " + err.message);
+                    }
+                });
+
+                // 3. Blokir / Buka Blokir Akun
+                const banBtn = card.querySelector(".owner-ban-btn");
+                if (banBtn) {
+                    banBtn.addEventListener("click", async () => {
+                        if (currentUserRole !== "owner") return;
+                        const reason = prompt(`Masukkan alasan pemblokiran untuk ${u.nickname}:`, "Melanggar pedoman komunitas Clover");
+                        if (!reason || !reason.trim()) return;
+                        try {
+                            await set(ref(database, `clover/banned_users/${u.uid}`), {
+                                reason: reason.trim().slice(0, 200),
+                                bannedAt: Date.now(),
+                                bannedBy: currentOwnerUid
+                            });
+                            await set(ref(database, `clover/users/${u.cleanNick}/banned`), true);
+                            alert(`Akun ${u.nickname} telah diblokir.`);
+                        } catch (err) {
+                            alert("Gagal memblokir akun: " + err.message);
+                        }
+                    });
+                }
+
+                const unbanBtn = card.querySelector(".owner-unban-btn");
+                if (unbanBtn) {
+                    unbanBtn.addEventListener("click", async () => {
+                        if (currentUserRole !== "owner") return;
+                        if (!confirm(`Buka blokir akun ${u.nickname}?`)) return;
+                        try {
+                            await remove(ref(database, `clover/banned_users/${u.uid}`));
+                            await set(ref(database, `clover/users/${u.cleanNick}/banned`), false);
+                            alert(`Blokir akun ${u.nickname} telah dibuka.`);
+                        } catch (err) {
+                            alert("Gagal membuka blokir: " + err.message);
+                        }
+                    });
+                }
+
+                // 4. Hapus Data Akun Permanen
+                card.querySelector(".owner-delete-btn").addEventListener("click", async () => {
+                    if (currentUserRole !== "owner") return;
+                    if (!confirm(`Hapus permanen data profil, teman, dan streak milik ${u.nickname}?`)) return;
+                    try {
+                        // Bersihkan relasi pertemanan di akun teman-temannya
+                        const userFriendsSnap = await get(ref(database, `clover/friends/${u.uid}`));
+                        if (userFriendsSnap.exists()) {
+                            const friendIds = Object.keys(userFriendsSnap.val());
+                            for (const fUid of friendIds) {
+                                await remove(ref(database, `clover/friends/${fUid}/${u.uid}`)).catch(() => {});
+                            }
+                        }
+
+                        await remove(ref(database, `clover/friends/${u.uid}`));
+                        await remove(ref(database, `clover/streaks/${u.uid}`));
+                        await remove(ref(database, `clover/banned_users/${u.uid}`));
+                        await remove(ref(database, `clover/users/${u.cleanNick}`));
+                        alert(`Data akun ${u.nickname} telah dihapus dari database.`);
+                    } catch (err) {
+                        alert("Gagal menghapus data akun: " + err.message);
+                    }
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        window.deleteUserReport = (repId) => {
+            if (currentUserRole !== "owner") return;
+            if (confirm("Hapus laporan pengguna ini?")) {
+                remove(ref(database, `clover/user_reports/${repId}`));
+            }
+        };
+
         function renderMessages() {
             const container = document.getElementById("adminMessagesContainer");
             const keyword = document.getElementById("searchMessageInput").value.toLowerCase();
@@ -821,7 +1175,6 @@
                 const deleteButtonHTML = currentUserRole === "owner" ? 
                     `<button onclick="window.deleteMsg('${msg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
 
-                // Render Balasan (Replies) untuk Pesan Kehangatan
                 let msgRepliesHTML = "";
                 const repliesObj = msg.replies || {};
                 const repliesEntries = Object.entries(repliesObj);
@@ -1082,6 +1435,11 @@
                 ["Curhat Ditolak", document.getElementById("statRejectedCurhat").textContent],
                 ["Total Masukan Web", document.getElementById("statTotalFb").textContent],
             ];
+
+            if (currentUserRole === "owner") {
+                statsData.push(["Total Akun Terdaftar", document.getElementById("ownerTotalUsersCount").textContent]);
+                statsData.push(["Total Akun Diblokir", document.getElementById("ownerBannedUsersCount").textContent]);
+            }
 
             let csvContent = "data:text/csv;charset=utf-8," + statsData.map(e => e.join(",")).join("\n");
             const encodedUri = encodeURI(csvContent);
