@@ -213,6 +213,172 @@
 </div>
 
 <!-- =====================================================
+     MODAL PENGATURAN AKUN
+===================================================== -->
+<div id="account-settings-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-[2.2rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden my-auto">
+        <i class="fa-solid fa-gear clover-watermark"></i>
+
+        <button id="close-settings-modal-btn" type="button" aria-label="Tutup pengaturan akun"
+                class="absolute top-5 right-5 z-20 w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+
+        <div class="text-center relative z-10 mb-5">
+            <div id="settings-avatar-badge" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-xl font-extrabold mx-auto mb-2.5 shadow-lg shadow-emerald-500/25">
+                C
+            </div>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Pengaturan Akun</h2>
+            <p id="settings-username-label" class="text-xs font-semibold text-emerald-600 mt-0.5">@username</p>
+        </div>
+
+        <!-- Tab Navigasi Pengaturan -->
+        <div class="grid grid-cols-3 gap-1 bg-slate-100 p-1.5 rounded-2xl mb-5 relative z-10">
+            <button id="stab-profile-btn" type="button" class="py-2 text-[11px] font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all">
+                <i class="fa-solid fa-user-pen mr-1"></i> Profil
+            </button>
+            <button id="stab-password-btn" type="button" class="py-2 text-[11px] font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all">
+                <i class="fa-solid fa-key mr-1"></i> Password
+            </button>
+            <button id="stab-delete-btn" type="button" class="py-2 text-[11px] font-extrabold rounded-xl text-slate-500 hover:text-rose-600 transition-all">
+                <i class="fa-solid fa-trash-can mr-1"></i> Hapus
+            </button>
+        </div>
+
+        <!-- Status Pesan Pengaturan -->
+        <div id="settings-status-box" class="hidden rounded-2xl px-4 py-3 text-xs font-bold mb-4 relative z-10"></div>
+
+        <!-- Panel 1: Edit Profil -->
+        <form id="settings-profile-form" class="space-y-4 relative z-10">
+            <div>
+                <label for="settings-nickname-input" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Nama Tampilan <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" id="settings-nickname-input" minlength="3" maxlength="25" required
+                       class="w-full px-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800 transition-all">
+                <p class="text-[10px] font-medium text-slate-400 mt-1 px-1">
+                    Nama ini tampil di Papan Peringkat, Daftar Teman, dan pengisian otomatis form.
+                </p>
+            </div>
+
+            <div>
+                <label for="settings-bio-input" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Bio / Status Singkat <span class="font-medium text-slate-400">(opsional)</span>
+                </label>
+                <textarea id="settings-bio-input" rows="2" maxlength="120" placeholder="Contoh: Pelan-pelan tapi pasti 🍀"
+                          class="w-full px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 resize-none transition-all"></textarea>
+            </div>
+
+            <button type="submit" id="settings-save-profile-btn"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 transition-all">
+                <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan Profil
+            </button>
+        </form>
+
+        <!-- Panel 2: Ganti Password -->
+        <form id="settings-password-form" class="hidden space-y-3.5 relative z-10">
+            <div>
+                <label for="settings-current-pass" class="block text-xs font-extrabold text-slate-700 mb-1">Password Saat Ini</label>
+                <input type="password" id="settings-current-pass" required autocomplete="current-password" placeholder="Masukkan password lama"
+                       class="w-full px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800">
+            </div>
+            <div>
+                <label for="settings-new-pass" class="block text-xs font-extrabold text-slate-700 mb-1">Password Baru</label>
+                <input type="password" id="settings-new-pass" minlength="6" maxlength="64" required autocomplete="new-password" placeholder="Minimal 6 karakter"
+                       class="w-full px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800">
+            </div>
+            <div>
+                <label for="settings-confirm-pass" class="block text-xs font-extrabold text-slate-700 mb-1">Ulangi Password Baru</label>
+                <input type="password" id="settings-confirm-pass" minlength="6" maxlength="64" required autocomplete="new-password" placeholder="Ketik ulang password baru"
+                       class="w-full px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800">
+            </div>
+            <button type="submit" id="settings-save-pass-btn"
+                    class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-xs sm:text-sm font-bold py-3.5 rounded-2xl transition-all mt-1">
+                <i class="fa-solid fa-shield-halved mr-1.5"></i> Perbarui Password
+            </button>
+        </form>
+
+        <!-- Panel 3: Hapus Akun -->
+        <form id="settings-delete-form" class="hidden space-y-4 relative z-10">
+            <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 space-y-1">
+                <p class="font-extrabold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Tindakan Permanen</p>
+                <p class="font-medium leading-relaxed text-rose-700">
+                    Menghapus akun akan menghapus profil nickname, riwayat streak tantangan, dan daftar pertemananmu secara permanen.
+                </p>
+            </div>
+
+            <div>
+                <label for="settings-delete-pass" class="block text-xs font-extrabold text-slate-700 mb-1">Konfirmasi Password</label>
+                <input type="password" id="settings-delete-pass" required autocomplete="current-password" placeholder="Masukkan password untuk konfirmasi"
+                       class="w-full px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-rose-400 focus:bg-white text-sm font-semibold text-slate-800">
+            </div>
+
+            <label class="flex items-start gap-2.5 text-xs font-semibold text-slate-600 cursor-pointer">
+                <input type="checkbox" id="settings-delete-confirm-cb" required class="mt-0.5 rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                <span>Saya mengerti akun dan data streak saya tidak dapat dipulihkan setelah dihapus.</span>
+            </label>
+
+            <button type="submit" id="settings-delete-account-btn"
+                    class="w-full bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold py-3.5 rounded-2xl shadow-lg shadow-rose-600/20 transition-all">
+                <i class="fa-solid fa-trash-can mr-1.5"></i> Hapus Akun Permanen
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL LAPORKAN PENGGUNA
+===================================================== -->
+<div id="report-user-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-[2.2rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-rose-100 relative overflow-hidden my-auto">
+        <button id="close-report-modal-btn" type="button" aria-label="Tutup laporan pengguna"
+                class="absolute top-5 right-5 z-20 w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+
+        <div class="text-center mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl mx-auto mb-2.5 border border-rose-100">
+                <i class="fa-solid fa-flag"></i>
+            </div>
+            <h2 class="text-lg font-extrabold text-slate-900">Laporkan Pengguna</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1">
+                Melaporkan akun: <strong id="report-target-nick" class="text-slate-800">-</strong>
+            </p>
+        </div>
+
+        <form id="report-user-form" class="space-y-4">
+            <div>
+                <label for="report-reason-select" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Alasan Laporan <span class="text-rose-500">*</span>
+                </label>
+                <select id="report-reason-select" required
+                        class="w-full px-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-rose-400 focus:bg-white text-xs sm:text-sm font-semibold text-slate-800">
+                    <option value="Kata-kata kasar / toxic">Kata-kata kasar / toxic</option>
+                    <option value="Perundungan / pelecehan">Perundungan / pelecehan</option>
+                    <option value="Konten berbahaya / menyakiti diri">Konten berbahaya / menyakiti diri</option>
+                    <option value="Spam / pesan mengganggu">Spam / pesan mengganggu</option>
+                    <option value="Nickname atau bio tidak pantas">Nickname atau bio tidak pantas</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="report-details-input" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Keterangan Tambahan <span class="font-medium text-slate-400">(opsional)</span>
+                </label>
+                <textarea id="report-details-input" rows="3" maxlength="300" placeholder="Jelaskan singkat apa yang terjadi agar admin bisa meninjau..."
+                          class="w-full px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-rose-400 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 resize-none"></textarea>
+            </div>
+
+            <button type="submit" id="submit-report-btn"
+                    class="w-full bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold py-3.5 rounded-2xl shadow-lg shadow-rose-600/20 transition-all">
+                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Laporan ke Admin
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- =====================================================
      NAVBAR
 ===================================================== -->
 <header class="bg-white/95 backdrop-blur-md border-b border-emerald-100/60 sticky top-0 z-50 transition-all">
@@ -246,7 +412,7 @@
             <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan</a>
         </nav>
 
-        <!-- Right Actions (Status Akun + Darurat + Mobile Menu Toggle) -->
+        <!-- Right Actions -->
         <div class="flex items-center gap-2">
             <!-- Status Akun Desktop/Tablet -->
             <div id="nav-account-area" class="hidden sm:flex items-center gap-2"></div>
@@ -865,8 +1031,14 @@
                         <div class="min-w-0">
                             <h4 id="chat-partner-name" class="text-sm font-extrabold text-slate-900 truncate">Pilih Teman untuk Mengobrol</h4>
                             <p id="chat-partner-sub" class="text-[11px] font-semibold text-slate-500 truncate">Obrolan privat antar teman Clover</p>
+                            <p id="chat-partner-bio" class="hidden text-[10px] font-medium text-emerald-700 italic truncate mt-0.5"></p>
                         </div>
                     </div>
+
+                    <button id="open-report-modal-btn" type="button" title="Laporkan pengguna ini"
+                            class="hidden bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors shrink-0">
+                        <i class="fa-solid fa-flag mr-1"></i> Laporkan
+                    </button>
                 </div>
 
                 <!-- Area Pesan Chat -->
@@ -1080,7 +1252,7 @@
 <script type="module">
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updatePassword, deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getDatabase, ref, push, set, get, onValue, query, orderByChild, equalTo, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
@@ -1097,6 +1269,54 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const database = getDatabase(app);
+
+    // =====================================================
+    // FILTER ANTI-TOXIC & KATA KASAR
+    // =====================================================
+    const TOXIC_WORDS = [
+        "anjing", "anjir", "anjay", "babi", "bangsat", "bajingan", "brengsek",
+        "kontol", "memek", "ngentot", "jembut", "pepek", "titit", "perek",
+        "lonte", "pelacur", "jablay", "bencong", "banci", "homo",
+        "tolol", "goblok", "idiot", "bego", "dungu", "geblek", "sarap",
+        "kampret", "keparat", "setan", "iblis", "tai", "taik", "asu",
+        "jancok", "jancuk", "cok", "cuk", "kimak", "pukimak", "pantek",
+        "sundala", "telaso", "fuck", "shit", "bitch", "asshole", "bastard",
+        "slut", "whore", "dick", "pussy", "cunt", "nigger", "retard",
+        "bunuh diri", "bundir", "mati aja", "mending mati", "gantung diri"
+    ];
+
+    function normalizeTextForFilter(text) {
+        return String(text || "")
+            .toLowerCase()
+            .replace(/4|@/g, "a")
+            .replace(/3/g, "e")
+            .replace(/1|!/g, "i")
+            .replace(/0/g, "o")
+            .replace(/\$|5/g, "s")
+            .replace(/7/g, "t")
+            .replace(/(.)\1{2,}/g, "$1");
+    }
+
+    function containsToxicWord(rawText) {
+        if (!rawText) return false;
+        const normalized = normalizeTextForFilter(rawText);
+
+        for (const word of TOXIC_WORDS) {
+            const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const wordRegex = new RegExp(`\\b${escaped}\\b`, "i");
+            if (wordRegex.test(normalized)) return true;
+        }
+
+        const stripped = normalized.replace(/[^a-z0-9]/g, "");
+        for (const word of TOXIC_WORDS) {
+            const cleanWord = word.replace(/\s+/g, "");
+            if (cleanWord.length >= 4 && stripped.includes(cleanWord)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // =====================================================
     // UTILITAS UMUM & TANGGAL
@@ -1223,11 +1443,6 @@
     authGateModal.addEventListener("click", (e) => {
         if (e.target === authGateModal) closeAuthModal();
     });
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && !authGateModal.classList.contains("hidden")) {
-            closeAuthModal();
-        }
-    });
 
     tabLoginBtn.addEventListener("click", () => setAuthMode("login"));
     tabRegisterBtn.addEventListener("click", () => setAuthMode("register"));
@@ -1249,6 +1464,10 @@
             showAuthStatus("Nickname harus terdiri dari 3 hingga 25 karakter.");
             return;
         }
+        if (containsToxicWord(rawNick)) {
+            showAuthStatus("Nickname mengandung kata yang tidak pantas. Gunakan nama yang sopan.");
+            return;
+        }
         if (password.length < 6) {
             showAuthStatus("Password minimal 6 karakter.");
             return;
@@ -1268,10 +1487,10 @@
                 const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
                 await updateProfile(cred.user, { displayName: rawNick });
 
-                // Simpan profil ringan ke Realtime Database (tanpa password)
                 await set(ref(database, `clover/users/${cleanNick}`), {
                     nickname: rawNick,
                     uid: cred.user.uid,
+                    bio: "",
                     createdAt: Date.now()
                 });
 
@@ -1713,6 +1932,11 @@
             const rSender = replySenderInput.value.trim() || "Sahabat Baik";
             if (!rText) return;
 
+            if (containsToxicWord(rText) || containsToxicWord(rSender)) {
+                alert("Balasan atau nama mengandung kata yang kurang pantas. Mari jaga suasana tetap hangat 🍀");
+                return;
+            }
+
             sendReplyBtn.disabled = true;
             sendReplyBtn.textContent = "Mengirim...";
 
@@ -1747,6 +1971,10 @@
 
         if (!text || text.length > 300) {
             showFirebaseStatus("Pesan wajib diisi (maksimal 300 karakter).", "error");
+            return;
+        }
+        if (containsToxicWord(text) || containsToxicWord(sender)) {
+            showFirebaseStatus("Pesan atau nama mengandung kata yang kurang pantas.", "error");
             return;
         }
 
@@ -2045,6 +2273,11 @@
             const rSender = replySenderInput.value.trim() || "Sahabat Baik";
             if (!rText) return;
 
+            if (containsToxicWord(rText) || containsToxicWord(rSender)) {
+                alert("Balasan atau nama mengandung kata yang kurang pantas. Mari saling menguatkan dengan bahasa yang baik 🍀");
+                return;
+            }
+
             sendReplyBtn.disabled = true;
             sendReplyBtn.textContent = "Mengirim...";
 
@@ -2079,6 +2312,10 @@
 
         if (!text || text.length > 400) {
             showCurhatStatus("Curhat wajib diisi (maksimal 400 karakter).", "error");
+            return;
+        }
+        if (containsToxicWord(text) || containsToxicWord(sender)) {
+            showCurhatStatus("Curhat atau nama mengandung kata yang kurang pantas.", "error");
             return;
         }
 
@@ -2343,7 +2580,7 @@
     const leaderboardMyBanner = document.getElementById("leaderboard-my-banner");
     const leaderboardList = document.getElementById("leaderboard-list");
 
-    let allUsersCache = {}; // { cleanNick: { nickname, uid, createdAt } }
+    let allUsersCache = {}; // { cleanNick: { nickname, uid, bio, createdAt } }
     let allStreaksCache = {}; // { uidOrDeviceId: { current, best, lastDate } }
     let leaderboardSortBy = "current"; // "current" | "best"
     let unsubscribeStreak = null;
@@ -2380,11 +2617,19 @@
         });
     }
 
-    // Pantau daftar pengguna & streak secara real-time untuk Leaderboard dan Fitur Teman
     onValue(ref(database, "clover/users"), (snapshot) => {
         allUsersCache = snapshot.val() || {};
         renderLeaderboard();
         renderFriendsUI();
+        if (activeChatPartner) {
+            const partnerInfo = allUsersCache[activeChatPartner.cleanNick] || {};
+            if (partnerInfo.bio) {
+                chatPartnerBio.textContent = `"${partnerInfo.bio}"`;
+                chatPartnerBio.classList.remove("hidden");
+            } else {
+                chatPartnerBio.classList.add("hidden");
+            }
+        }
     });
 
     onValue(ref(database, "clover/streaks"), (snapshot) => {
@@ -2423,7 +2668,6 @@
     }
 
     function renderLeaderboard() {
-        const todayStr = getTodayDateString();
         const entries = Object.entries(allUsersCache).map(([cleanNick, u]) => {
             const st = getEffectiveStreak(u.uid);
             return {
@@ -2445,7 +2689,6 @@
             }
         });
 
-        // Banner Status Pengguna Saat Ini
         if (currentUser) {
             const myRankIdx = entries.findIndex(item => item.uid === currentUser.uid);
             const myItem = myRankIdx >= 0 ? entries[myRankIdx] : null;
@@ -2656,7 +2899,7 @@
     });
 
     // =====================================================
-    // 7. FITUR ADD TEMAN & OBROLAN HANGAT 1-ON-1
+    // 7. FITUR ADD TEMAN, OBROLAN HANGAT 1-ON-1, & LAPORAN
     // =====================================================
     const friendsGuestGate = document.getElementById("friends-guest-gate");
     const friendsLoggedInArea = document.getElementById("friends-logged-in-area");
@@ -2680,6 +2923,8 @@
     const chatPartnerAvatar = document.getElementById("chat-partner-avatar");
     const chatPartnerName = document.getElementById("chat-partner-name");
     const chatPartnerSub = document.getElementById("chat-partner-sub");
+    const chatPartnerBio = document.getElementById("chat-partner-bio");
+    const openReportModalBtn = document.getElementById("open-report-modal-btn");
     const chatMessagesBox = document.getElementById("chat-messages-box");
     const chatComposerArea = document.getElementById("chat-composer-area");
     const chatSendForm = document.getElementById("chat-send-form");
@@ -2733,6 +2978,9 @@
         chatPartnerAvatar.innerHTML = `<i class="fa-solid fa-comments"></i>`;
         chatPartnerName.textContent = "Pilih Teman untuk Mengobrol";
         chatPartnerSub.textContent = "Obrolan privat antar teman Clover";
+        chatPartnerBio.classList.add("hidden");
+        chatPartnerBio.textContent = "";
+        openReportModalBtn.classList.add("hidden");
         chatComposerArea.classList.add("hidden");
         chatMessagesBox.innerHTML = `
             <div class="h-full flex flex-col items-center justify-center text-center px-6">
@@ -2909,7 +3157,6 @@
         const incoming = entries.filter(item => item.status === "received");
         const accepted = entries.filter(item => item.status === "accepted");
 
-        // Notifikasi titik merah di navbar jika ada permintaan teman masuk
         if (incoming.length > 0) {
             navFriendDot.classList.remove("hidden");
             mobileMenuDot.classList.remove("hidden");
@@ -2921,7 +3168,6 @@
             incomingRequestsCard.classList.add("hidden");
         }
 
-        // Render Permintaan Masuk
         incomingRequestsList.innerHTML = "";
         incoming.forEach((req) => {
             const div = document.createElement("div");
@@ -2949,7 +3195,6 @@
             incomingRequestsList.appendChild(div);
         });
 
-        // Render Daftar Teman Diterima
         friendsTotalBadge.textContent = `${accepted.length} teman`;
         if (accepted.length === 0) {
             friendsList.innerHTML = `
@@ -2963,7 +3208,11 @@
         friendsList.innerHTML = "";
         accepted.forEach((friend) => {
             const st = getEffectiveStreak(friend.uid);
+            const userProfile = allUsersCache[friend.cleanNick] || {};
+            const displayNick = userProfile.nickname || friend.nickname;
+            const bioSnippet = userProfile.bio ? ` • ${userProfile.bio}` : "";
             const isSelected = activeChatPartner && activeChatPartner.uid === friend.uid;
+
             const item = document.createElement("div");
             item.className = `p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${
                 isSelected
@@ -2974,11 +3223,11 @@
             item.innerHTML = `
                 <div class="flex items-center gap-2.5 min-w-0">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-                        ${escapeHTML(friend.nickname.charAt(0).toUpperCase())}
+                        ${escapeHTML(displayNick.charAt(0).toUpperCase())}
                     </div>
                     <div class="min-w-0">
-                        <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(friend.nickname)}</p>
-                        <p class="text-[10px] font-semibold text-orange-600">🔥 ${st.current} hari streak</p>
+                        <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(displayNick)}</p>
+                        <p class="text-[10px] font-semibold text-orange-600 truncate">🔥 ${st.current} hari${escapeHTML(bioSnippet)}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
@@ -2992,11 +3241,11 @@
             `;
 
             item.querySelector(".open-chat-btn").addEventListener("click", () => {
-                openChatWithFriend(friend);
+                openChatWithFriend({ ...friend, nickname: displayNick });
             });
 
             item.querySelector(".unfriend-btn").addEventListener("click", () => {
-                if (confirm(`Hapus ${friend.nickname} dari daftar teman?`)) {
+                if (confirm(`Hapus ${displayNick} dari daftar teman?`)) {
                     removeFriendOrRequest(friend.uid);
                 }
             });
@@ -3011,9 +3260,19 @@
         renderFriendsUI();
 
         const st = getEffectiveStreak(friend.uid);
-        chatPartnerAvatar.textContent = friend.nickname.charAt(0).toUpperCase();
-        chatPartnerName.textContent = friend.nickname;
+        const partnerInfo = allUsersCache[friend.cleanNick] || {};
+        const displayNick = partnerInfo.nickname || friend.nickname;
+
+        chatPartnerAvatar.textContent = displayNick.charAt(0).toUpperCase();
+        chatPartnerName.textContent = displayNick;
         chatPartnerSub.textContent = `Teman Clover • 🔥 ${st.current} hari streak`;
+        if (partnerInfo.bio) {
+            chatPartnerBio.textContent = `"${partnerInfo.bio}"`;
+            chatPartnerBio.classList.remove("hidden");
+        } else {
+            chatPartnerBio.classList.add("hidden");
+        }
+        openReportModalBtn.classList.remove("hidden");
         chatComposerArea.classList.remove("hidden");
 
         if (unsubscribeActiveChat) {
@@ -3035,7 +3294,7 @@
             if (!data) {
                 chatMessagesBox.innerHTML = `
                     <div class="h-full flex flex-col items-center justify-center text-center px-6">
-                        <p class="text-xs font-bold text-slate-500">Belum ada pesan dengan ${escapeHTML(friend.nickname)}.</p>
+                        <p class="text-xs font-bold text-slate-500">Belum ada pesan dengan ${escapeHTML(displayNick)}.</p>
                         <p class="text-[11px] text-slate-400 mt-1">Gunakan tombol sapaan cepat di bawah untuk mulai menyapa! 🍀</p>
                     </div>
                 `;
@@ -3061,7 +3320,7 @@
                         <p class="whitespace-pre-wrap break-words">${escapeHTML(m.text)}</p>
                     </div>
                     <span class="text-[10px] font-semibold text-slate-400 mt-1 px-1">
-                        ${isMine ? "Kamu" : escapeHTML(m.senderNick || friend.nickname)} • ${formatTimeShort(m.createdAt)}
+                        ${isMine ? "Kamu" : escapeHTML(m.senderNick || displayNick)} • ${formatTimeShort(m.createdAt)}
                     </span>
                 `;
                 chatMessagesBox.appendChild(bubbleWrap);
@@ -3075,6 +3334,11 @@
         if (!currentUser || !activeChatPartner) return;
         const text = rawText.trim();
         if (!text || text.length > 250) return;
+
+        if (containsToxicWord(text)) {
+            alert("Pesan tidak dapat dikirim karena mengandung kata yang kurang pantas. Mari jaga obrolan tetap hangat 🍀");
+            return;
+        }
 
         const roomId = getChatRoomId(currentUser.uid, activeChatPartner.uid);
         const roomMessagesRef = ref(database, `clover/direct_chats/${roomId}/messages`);
@@ -3106,6 +3370,80 @@
             const msg = btn.getAttribute("data-msg");
             if (msg) sendDirectChatMessage(msg);
         });
+    });
+
+    // Logika Modal Laporkan Pengguna
+    const reportUserModal = document.getElementById("report-user-modal");
+    const closeReportModalBtn = document.getElementById("close-report-modal-btn");
+    const reportTargetNick = document.getElementById("report-target-nick");
+    const reportUserForm = document.getElementById("report-user-form");
+    const reportReasonSelect = document.getElementById("report-reason-select");
+    const reportDetailsInput = document.getElementById("report-details-input");
+    const submitReportBtn = document.getElementById("submit-report-btn");
+
+    openReportModalBtn.addEventListener("click", () => {
+        if (!currentUser || !activeChatPartner) return;
+        reportTargetNick.textContent = activeChatPartner.nickname;
+        reportUserForm.reset();
+        reportUserModal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    });
+
+    function closeReportModal() {
+        reportUserModal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    closeReportModalBtn.addEventListener("click", closeReportModal);
+    reportUserModal.addEventListener("click", (e) => {
+        if (e.target === reportUserModal) closeReportModal();
+    });
+
+    reportUserForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!currentUser || !activeChatPartner) return;
+
+        const reason = reportReasonSelect.value;
+        const details = reportDetailsInput.value.trim();
+
+        submitReportBtn.disabled = true;
+        submitReportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Mengirim Laporan...`;
+
+        try {
+            const now = Date.now();
+            const myNick = (currentNickname || "Sahabat Clover").slice(0, 25);
+            const targetNick = (activeChatPartner.nickname || "Pengguna").slice(0, 25);
+
+            await set(push(ref(database, "clover/user_reports")), {
+                reporterUid: currentUser.uid,
+                reporterNick: myNick,
+                reportedUid: activeChatPartner.uid,
+                reportedNick: targetNick,
+                reason: reason.slice(0, 100),
+                details: details.slice(0, 300),
+                createdAt: now,
+                status: "pending"
+            });
+
+            // Kirim salinan ringkas ke masukan admin agar langsung terlihat di panel admin
+            const summaryText = `[LAPORAN AKUN: ${targetNick}] Alasan: ${reason}${details ? ` — ${details}` : ""}`.slice(0, 500);
+            await set(push(ref(database, "clover/feedback")), {
+                text: summaryText,
+                sender: `Laporan (${myNick})`.slice(0, 40),
+                userId: currentUser.uid,
+                status: "pending",
+                createdAt: now
+            }).catch(() => {});
+
+            closeReportModal();
+            alert("Laporan berhasil dikirim dan akan segera ditinjau oleh admin. Terima kasih sudah menjaga keamanan Clover 🍀");
+        } catch (err) {
+            console.error("Gagal mengirim laporan:", err);
+            alert("Gagal mengirim laporan. Pastikan aturan database sudah diperbarui.");
+        } finally {
+            submitReportBtn.disabled = false;
+            submitReportBtn.innerHTML = `<i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Laporan ke Admin`;
+        }
     });
 
     // =====================================================
@@ -3204,6 +3542,10 @@
             showFeedbackStatus("Masukan wajib diisi (maksimal 500 karakter).", "error");
             return;
         }
+        if (containsToxicWord(text) || containsToxicWord(sender)) {
+            showFeedbackStatus("Masukan atau nama mengandung kata yang kurang pantas.", "error");
+            return;
+        }
 
         submitFeedbackButton.disabled = true;
         submitFeedbackButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
@@ -3244,7 +3586,247 @@
     });
 
     // =====================================================
-    // 9. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
+    // 9. PENGATURAN AKUN (EDIT PROFIL, PASSWORD, HAPUS AKUN)
+    // =====================================================
+    const accountSettingsModal = document.getElementById("account-settings-modal");
+    const closeSettingsModalBtn = document.getElementById("close-settings-modal-btn");
+    const settingsAvatarBadge = document.getElementById("settings-avatar-badge");
+    const settingsUsernameLabel = document.getElementById("settings-username-label");
+    const settingsStatusBox = document.getElementById("settings-status-box");
+
+    const stabProfileBtn = document.getElementById("stab-profile-btn");
+    const stabPasswordBtn = document.getElementById("stab-password-btn");
+    const stabDeleteBtn = document.getElementById("stab-delete-btn");
+
+    const settingsProfileForm = document.getElementById("settings-profile-form");
+    const settingsNicknameInput = document.getElementById("settings-nickname-input");
+    const settingsBioInput = document.getElementById("settings-bio-input");
+    const settingsSaveProfileBtn = document.getElementById("settings-save-profile-btn");
+
+    const settingsPasswordForm = document.getElementById("settings-password-form");
+    const settingsCurrentPass = document.getElementById("settings-current-pass");
+    const settingsNewPass = document.getElementById("settings-new-pass");
+    const settingsConfirmPass = document.getElementById("settings-confirm-pass");
+    const settingsSavePassBtn = document.getElementById("settings-save-pass-btn");
+
+    const settingsDeleteForm = document.getElementById("settings-delete-form");
+    const settingsDeletePass = document.getElementById("settings-delete-pass");
+    const settingsDeleteConfirmCb = document.getElementById("settings-delete-confirm-cb");
+    const settingsDeleteAccountBtn = document.getElementById("settings-delete-account-btn");
+
+    function showSettingsStatus(message, type = "error") {
+        settingsStatusBox.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200");
+        settingsStatusBox.classList.add("border");
+        if (type === "success") {
+            settingsStatusBox.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
+        } else {
+            settingsStatusBox.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+        }
+        settingsStatusBox.textContent = message;
+    }
+
+    function hideSettingsStatus() {
+        settingsStatusBox.classList.add("hidden");
+    }
+
+    function switchSettingsTab(tab) {
+        hideSettingsStatus();
+        const inactiveClass = "py-2 text-[11px] font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all";
+        stabProfileBtn.className = inactiveClass;
+        stabPasswordBtn.className = inactiveClass;
+        stabDeleteBtn.className = "py-2 text-[11px] font-extrabold rounded-xl text-slate-500 hover:text-rose-600 transition-all";
+
+        settingsProfileForm.classList.add("hidden");
+        settingsPasswordForm.classList.add("hidden");
+        settingsDeleteForm.classList.add("hidden");
+
+        if (tab === "profile") {
+            stabProfileBtn.className = "py-2 text-[11px] font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
+            settingsProfileForm.classList.remove("hidden");
+        } else if (tab === "password") {
+            stabPasswordBtn.className = "py-2 text-[11px] font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
+            settingsPasswordForm.classList.remove("hidden");
+        } else if (tab === "delete") {
+            stabDeleteBtn.className = "py-2 text-[11px] font-extrabold rounded-xl bg-white text-rose-600 shadow-sm transition-all";
+            settingsDeleteForm.classList.remove("hidden");
+        }
+    }
+
+    function openSettingsModal(defaultTab = "profile") {
+        if (!currentUser) return;
+        const clean = currentCleanNick || formatNick(currentNickname).cleanNick;
+        const userRecord = allUsersCache[clean] || {};
+
+        settingsAvatarBadge.textContent = (currentNickname || "C").charAt(0).toUpperCase();
+        settingsUsernameLabel.textContent = `ID Login: @${clean}`;
+        settingsNicknameInput.value = currentNickname || "";
+        settingsBioInput.value = userRecord.bio || "";
+
+        settingsPasswordForm.reset();
+        settingsDeleteForm.reset();
+        switchSettingsTab(defaultTab);
+
+        accountSettingsModal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeSettingsModal() {
+        accountSettingsModal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+        hideSettingsStatus();
+    }
+
+    closeSettingsModalBtn.addEventListener("click", closeSettingsModal);
+    accountSettingsModal.addEventListener("click", (e) => {
+        if (e.target === accountSettingsModal) closeSettingsModal();
+    });
+
+    stabProfileBtn.addEventListener("click", () => switchSettingsTab("profile"));
+    stabPasswordBtn.addEventListener("click", () => switchSettingsTab("password"));
+    stabDeleteBtn.addEventListener("click", () => switchSettingsTab("delete"));
+
+    settingsProfileForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const newNick = settingsNicknameInput.value.trim();
+        const newBio = settingsBioInput.value.trim();
+
+        if (newNick.length < 3 || newNick.length > 25) {
+            showSettingsStatus("Nama tampilan harus 3–25 karakter.");
+            return;
+        }
+        if (containsToxicWord(newNick) || containsToxicWord(newBio)) {
+            showSettingsStatus("Nama tampilan atau bio mengandung kata yang tidak pantas.");
+            return;
+        }
+
+        const clean = currentCleanNick || formatNick(currentNickname).cleanNick;
+        settingsSaveProfileBtn.disabled = true;
+        settingsSaveProfileBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Menyimpan...`;
+
+        try {
+            await updateProfile(currentUser, { displayName: newNick });
+
+            const existingSnap = await get(ref(database, `clover/users/${clean}`));
+            const existingData = existingSnap.val() || {};
+
+            await set(ref(database, `clover/users/${clean}`), {
+                nickname: newNick,
+                uid: currentUser.uid,
+                bio: newBio,
+                createdAt: existingData.createdAt || Date.now()
+            });
+
+            const friendUids = Object.keys(myFriendsMap);
+            for (const fUid of friendUids) {
+                await set(ref(database, `clover/friends/${fUid}/${currentUser.uid}/nickname`), newNick).catch(() => {});
+            }
+
+            currentNickname = newNick;
+            settingsAvatarBadge.textContent = newNick.charAt(0).toUpperCase();
+            updateAccountUI();
+            showSettingsStatus("Profil berhasil diperbarui! 🍀", "success");
+        } catch (err) {
+            console.error("Gagal memperbarui profil:", err);
+            showSettingsStatus("Gagal menyimpan profil. Pastikan Rules Firebase sudah diperbarui.");
+        } finally {
+            settingsSaveProfileBtn.disabled = false;
+            settingsSaveProfileBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan Profil`;
+        }
+    });
+
+    settingsPasswordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!currentUser || !currentUser.email) return;
+
+        const oldPass = settingsCurrentPass.value;
+        const newPass = settingsNewPass.value;
+        const confirmPass = settingsConfirmPass.value;
+
+        if (newPass.length < 6) {
+            showSettingsStatus("Password baru minimal 6 karakter.");
+            return;
+        }
+        if (newPass !== confirmPass) {
+            showSettingsStatus("Konfirmasi password baru tidak cocok.");
+            return;
+        }
+
+        settingsSavePassBtn.disabled = true;
+        settingsSavePassBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Memproses...`;
+
+        try {
+            const credential = EmailAuthProvider.credential(currentUser.email, oldPass);
+            await reauthenticateWithCredential(currentUser, credential);
+            await updatePassword(currentUser, newPass);
+
+            settingsPasswordForm.reset();
+            showSettingsStatus("Password berhasil diperbarui! 🍀", "success");
+        } catch (err) {
+            console.error("Gagal mengganti password:", err);
+            if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+                showSettingsStatus("Password saat ini salah.");
+            } else {
+                showSettingsStatus("Gagal mengganti password. Silakan coba lagi.");
+            }
+        } finally {
+            settingsSavePassBtn.disabled = false;
+            settingsSavePassBtn.innerHTML = `<i class="fa-solid fa-shield-halved mr-1.5"></i> Perbarui Password`;
+        }
+    });
+
+    settingsDeleteForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!currentUser || !currentUser.email) return;
+        if (!settingsDeleteConfirmCb.checked) return;
+
+        const pass = settingsDeletePass.value;
+        const clean = currentCleanNick || formatNick(currentNickname).cleanNick;
+        const uid = currentUser.uid;
+
+        settingsDeleteAccountBtn.disabled = true;
+        settingsDeleteAccountBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Menghapus Akun...`;
+
+        try {
+            const credential = EmailAuthProvider.credential(currentUser.email, pass);
+            await reauthenticateWithCredential(currentUser, credential);
+
+            const friendUids = Object.keys(myFriendsMap);
+            for (const fUid of friendUids) {
+                await set(ref(database, `clover/friends/${fUid}/${uid}`), null).catch(() => {});
+            }
+            await set(ref(database, `clover/friends/${uid}`), null).catch(() => {});
+            await set(ref(database, `clover/streaks/${uid}`), null).catch(() => {});
+            await set(ref(database, `clover/users/${clean}`), null).catch(() => {});
+
+            await deleteUser(currentUser);
+            closeSettingsModal();
+            alert("Akun kamu telah berhasil dihapus secara permanen.");
+        } catch (err) {
+            console.error("Gagal menghapus akun:", err);
+            if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+                showSettingsStatus("Password konfirmasi salah.");
+            } else {
+                showSettingsStatus("Gagal menghapus akun. Silakan coba lagi.");
+            }
+        } finally {
+            settingsDeleteAccountBtn.disabled = false;
+            settingsDeleteAccountBtn.innerHTML = `<i class="fa-solid fa-trash-can mr-1.5"></i> Hapus Akun Permanen`;
+        }
+    });
+
+    // Tutup modal dengan tombol Escape
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            if (!authGateModal.classList.contains("hidden")) closeAuthModal();
+            if (!accountSettingsModal.classList.contains("hidden")) closeSettingsModal();
+            if (!reportUserModal.classList.contains("hidden")) closeReportModal();
+        }
+    });
+
+    // =====================================================
+    // 10. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
     // =====================================================
     function applyAccountAutofill() {
         senderInput.value = currentNickname || "";
@@ -3261,33 +3843,41 @@
             heroGreeting.textContent = `Halo, ${currentNickname} — Ruang aman untuk terhubung & bertumbuh`;
 
             navAccountArea.innerHTML = `
-                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 pl-3 pr-1.5 py-1 rounded-2xl">
-                    <span class="text-xs font-extrabold text-emerald-800 max-w-[110px] truncate" title="${escapeHTML(currentNickname)}">
-                        <i class="fa-solid fa-circle-user text-emerald-600 mr-1"></i>${escapeHTML(currentNickname)}
-                    </span>
+                <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/80 pl-1.5 pr-1.5 py-1 rounded-2xl">
+                    <button type="button" id="desktop-open-settings-btn" title="Pengaturan Akun"
+                            class="flex items-center gap-1.5 px-2 py-1 rounded-xl hover:bg-emerald-100/80 text-xs font-extrabold text-emerald-800 max-w-[130px] truncate transition-colors">
+                        <i class="fa-solid fa-circle-user text-emerald-600"></i>
+                        <span class="truncate">${escapeHTML(currentNickname)}</span>
+                        <i class="fa-solid fa-gear text-[10px] text-emerald-600/70"></i>
+                    </button>
                     <button type="button" id="desktop-logout-btn"
                             class="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-[11px] font-bold px-2.5 py-1.5 rounded-xl border border-slate-200/80 transition-colors">
                         Keluar
                     </button>
                 </div>
             `;
+            document.getElementById("desktop-open-settings-btn").addEventListener("click", () => openSettingsModal("profile"));
             document.getElementById("desktop-logout-btn").addEventListener("click", handleLogout);
 
             mobileAccountArea.innerHTML = `
-                <div class="flex items-center gap-2.5 min-w-0">
+                <button type="button" id="mobile-open-settings-btn" class="flex items-center gap-2.5 min-w-0 text-left flex-1">
                     <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-xs shrink-0">
                         ${escapeHTML(currentNickname.charAt(0).toUpperCase())}
                     </div>
                     <div class="min-w-0">
-                        <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(currentNickname)}</p>
-                        <p class="text-[10px] font-semibold text-emerald-600">Akun tersinkronisasi</p>
+                        <p class="text-xs font-extrabold text-slate-800 truncate">${escapeHTML(currentNickname)} <i class="fa-solid fa-gear text-[10px] text-emerald-600 ml-1"></i></p>
+                        <p class="text-[10px] font-semibold text-emerald-600">Ketuk untuk pengaturan akun</p>
                     </div>
-                </div>
+                </button>
                 <button type="button" id="mobile-logout-btn"
                         class="bg-white hover:bg-rose-50 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl border border-rose-100 shrink-0">
                     <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
                 </button>
             `;
+            document.getElementById("mobile-open-settings-btn").addEventListener("click", () => {
+                closeMobileMenu();
+                openSettingsModal("profile");
+            });
             document.getElementById("mobile-logout-btn").addEventListener("click", handleLogout);
         } else {
             heroGreeting.textContent = "Ruang aman untuk terhubung & bertumbuh";
@@ -3350,7 +3940,6 @@
             closeAuthModal();
             updateAccountUI();
         } else {
-            // Langsung masuk beranda sebagai Tamu tanpa memunculkan pop-up otomatis
             currentUser = null;
             currentAccountId = guestDeviceId;
             currentNickname = "";
