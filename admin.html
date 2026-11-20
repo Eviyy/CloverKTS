@@ -466,10 +466,6 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        setPersistence(auth, browserSessionPersistence).catch((err) => {
-            console.warn("Persistence fallback:", err);
-        });
-
         const loginScreen = document.getElementById("loginScreen");
         const adminDashboard = document.getElementById("adminDashboard");
         const loginForm = document.getElementById("loginForm");
@@ -662,6 +658,30 @@
         function getTodayKey(timestamp) {
             const date = new Date(Number(timestamp));
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        }
+
+        function parseDateUTC(dateStr) {
+            const [y, m, d] = String(dateStr).split("-").map(Number);
+            return Date.UTC(y, m - 1, d);
+        }
+
+        function getDaysDifference(dateStr1, dateStr2) {
+            const diffTime = parseDateUTC(dateStr2) - parseDateUTC(dateStr1);
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function getEffectiveStreakValues(streakObj) {
+            if (!streakObj) return { current: 0, best: 0 };
+            const todayStr = getTodayKey(Date.now());
+            let cur = Number(streakObj.current || 0);
+            if (streakObj.lastDate && streakObj.lastDate !== todayStr) {
+                const diff = getDaysDifference(streakObj.lastDate, todayStr);
+                if (diff > 1) cur = 0;
+            }
+            return {
+                current: cur,
+                best: Number(streakObj.best || 0)
+            };
         }
 
         function initAdminPanel() {
@@ -912,8 +932,14 @@
 
             const allEntries = Object.entries(cachedUsersData).map(([cleanNick, u]) => {
                 const uid = u.uid || "";
-                const st = cachedStreaksData[uid] || { current: 0, best: 0 };
-                const banInfo = cachedBannedData[uid] || null;
+                const rawSt = cachedStreaksData[uid] || cachedStreaksData[cleanNick] || null;
+                const st = getEffectiveStreakValues(rawSt);
+
+                // Deteksi blokir dari kedua sumber (banned_users maupun flag banned di users)
+                const banFromNode = cachedBannedData[uid] || null;
+                const isBannedFlag = u.banned === true;
+                const banInfo = banFromNode || (isBannedFlag ? { reason: u.banReason || "Melanggar pedoman komunitas Clover." } : null);
+
                 const userReports = reportMap[uid] || [];
                 return {
                     cleanNick,
@@ -921,8 +947,8 @@
                     nickname: u.nickname || cleanNick,
                     bio: u.bio || "",
                     createdAt: u.createdAt || 0,
-                    currentStreak: Number(st.current || 0),
-                    bestStreak: Number(st.best || 0),
+                    currentStreak: st.current,
+                    bestStreak: st.best,
                     banInfo,
                     reports: userReports
                 };
@@ -1063,8 +1089,10 @@
                     if (newBio === null) return;
 
                     try {
-                        await set(ref(database, `clover/users/${u.cleanNick}/nickname`), trimmedNick);
-                        await set(ref(database, `clover/users/${u.cleanNick}/bio`), newBio.trim().slice(0, 120));
+                        await update(ref(database, `clover/users/${u.cleanNick}`), {
+                            nickname: trimmedNick,
+                            bio: newBio.trim().slice(0, 120)
+                        });
                         alert("Profil pengguna berhasil diperbarui.");
                     } catch (err) {
                         alert("Gagal memperbarui profil: " + err.message);
@@ -1076,31 +1104,40 @@
                     if (currentUserRole !== "owner") return;
                     if (!confirm(`Reset streak tantangan milik ${u.nickname} menjadi 0?`)) return;
                     try {
-                        await set(ref(database, `clover/streaks/${u.uid}`), {
+                        const resetPayload = {
                             current: 0,
                             best: 0,
                             lastDate: ""
-                        });
+                        };
+                        await set(ref(database, `clover/streaks/${u.uid}`), resetPayload);
+                        cachedStreaksData[u.uid] = resetPayload;
+                        renderOwnerUsersList();
                         alert("Streak berhasil di-reset ke 0.");
                     } catch (err) {
                         alert("Gagal mereset streak: " + err.message);
                     }
                 });
 
-                // 3. Blokir / Buka Blokir Akun
+                // 3. Blokir / Buka Blokir Akun (Sinkron ke kedua node)
                 const banBtn = card.querySelector(".owner-ban-btn");
                 if (banBtn) {
                     banBtn.addEventListener("click", async () => {
                         if (currentUserRole !== "owner") return;
                         const reason = prompt(`Masukkan alasan pemblokiran untuk ${u.nickname}:`, "Melanggar pedoman komunitas Clover");
                         if (!reason || !reason.trim()) return;
+                        const cleanReason = reason.trim().slice(0, 200);
                         try {
-                            await set(ref(database, `clover/banned_users/${u.uid}`), {
-                                reason: reason.trim().slice(0, 200),
-                                bannedAt: Date.now(),
-                                bannedBy: currentOwnerUid
-                            });
-                            await set(ref(database, `clover/users/${u.cleanNick}/banned`), true);
+                            await Promise.all([
+                                set(ref(database, `clover/banned_users/${u.uid}`), {
+                                    reason: cleanReason,
+                                    bannedAt: Date.now(),
+                                    bannedBy: currentOwnerUid
+                                }),
+                                update(ref(database, `clover/users/${u.cleanNick}`), {
+                                    banned: true,
+                                    banReason: cleanReason
+                                })
+                            ]);
                             alert(`Akun ${u.nickname} telah diblokir.`);
                         } catch (err) {
                             alert("Gagal memblokir akun: " + err.message);
@@ -1114,8 +1151,13 @@
                         if (currentUserRole !== "owner") return;
                         if (!confirm(`Buka blokir akun ${u.nickname}?`)) return;
                         try {
-                            await remove(ref(database, `clover/banned_users/${u.uid}`));
-                            await set(ref(database, `clover/users/${u.cleanNick}/banned`), false);
+                            await Promise.all([
+                                remove(ref(database, `clover/banned_users/${u.uid}`)),
+                                update(ref(database, `clover/users/${u.cleanNick}`), {
+                                    banned: false,
+                                    banReason: null
+                                })
+                            ]);
                             alert(`Blokir akun ${u.nickname} telah dibuka.`);
                         } catch (err) {
                             alert("Gagal membuka blokir: " + err.message);
@@ -1136,10 +1178,12 @@
                             }
                         }
 
-                        await remove(ref(database, `clover/friends/${u.uid}`));
-                        await remove(ref(database, `clover/streaks/${u.uid}`));
-                        await remove(ref(database, `clover/banned_users/${u.uid}`));
-                        await remove(ref(database, `clover/users/${u.cleanNick}`));
+                        await Promise.all([
+                            remove(ref(database, `clover/friends/${u.uid}`)),
+                            remove(ref(database, `clover/streaks/${u.uid}`)),
+                            remove(ref(database, `clover/banned_users/${u.uid}`)),
+                            remove(ref(database, `clover/users/${u.cleanNick}`))
+                        ]);
                         alert(`Data akun ${u.nickname} telah dihapus dari database.`);
                     } catch (err) {
                         alert("Gagal menghapus data akun: " + err.message);
