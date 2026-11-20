@@ -144,7 +144,7 @@
 </div>
 
 <!-- =====================================================
-     MODAL MASUK / DAFTAR
+     MODAL MASUK / DAFTAR + BIND PROGRES TAMU
 ===================================================== -->
 <div id="auth-gate-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div id="auth-modal-card" class="bg-white rounded-[2.2rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden my-auto">
@@ -210,6 +210,19 @@
                         <i id="toggle-auth-pass-icon" class="fa-solid fa-eye"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- Opsi Bind Progres Mode Tamu (Muncul Otomatis Jika Ada Progres Tamu) -->
+            <div id="guest-bind-box" class="hidden p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 space-y-1.5">
+                <label class="flex items-start gap-2.5 cursor-pointer">
+                    <input type="checkbox" id="bind-guest-progress-cb" checked class="mt-0.5 rounded border-emerald-400 text-emerald-600 focus:ring-emerald-500">
+                    <div class="text-xs">
+                        <span class="font-extrabold text-emerald-900 block"><i class="fa-solid fa-link mr-1 text-emerald-600"></i> Tautkan Progres Mode Tamu</span>
+                        <span id="guest-bind-summary" class="text-[11px] font-medium text-emerald-700 leading-snug block mt-0.5">
+                            Progres tantangan & streak dari sesi tamu akan dipindahkan ke akun ini.
+                        </span>
+                    </div>
+                </label>
             </div>
 
             <button type="submit" id="auth-submit-btn"
@@ -1184,7 +1197,6 @@
         }
     };
 
-    // Inisialisasi awal navbar sesuai Beranda Utama
     renderContextualNavbar("home");
 
     // =====================================================
@@ -1293,7 +1305,7 @@
     let unsubscribeProfileListener = null;
 
     // =====================================================
-    // ELEMEN DOM MODAL MASUK / DAFTAR & NAVBAR AKUN
+    // ELEMEN DOM MODAL MASUK / DAFTAR & BIND PROGRES TAMU
     // =====================================================
     const authGateModal = document.getElementById("auth-gate-modal");
     const closeAuthModalBtn = document.getElementById("close-auth-modal-btn");
@@ -1306,12 +1318,44 @@
     const authPassInput = document.getElementById("auth-pass-input");
     const toggleAuthPass = document.getElementById("toggle-auth-pass");
     const toggleAuthPassIcon = document.getElementById("toggle-auth-pass-icon");
+    const guestBindBox = document.getElementById("guest-bind-box");
+    const bindGuestProgressCb = document.getElementById("bind-guest-progress-cb");
+    const guestBindSummary = document.getElementById("guest-bind-summary");
     const authSubmitBtn = document.getElementById("auth-submit-btn");
     const continueGuestBtn = document.getElementById("continue-guest-btn");
 
     const navAccountArea = document.getElementById("nav-account-area");
     const mobileAccountArea = document.getElementById("mobile-account-area");
     const heroGreeting = document.getElementById("hero-greeting");
+
+    async function checkGuestProgressSummary() {
+        const todayStr = getTodayDateString();
+        const guestDate = localStorage.getItem(`clover_challenge_date_${guestDeviceId}`);
+        const guestMap = guestDate === todayStr
+            ? JSON.parse(localStorage.getItem(`clover_challenge_map_${guestDeviceId}`) || "{}")
+            : {};
+        const doneCount = Object.values(guestMap).filter(Boolean).length;
+
+        let guestStreak = { current: 0, best: 0, lastDate: "" };
+        try {
+            const snap = await get(ref(database, `clover/streaks/${guestDeviceId}`));
+            if (snap.exists()) {
+                const raw = snap.val();
+                let cur = Number(raw.current || 0);
+                if (raw.lastDate && raw.lastDate !== todayStr && getDaysDifference(raw.lastDate, todayStr) > 1) {
+                    cur = 0;
+                }
+                guestStreak = {
+                    current: cur,
+                    best: Number(raw.best || 0),
+                    lastDate: raw.lastDate || ""
+                };
+            }
+        } catch {}
+
+        const hasProgress = doneCount > 0 || guestStreak.current > 0 || guestStreak.best > 0;
+        return { hasProgress, doneCount, guestMap, guestStreak };
+    }
 
     function showAuthStatus(message, type = "error") {
         authModalStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200");
@@ -1335,6 +1379,7 @@
             tabLoginBtn.className = "py-2.5 text-xs font-extrabold rounded-xl bg-white text-emerald-700 shadow-sm transition-all";
             tabRegisterBtn.className = "py-2.5 text-xs font-extrabold rounded-xl text-slate-500 hover:text-slate-700 transition-all";
             authNickHint.classList.add("hidden");
+            guestBindBox.classList.add("hidden");
             authPassInput.setAttribute("autocomplete", "current-password");
             authSubmitBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-1.5"></i> Masuk ke Clover`;
         } else {
@@ -1348,6 +1393,16 @@
             if (registeredNickOnDevice) {
                 showAuthStatus(`Perangkat ini sudah pernah mendaftarkan akun (@${registeredNickOnDevice}). Silakan masuk menggunakan akun tersebut.`);
             }
+
+            checkGuestProgressSummary().then(({ hasProgress, doneCount, guestStreak }) => {
+                if (authMode === "register" && hasProgress) {
+                    guestBindSummary.textContent = `Ditemukan ${doneCount} tantangan hari ini & streak ${guestStreak.current} hari (rekor ${guestStreak.best} hari) siap dipindahkan ke akun baru.`;
+                    bindGuestProgressCb.checked = true;
+                    guestBindBox.classList.remove("hidden");
+                } else {
+                    guestBindBox.classList.add("hidden");
+                }
+            });
         }
     }
 
@@ -1470,6 +1525,9 @@
                     return;
                 }
 
+                const shouldBindGuest = Boolean(bindGuestProgressCb && bindGuestProgressCb.checked);
+                const guestInfo = shouldBindGuest ? await checkGuestProgressSummary() : { hasProgress: false };
+
                 const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
                 await updateProfile(cred.user, { displayName: rawNick });
 
@@ -1481,11 +1539,18 @@
                     banned: false,
                     createdAt: Date.now()
                 };
-                const initialStreakData = {
-                    current: 0,
-                    best: 0,
-                    lastDate: ""
-                };
+
+                const initialStreakData = (shouldBindGuest && guestInfo.hasProgress)
+                    ? {
+                        current: Number(guestInfo.guestStreak.current || 0),
+                        best: Number(guestInfo.guestStreak.best || 0),
+                        lastDate: guestInfo.guestStreak.lastDate || ""
+                    }
+                    : {
+                        current: 0,
+                        best: 0,
+                        lastDate: ""
+                    };
 
                 const atomicUpdates = {};
                 atomicUpdates[`clover/users/${cleanNick}`] = initialUserData;
@@ -1497,11 +1562,28 @@
                 };
                 atomicUpdates[`clover/streaks/${cred.user.uid}`] = initialStreakData;
 
+                // Bersihkan streak tamu lama di database jika di-bind ke akun baru
+                if (shouldBindGuest && guestInfo.hasProgress) {
+                    atomicUpdates[`clover/streaks/${guestDeviceId}`] = null;
+                }
+
                 await update(ref(database), atomicUpdates);
+
+                // Pindahkan checklist tantangan hari ini di localStorage ke UID akun baru
+                if (shouldBindGuest && guestInfo.hasProgress && guestInfo.doneCount > 0) {
+                    const todayStr = getTodayDateString();
+                    localStorage.setItem(`clover_challenge_date_${cred.user.uid}`, todayStr);
+                    localStorage.setItem(`clover_challenge_map_${cred.user.uid}`, JSON.stringify(guestInfo.guestMap));
+                    localStorage.removeItem(`clover_challenge_date_${guestDeviceId}`);
+                    localStorage.removeItem(`clover_challenge_map_${guestDeviceId}`);
+                }
 
                 localStorage.setItem("clover_registered_nick", cleanNick);
                 allUsersCache[cleanNick] = initialUserData;
                 allStreaksCache[cred.user.uid] = initialStreakData;
+                if (shouldBindGuest && guestInfo.hasProgress) {
+                    delete allStreaksCache[guestDeviceId];
+                }
 
                 currentUser = cred.user;
                 currentAccountId = cred.user.uid;
