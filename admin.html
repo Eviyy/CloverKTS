@@ -135,7 +135,7 @@
                 </button>
             </div>
 
-            <!-- TAB 1: MODERASI PESAN KEHANGATAN -->
+            <!-- TAB 1: MODERASI PESAN KEHANGATAN (2 KOLOM) -->
             <div id="tabContentMessages" class="space-y-6">
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
@@ -205,11 +205,11 @@
                 </div>
 
                 <div id="adminMessagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <p class="text-xs text-slate-400 font-bold">Memuat pesan...</p>
+                    <p class="text-xs text-slate-400 font-bold md:col-span-2">Memuat pesan...</p>
                 </div>
             </div>
 
-            <!-- TAB 2: MODERASI RUANG CURHAT PUBLIK -->
+            <!-- TAB 2: MODERASI RUANG CURHAT PUBLIK (2 KOLOM) -->
             <div id="tabContentCurhat" class="hidden space-y-6">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
@@ -274,12 +274,12 @@
                     </div>
                 </div>
 
-                <div id="adminCurhatsContainer" class="space-y-4">
-                    <p class="text-xs text-slate-400 font-bold">Memuat data curhat...</p>
+                <div id="adminCurhatsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <p class="text-xs text-slate-400 font-bold md:col-span-2">Memuat data curhat...</p>
                 </div>
             </div>
 
-            <!-- TAB 3: MASUKAN WEB -->
+            <!-- TAB 3: MASUKAN WEB (2 KOLOM) -->
             <div id="tabContentFeedback" class="hidden space-y-6">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
@@ -324,12 +324,12 @@
                     </div>
                 </div>
 
-                <div id="adminFeedbackContainer" class="space-y-4">
-                    <p class="text-xs text-slate-400 font-bold">Memuat masukan...</p>
+                <div id="adminFeedbackContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <p class="text-xs text-slate-400 font-bold md:col-span-2">Memuat masukan...</p>
                 </div>
             </div>
 
-            <!-- TAB 4: MANAJEMEN SEMUA AKUN PENGGUNA (KHUSUS OWNER) -->
+            <!-- TAB 4: MANAJEMEN SEMUA AKUN PENGGUNA (KHUSUS OWNER - 2 KOLOM) -->
             <div id="tabContentUsers" class="hidden space-y-6">
                 <!-- Ringkasan Statistik Akun -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -365,78 +365,82 @@
                     </select>
                 </div>
 
-                <!-- Daftar Semua Akun -->
-                <div id="ownerUsersList" class="space-y-4">
-                    <p class="text-xs text-slate-400 font-bold text-center py-6">Memuat daftar akun pengguna...</p>
+                <!-- Daftar Semua Akun (2 Kolom) -->
+                <div id="ownerUsersList" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <p class="text-xs text-slate-400 font-bold text-center py-6 lg:col-span-2">Memuat daftar akun pengguna...</p>
                 </div>
             </div>
 
-            <!-- TAB 5: BROADCAST & PEMELIHARAAN WEBSITE (KHUSUS OWNER) -->
-            <div id="tabContentBroadcast" class="hidden space-y-6">
-                <!-- Mode Pemeliharaan (Tutup Web) -->
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 max-w-2xl mx-auto">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-power-off text-rose-500"></i> Mode Pemeliharaan Website (Tutup Web)
-                        </h3>
-                        <p class="text-xs text-slate-500 font-medium leading-relaxed">
-                            Aktifkan fitur ini untuk menutup akses website utama bagi pengunjung umum (menampilkan halaman pemeliharaan / perbaikan secara instan).
-                        </p>
+            <!-- TAB 5: BROADCAST & PEMELIHARAAN WEBSITE (KHUSUS OWNER - 2 KOLOM) -->
+            <div id="tabContentBroadcast" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <!-- Kolom 1: Mode Pemeliharaan (Tutup Web) -->
+                <div class="bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 h-full flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-power-off text-rose-500"></i> Mode Pemeliharaan Website
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                                Aktifkan fitur ini untuk menutup akses website utama bagi pengunjung umum (menampilkan halaman pemeliharaan / perbaikan secara instan).
+                            </p>
+                        </div>
+
+                        <div id="maintenanceStatusMsg" class="hidden p-4 rounded-2xl text-xs font-bold text-center"></div>
+
+                        <form id="maintenanceForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-700 mb-2">Status Website Utama</label>
+                                <select id="maintenanceActiveSelect" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-rose-500">
+                                    <option value="false">✅ Website Aktif & Dapat Diakses Publik</option>
+                                    <option value="true">❌ Tutup Web / Mode Pemeliharaan (Maintenance)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-700 mb-2">Pesan Pemberitahuan Pemeliharaan</label>
+                                <textarea id="maintenanceMessageInput" rows="4" placeholder="Contoh: Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi." class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500 resize-none shadow-inner"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-4 rounded-2xl transition-all shadow-lg shadow-rose-600/20">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Status Pemeliharaan
+                            </button>
+                        </form>
                     </div>
-
-                    <div id="maintenanceStatusMsg" class="hidden p-4 rounded-2xl text-xs font-bold text-center"></div>
-
-                    <form id="maintenanceForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-700 mb-2">Status Website Utama</label>
-                            <select id="maintenanceActiveSelect" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-rose-500">
-                                <option value="false">✅ Website Aktif & Dapat Diakses Publik</option>
-                                <option value="true">❌ Tutup Web / Mode Pemeliharaan (Maintenance)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-700 mb-2">Pesan Pemberitahuan Pemeliharaan</label>
-                            <textarea id="maintenanceMessageInput" rows="3" placeholder="Contoh: Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi." class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500 resize-none shadow-inner"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-4 rounded-2xl transition-all shadow-lg shadow-rose-600/20">
-                            <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Status Pemeliharaan
-                        </button>
-                    </form>
                 </div>
 
-                <!-- Broadcast Global -->
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 max-w-2xl mx-auto">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-bullhorn text-amber-500"></i> Pengumuman Broadcast Global
-                        </h3>
-                        <p class="text-xs text-slate-500 font-medium leading-relaxed">
-                            Kirimkan pengumuman atau informasi penting yang akan tampil di bagian atas halaman utama seluruh pengunjung website secara real-time.
-                        </p>
+                <!-- Kolom 2: Broadcast Global -->
+                <div class="bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6 h-full flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn text-amber-500"></i> Pengumuman Broadcast Global
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                                Kirimkan pengumuman atau informasi penting yang akan tampil di bagian atas halaman utama seluruh pengunjung website secara real-time.
+                            </p>
+                        </div>
+
+                        <div id="broadcastStatusMsg" class="hidden p-4 rounded-2xl text-xs font-bold text-center"></div>
+
+                        <form id="broadcastForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-700 mb-2">Status Broadcast</label>
+                                <select id="broadcastActiveSelect" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500">
+                                    <option value="false">❌ Nonaktifkan (Sembunyikan Banner)</option>
+                                    <option value="true">✅ Aktifkan (Tampilkan Banner di Web)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-700 mb-2">Isi Pesan Pengumuman</label>
+                                <textarea id="broadcastMessageInput" rows="4" maxlength="300" placeholder="Contoh: Fitur baru telah rilis! Silakan periksa pembaruan..." class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 resize-none shadow-inner"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-600/20">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan & Publikasikan Broadcast
+                            </button>
+                        </form>
                     </div>
-
-                    <div id="broadcastStatusMsg" class="hidden p-4 rounded-2xl text-xs font-bold text-center"></div>
-
-                    <form id="broadcastForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-700 mb-2">Status Broadcast</label>
-                            <select id="broadcastActiveSelect" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500">
-                                <option value="false">❌ Nonaktifkan (Sembunyikan Banner)</option>
-                                <option value="true">✅ Aktifkan (Tampilkan Banner di Web)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-extrabold text-slate-700 mb-2">Isi Pesan Pengumuman</label>
-                            <textarea id="broadcastMessageInput" rows="4" maxlength="300" placeholder="Contoh: Fitur baru telah rilis! Silakan periksa pembaruan..." class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 resize-none shadow-inner"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-600/20">
-                            <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan & Publikasikan Broadcast
-                        </button>
-                    </form>
                 </div>
             </div>
 
@@ -713,7 +717,6 @@
             return { current: cur, best, lastDate };
         }
 
-        // Pencocokan data streak menyeluruh (case-insensitive & multi-lokasi)
         function resolveUserStreak(uid, cleanNick, userObj) {
             const candidates = [];
             const rawNick = userObj?.nickname ? String(userObj.nickname).trim() : "";
@@ -772,7 +775,6 @@
             return bestResolved;
         }
 
-        // Cek pergantian hari otomatis setiap 1 menit
         setInterval(() => {
             const currentKey = getTodayKey(Date.now());
             if (currentKey !== lastCheckedDateKey) {
@@ -1049,6 +1051,7 @@
                 return {
                     cleanNick,
                     uid,
+                    deviceId: u.deviceId || "",
                     nickname: u.nickname || cleanNick,
                     bio: u.bio || "",
                     createdAt: u.createdAt || 0,
@@ -1081,7 +1084,7 @@
                 .sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-8 bg-white rounded-3xl border border-slate-200">Tidak ada akun yang cocok dengan filter pencarian.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-8 bg-white rounded-3xl border border-slate-200 lg:col-span-2">Tidak ada akun yang cocok dengan filter pencarian.</p>`;
                 return;
             }
 
@@ -1092,7 +1095,7 @@
                     : "-";
 
                 const card = document.createElement("div");
-                card.className = `p-6 rounded-3xl border shadow-sm space-y-4 transition-all ${
+                card.className = `p-6 rounded-3xl border shadow-sm space-y-4 flex flex-col justify-between transition-all ${
                     u.banInfo ? "bg-rose-50/60 border-rose-200" : "bg-white border-slate-200"
                 }`;
 
@@ -1137,15 +1140,15 @@
                 }
 
                 const banActionBtn = u.banInfo
-                    ? `<button type="button" class="owner-unban-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                    ? `<button type="button" class="owner-unban-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors">
                            <i class="fa-solid fa-unlock mr-1"></i> Buka Blokir
                        </button>`
-                    : `<button type="button" class="owner-ban-btn bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
-                           <i class="fa-solid fa-ban mr-1"></i> Blokir Akun
+                    : `<button type="button" class="owner-ban-btn bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors">
+                           <i class="fa-solid fa-ban mr-1"></i> Blokir
                        </button>`;
 
                 card.innerHTML = `
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-3">
                         <div class="space-y-1.5 min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="text-base font-extrabold text-slate-900">${escapeHTML(u.nickname)}</span>
@@ -1153,30 +1156,30 @@
                                 ${statusBadge}
                                 ${reportBadge}
                             </div>
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-semibold text-slate-500">
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-slate-500">
                                 <span>UID: <code class="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-700">${escapeHTML(u.uid)}</code></span>
-                                <span><i class="fa-regular fa-clock mr-1"></i>Bergabung: ${escapeHTML(joinedStr)}</span>
-                                <span class="text-orange-600 font-bold">🔥 Streak: ${u.currentStreak} hari (Rekor: ${u.bestStreak})</span>
+                                <span><i class="fa-regular fa-clock mr-1"></i>${escapeHTML(joinedStr)}</span>
+                                <span class="text-orange-600 font-bold">🔥 ${u.currentStreak} hari (Rekor: ${u.bestStreak})</span>
                             </div>
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-2 shrink-0">
-                            <button type="button" class="owner-edit-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
-                                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profil
-                            </button>
-                            <button type="button" class="owner-reset-streak-btn bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
-                                <i class="fa-solid fa-rotate-left mr-1"></i> Reset Streak
-                            </button>
-                            ${banActionBtn}
-                            <button type="button" class="owner-delete-btn bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
-                                <i class="fa-solid fa-trash-can mr-1"></i> Hapus Akun
-                            </button>
-                        </div>
+                        ${bioHTML}
+                        ${banReasonHTML}
+                        ${reportsListHTML}
                     </div>
 
-                    ${bioHTML}
-                    ${banReasonHTML}
-                    ${reportsListHTML}
+                    <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                        <button type="button" class="owner-edit-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold px-3 py-2 rounded-xl transition-colors">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                        </button>
+                        <button type="button" class="owner-reset-streak-btn bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 text-xs font-bold px-3 py-2 rounded-xl transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Streak
+                        </button>
+                        ${banActionBtn}
+                        <button type="button" class="owner-delete-btn bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors ml-auto">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Hapus Akun
+                        </button>
+                    </div>
                 `;
 
                 // 1. Edit Profil Pengguna
@@ -1204,7 +1207,7 @@
                     }
                 });
 
-                // 2. Reset Streak Tantangan (Sesuai aturan .validate clover/streaks)
+                // 2. Reset Streak Tantangan
                 card.querySelector(".owner-reset-streak-btn").addEventListener("click", async () => {
                     if (currentUserRole !== "owner") return;
                     if (!confirm(`Reset streak tantangan milik ${u.nickname} menjadi 0?`)) return;
@@ -1278,30 +1281,60 @@
                     });
                 }
 
-                // 4. Hapus Data Akun Permanen
+                // 4. Hapus Data Akun Permanen (Termasuk pembersihan uid_to_nick & device_accounts)
                 card.querySelector(".owner-delete-btn").addEventListener("click", async () => {
                     if (currentUserRole !== "owner") return;
-                    if (!confirm(`Hapus permanen data profil, teman, laporan, dan streak milik ${u.nickname}?`)) return;
+                    if (!confirm(`Hapus permanen seluruh data akun milik ${u.nickname} (profil, uid_to_nick, device_accounts, teman, laporan, dan streak)?`)) return;
                     try {
-                        const userFriendsSnap = await get(ref(database, `clover/friends/${u.uid}`));
-                        if (userFriendsSnap.exists()) {
-                            const friendIds = Object.keys(userFriendsSnap.val());
-                            for (const fUid of friendIds) {
-                                await remove(ref(database, `clover/friends/${fUid}/${u.uid}`)).catch(() => {});
+                        // Hapus relasi teman pada akun-akun lain
+                        if (u.uid) {
+                            const userFriendsSnap = await get(ref(database, `clover/friends/${u.uid}`));
+                            if (userFriendsSnap.exists()) {
+                                const friendIds = Object.keys(userFriendsSnap.val());
+                                for (const fUid of friendIds) {
+                                    await remove(ref(database, `clover/friends/${fUid}/${u.uid}`)).catch(() => {});
+                                }
                             }
                         }
 
-                        const reportDeletes = u.reports.map(r => remove(ref(database, `clover/user_reports/${r.repId}`)).catch(() => {}));
+                        // Cari seluruh entri device_accounts yang terikat pada uid / cleanNick / deviceId pengguna ini
+                        const deviceIdsToClean = new Set();
+                        if (u.deviceId) deviceIdsToClean.add(u.deviceId);
+                        try {
+                            const deviceAccountsSnap = await get(ref(database, "clover/device_accounts"));
+                            if (deviceAccountsSnap.exists()) {
+                                Object.entries(deviceAccountsSnap.val()).forEach(([devId, devInfo]) => {
+                                    if (
+                                        devInfo &&
+                                        ((u.uid && devInfo.uid === u.uid) ||
+                                         (u.cleanNick && devInfo.cleanNick === u.cleanNick))
+                                    ) {
+                                        deviceIdsToClean.add(devId);
+                                    }
+                                });
+                            }
+                        } catch (_) {}
 
-                        await Promise.all([
-                            ...reportDeletes,
-                            remove(ref(database, `clover/friends/${u.uid}`)),
-                            remove(ref(database, `clover/streaks/${u.uid}`)),
-                            remove(ref(database, `clover/streaks/${u.cleanNick}`)),
-                            remove(ref(database, `clover/banned_users/${u.uid}`)),
-                            remove(ref(database, `clover/users/${u.cleanNick}`))
-                        ]);
-                        alert(`Data akun ${u.nickname} telah dihapus dari database.`);
+                        const multiDeletes = {};
+                        if (u.cleanNick) {
+                            multiDeletes[`clover/users/${u.cleanNick}`] = null;
+                            multiDeletes[`clover/streaks/${u.cleanNick}`] = null;
+                        }
+                        if (u.uid) {
+                            multiDeletes[`clover/uid_to_nick/${u.uid}`] = null;
+                            multiDeletes[`clover/friends/${u.uid}`] = null;
+                            multiDeletes[`clover/streaks/${u.uid}`] = null;
+                            multiDeletes[`clover/banned_users/${u.uid}`] = null;
+                        }
+                        deviceIdsToClean.forEach((devId) => {
+                            multiDeletes[`clover/device_accounts/${devId}`] = null;
+                        });
+                        u.reports.forEach((r) => {
+                            multiDeletes[`clover/user_reports/${r.repId}`] = null;
+                        });
+
+                        await update(ref(database), multiDeletes);
+                        alert(`Seluruh data akun ${u.nickname} (termasuk uid_to_nick dan device_accounts) telah dihapus permanen.`);
                     } catch (err) {
                         alert("Gagal menghapus data akun: " + err.message);
                     }
@@ -1484,13 +1517,13 @@
             }
 
             if (currentFilteredCurhats.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6">Tidak ada data curhat publik ditemukan untuk kriteria ini.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6 md:col-span-2">Tidak ada data curhat publik ditemukan untuk kriteria ini.</p>`;
                 return;
             }
 
             currentFilteredCurhats.forEach(c => {
                 const card = document.createElement("div");
-                card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4";
+                card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between";
                 let statusBadge = c.status === "approved" ? '<span class="bg-teal-100 text-teal-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Disetujui</span>' :
                                   c.status === "rejected" ? '<span class="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Ditolak</span>' :
                                   '<span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-3 py-1 rounded-full">Menunggu</span>';
@@ -1531,19 +1564,21 @@
                 }
 
                 const deleteCurhatBtn = currentUserRole === "owner" ? 
-                    `<button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-3 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
+                    `<button onclick="window.deleteCurhat('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2 px-3 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="curhat-checkbox w-4 h-4 rounded text-teal-600 focus:ring-teal-500" data-id="${c.id}" ${isChecked ? 'checked' : ''}>
-                            <span class="font-extrabold text-sm text-slate-800">${escapeHTML(c.sender || "Pejuang Tenang")}</span>
-                        </label>
-                        ${statusBadge}
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="curhat-checkbox w-4 h-4 rounded text-teal-600 focus:ring-teal-500" data-id="${c.id}" ${isChecked ? 'checked' : ''}>
+                                <span class="font-extrabold text-sm text-slate-800">${escapeHTML(c.sender || "Pejuang Tenang")}</span>
+                            </label>
+                            ${statusBadge}
+                        </div>
+                        <p class="text-xs text-slate-700 font-medium italic mb-2">"${escapeHTML(c.text)}"</p>
+                        <p class="text-[10px] text-slate-400 font-semibold">${new Date(Number(c.createdAt)).toLocaleString("id-ID")}</p>
                     </div>
-                    <p class="text-xs text-slate-700 font-medium italic">"${escapeHTML(c.text)}"</p>
-                    <p class="text-[10px] text-slate-400 font-semibold">${new Date(Number(c.createdAt)).toLocaleString("id-ID")}</p>
-                    <div class="pt-2 flex gap-2">
+                    <div class="pt-3 border-t border-slate-100 flex gap-2">
                         <button onclick="window.approveCurhat('${c.id}')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Setujui Curhat</button>
                         <button onclick="window.rejectCurhat('${c.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors">Tolak</button>
                         ${deleteCurhatBtn}
@@ -1592,23 +1627,25 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6">Tidak ada masukan ditemukan untuk kriteria ini.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6 md:col-span-2">Tidak ada masukan ditemukan untuk kriteria ini.</p>`;
                 return;
             }
 
             filtered.forEach(fb => {
                 const card = document.createElement("div");
-                card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3";
+                card.className = "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between";
                 
                 const deleteFeedbackBtn = currentUserRole === "owner" ? 
                     `<button onclick="window.deleteFeedback('${fb.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 card.innerHTML = `
-                    <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-                        <span>${escapeHTML(fb.sender || "Anonim")}</span>
-                        <span>${new Date(Number(fb.createdAt)).toLocaleString("id-ID")}</span>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+                            <span>${escapeHTML(fb.sender || "Anonim")}</span>
+                            <span>${new Date(Number(fb.createdAt)).toLocaleString("id-ID")}</span>
+                        </div>
+                        <p class="text-sm text-slate-700 font-medium italic">"${escapeHTML(fb.text)}"</p>
                     </div>
-                    <p class="text-sm text-slate-700 font-medium italic">"${escapeHTML(fb.text)}"</p>
                     <div class="pt-2">
                         <textarea id="replyInput_${fb.id}" rows="2" placeholder="Tulis balasan..." class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-emerald-500 mb-2">${escapeHTML(fb.reply || "")}</textarea>
                         <div class="flex justify-end gap-2">
