@@ -89,14 +89,6 @@
             pointer-events: none;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 40px -10px rgba(16, 185, 129, 0.08);
-        }
-
         .clover-watermark {
             position: absolute;
             bottom: -20px;
@@ -163,7 +155,7 @@
             </div>
             <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Akun Clover</h2>
             <p class="text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">
-                Masuk atau buat akun dengan nickname & password untuk menyimpan streak, masuk papan peringkat, menambah teman, dan mengobrol.
+                Masuk atau buat 1 akun dengan nickname & password untuk menyimpan streak, masuk papan peringkat, menambah teman, dan mengobrol.
             </p>
         </div>
 
@@ -195,7 +187,7 @@
                            class="w-full pl-9 pr-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-sm font-semibold text-slate-800 transition-all">
                 </div>
                 <p id="auth-nick-hint" class="hidden text-[10px] font-medium text-slate-400 mt-1 px-1">
-                    3–25 karakter (huruf, angka, titik, atau garis bawah).
+                    3–25 karakter (maksimal 1 akun per perangkat).
                 </p>
             </div>
 
@@ -400,13 +392,13 @@
 </div>
 
 <!-- =====================================================
-     NAVBAR
+     NAVBAR (BERANDA UTAMA vs BERANDA OBROLAN & MASUKAN)
 ===================================================== -->
 <header class="bg-white/95 backdrop-blur-md border-b border-emerald-100/60 sticky top-0 z-50 transition-all">
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
         
         <!-- Logo -->
-        <a href="#hero" class="flex items-center gap-3 shrink-0 group">
+        <button type="button" onclick="window.switchPageView('home', 'hero')" class="flex items-center gap-3 shrink-0 group text-left">
             <div class="w-10 h-10 rounded-2xl overflow-hidden shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white">
                 <i class="fa-solid fa-clover text-lg"></i>
             </div>
@@ -418,66 +410,95 @@
                     Kamu tidak sendirian
                 </p>
             </div>
-        </a>
+        </button>
 
-        <!-- Desktop Links -->
-        <nav class="hidden lg:flex items-center gap-3.5 xl:gap-5 text-xs xl:text-sm font-bold text-slate-600">
-            <a href="#tentang" class="hover:text-emerald-600 transition-colors">Tentang</a>
-            <a href="#keluhan" class="hover:text-emerald-600 transition-colors">Keluhan</a>
-            <a href="#curhat-publik" class="hover:text-emerald-600 transition-colors">Curhat</a>
-            <a href="#tantangan" class="hover:text-emerald-600 transition-colors">Tantangan</a>
-            <a href="#teman" class="hover:text-emerald-600 transition-colors flex items-center gap-1">
-                Teman <span id="nav-friend-dot" class="hidden w-2 h-2 rounded-full bg-rose-500"></span>
-            </a>
-            <a href="#papan" class="hover:text-emerald-600 transition-colors">Kehangatan</a>
-            <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan</a>
-        </nav>
+        <!-- Switcher 2 Beranda Utama (Desktop) -->
+        <div class="hidden md:flex items-center bg-slate-100/90 p-1 rounded-2xl border border-slate-200/70">
+            <button type="button" id="top-tab-home" onclick="window.switchPageView('home', 'hero')"
+                    class="px-4 py-2 rounded-xl text-xs font-extrabold bg-white text-emerald-700 shadow-sm transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-house"></i> Beranda Utama
+            </button>
+            <button type="button" id="top-tab-community" onclick="window.switchPageView('community', 'teman')"
+                    class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-user-group"></i> Obrolan & Masukan
+                <span id="nav-friend-dot" class="hidden w-2 h-2 rounded-full bg-rose-500"></span>
+            </button>
+        </div>
 
         <!-- Right Actions -->
         <div class="flex items-center gap-2">
             <!-- Status Akun Desktop/Tablet -->
             <div id="nav-account-area" class="hidden sm:flex items-center gap-2"></div>
 
-            <a href="#bantuan" class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-3.5 py-2.5 rounded-2xl transition-colors flex items-center gap-1.5 border border-rose-100 shadow-sm">
+            <button type="button" onclick="window.switchPageView('home', 'bantuan')"
+                    class="bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-3.5 py-2.5 rounded-2xl transition-colors flex items-center gap-1.5 border border-rose-100 shadow-sm">
                 <i class="fa-solid fa-phone"></i>
-                <span class="hidden sm:inline">Darurat</span>
-            </a>
+                <span class="hidden sm:inline">Bantuan</span>
+            </button>
 
             <button id="mobile-menu-btn" type="button" aria-label="Buka menu navigasi" aria-expanded="false"
-                    class="lg:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors relative">
+                    class="md:hidden w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 flex items-center justify-center transition-colors relative">
                 <i id="mobile-menu-icon" class="fa-solid fa-bars text-base"></i>
                 <span id="mobile-menu-dot" class="hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500"></span>
             </button>
         </div>
     </div>
 
+    <!-- Sub-Navigasi Cepat (Desktop) -->
+    <div id="sub-nav-home" class="hidden md:block border-t border-emerald-50 bg-emerald-50/30">
+        <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-center gap-6 text-xs font-bold text-slate-600">
+            <a href="#hero" class="hover:text-emerald-600 transition-colors">Beranda</a>
+            <a href="#curhat-publik" class="hover:text-emerald-600 transition-colors">Curhat</a>
+            <a href="#tantangan" class="hover:text-emerald-600 transition-colors">Tantangan</a>
+            <a href="#peringkat" class="hover:text-emerald-600 transition-colors">Peringkat</a>
+            <a href="#papan" class="hover:text-emerald-600 transition-colors">Pesan Kehangatan</a>
+            <a href="#bantuan" class="hover:text-rose-600 transition-colors">Bantuan</a>
+        </div>
+    </div>
+
+    <div id="sub-nav-community" class="hidden border-t border-emerald-50 bg-emerald-50/30">
+        <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-center gap-6 text-xs font-bold text-slate-600">
+            <a href="#teman" class="hover:text-emerald-600 transition-colors">Obrolan Teman</a>
+            <a href="#masukan" class="hover:text-emerald-600 transition-colors">Masukan & Saran Web</a>
+        </div>
+    </div>
+
     <!-- Mobile Navigation Dropdown -->
-    <div id="mobile-menu" class="hidden lg:hidden border-t border-emerald-100/70 bg-white/98 backdrop-blur-md px-4 py-4 shadow-lg space-y-3">
+    <div id="mobile-menu" class="hidden md:hidden border-t border-emerald-100/70 bg-white/98 backdrop-blur-md px-4 py-4 shadow-lg space-y-3">
         <!-- Info Akun Mobile -->
         <div id="mobile-account-area" class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-center justify-between gap-2"></div>
 
+        <!-- Switcher 2 Halaman Mobile -->
+        <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-2xl">
+            <button type="button" id="mobile-tab-home" onclick="window.switchPageView('home', 'hero'); closeMobileMenu();"
+                    class="py-2.5 rounded-xl text-xs font-extrabold bg-white text-emerald-700 shadow-sm">
+                <i class="fa-solid fa-house mr-1"></i> Beranda Utama
+            </button>
+            <button type="button" id="mobile-tab-community" onclick="window.switchPageView('community', 'teman'); closeMobileMenu();"
+                    class="py-2.5 rounded-xl text-xs font-bold text-slate-600 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-user-group"></i> Obrolan & Masukan
+            </button>
+        </div>
+
         <nav class="grid grid-cols-2 gap-2 text-xs font-bold text-slate-700">
-            <a href="#tentang" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                <i class="fa-solid fa-clover text-emerald-500 w-4 text-center"></i> Tentang
-            </a>
-            <a href="#keluhan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                <i class="fa-solid fa-lock text-emerald-500 w-4 text-center"></i> Keluhan Privat
-            </a>
-            <a href="#curhat-publik" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-teal-50 hover:text-teal-700 transition-colors">
-                <i class="fa-solid fa-comments text-teal-500 w-4 text-center"></i> Curhat Publik
-            </a>
-            <a href="#tantangan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                <i class="fa-solid fa-leaf text-emerald-500 w-4 text-center"></i> Tantangan & Rank
-            </a>
-            <a href="#teman" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                <i class="fa-solid fa-user-group text-emerald-500 w-4 text-center"></i> Teman & Chat
-            </a>
-            <a href="#papan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+            <button type="button" onclick="window.switchPageView('home', 'curhat-publik'); closeMobileMenu();" class="flex items-center gap-2.5 p-3 rounded-2xl hover:bg-teal-50 hover:text-teal-700 transition-colors text-left">
+                <i class="fa-solid fa-comments text-teal-500 w-4 text-center"></i> Curhat
+            </button>
+            <button type="button" onclick="window.switchPageView('home', 'tantangan'); closeMobileMenu();" class="flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-left">
+                <i class="fa-solid fa-leaf text-emerald-500 w-4 text-center"></i> Tantangan
+            </button>
+            <button type="button" onclick="window.switchPageView('home', 'peringkat'); closeMobileMenu();" class="flex items-center gap-2.5 p-3 rounded-2xl hover:bg-amber-50 hover:text-amber-700 transition-colors text-left">
+                <i class="fa-solid fa-trophy text-amber-500 w-4 text-center"></i> Peringkat
+            </button>
+            <button type="button" onclick="window.switchPageView('home', 'papan'); closeMobileMenu();" class="flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-left">
                 <i class="fa-solid fa-envelope-open-text text-emerald-500 w-4 text-center"></i> Kehangatan
-            </a>
-            <a href="#masukan" class="mobile-nav-link flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors col-span-2">
+            </button>
+            <button type="button" onclick="window.switchPageView('community', 'teman'); closeMobileMenu();" class="flex items-center gap-2.5 p-3 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-left">
+                <i class="fa-solid fa-comment-dots text-emerald-600 w-4 text-center"></i> Obrolan Teman
+            </button>
+            <button type="button" onclick="window.switchPageView('community', 'masukan'); closeMobileMenu();" class="flex items-center gap-2.5 p-3 rounded-2xl hover:bg-slate-100 transition-colors text-left">
                 <i class="fa-solid fa-lightbulb text-amber-500 w-4 text-center"></i> Masukan Web
-            </a>
+            </button>
         </nav>
     </div>
 </header>
@@ -498,429 +519,250 @@
 </div>
 
 <!-- =====================================================
-     HERO
+     BERANDA 1: BERANDA UTAMA
+     (Hero, Curhat, Tantangan, Peringkat, Pesan Kehangatan, Bantuan)
 ===================================================== -->
-<section id="hero" class="relative overflow-hidden px-4 py-20 md:py-28">
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full pointer-events-none -z-10">
-        <div class="absolute top-10 left-10 w-64 h-64 bg-emerald-200/40 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div class="absolute top-20 right-10 w-72 h-72 bg-teal-200/40 rounded-full mix-blend-multiply filter blur-3xl"></div>
-    </div>
+<div id="view-home" class="flex-1 flex flex-col">
 
-    <div class="max-w-4xl mx-auto text-center relative z-10">
-        <span class="inline-flex items-center gap-1.5 bg-emerald-100/80 backdrop-blur-sm border border-emerald-200 text-emerald-800 text-xs font-bold px-4 py-1.5 rounded-full mb-6 shadow-sm">
-            <i class="fa-solid fa-clover text-emerald-600"></i> <span id="hero-greeting">Ruang aman untuk terhubung & bertumbuh</span>
-        </span>
-
-        <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mb-6">
-            Kamu Tidak Sendirian <br class="hidden md:block">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">
-                di Dunia yang Ramai Ini
-            </span>
-        </h2>
-
-        <p class="text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
-            Clover hadir sebagai ruang hangat bagi setiap jiwa untuk mencatat keluhan pribadi, berbagi curhat bersama komunitas, dan saling menguatkan.
-        </p>
-
-        <!-- Tombol Navigasi Utama -->
-        <div class="flex flex-wrap justify-center gap-3.5">
-            <a href="#keluhan" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-comments"></i> Ruang Keluhan & Curhat
-            </a>
-            <a href="#tantangan" class="bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-teal-700/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-leaf"></i> Tantangan & Peringkat
-            </a>
-            <a href="#teman" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-slate-900/15 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-user-group"></i> Teman & Obrolan
-            </a>
+    <!-- 1. HERO SECTION -->
+    <section id="hero" class="relative overflow-hidden px-4 py-16 md:py-24">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full pointer-events-none -z-10">
+            <div class="absolute top-10 left-10 w-64 h-64 bg-emerald-200/40 rounded-full mix-blend-multiply filter blur-3xl"></div>
+            <div class="absolute top-20 right-10 w-72 h-72 bg-teal-200/40 rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
-    </div>
-</section>
 
-<!-- =====================================================
-     MAIN
-===================================================== -->
-<main class="max-w-5xl mx-auto px-4 py-12 flex-1 space-y-24 w-full relative z-10">
-
-    <!-- =================================================
-         TENTANG
-    ================================================== -->
-    <section id="tentang" class="relative">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-clover"></i> Tentang Clover
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="inline-flex items-center gap-1.5 bg-emerald-100/80 backdrop-blur-sm border border-emerald-200 text-emerald-800 text-xs font-bold px-4 py-1.5 rounded-full mb-6 shadow-sm">
+                <i class="fa-solid fa-clover text-emerald-600"></i> <span id="hero-greeting">Ruang aman untuk terhubung & bertumbuh</span>
             </span>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                Langkah kecil bisa berarti besar
-            </h3>
-            <p class="text-slate-500 leading-relaxed font-medium">
-                Pilih ruang yang kamu butuhkan untuk merenung, melangkah keluar dari sepi, atau berbagi energi positif.
+
+            <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mb-6">
+                Kamu Tidak Sendirian <br class="hidden md:block">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">
+                    di Dunia yang Ramai Ini
+                </span>
+            </h2>
+
+            <p class="text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
+                Clover hadir sebagai ruang hangat untuk berbagi curhat, menyelesaikan tantangan harian, menjaga streak semangat, dan saling menguatkan.
             </p>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <i class="fa-solid fa-comments clover-watermark"></i>
-                <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-6 text-2xl relative z-10">
-                    <i class="fa-solid fa-comments"></i>
-                </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Keluhan & Curhat</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Tulis catatan harian secara privat di perangkatmu atau bagikan cerita ke ruang publik untuk saling menguatkan.</p>
-            </div>
-
-            <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <i class="fa-solid fa-leaf clover-watermark"></i>
-                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[100px] -z-0"></div>
-                <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-6 text-2xl shadow-lg shadow-emerald-500/30 relative z-10">
-                    <i class="fa-solid fa-leaf"></i>
-                </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Tantangan & Peringkat</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Lakukan aksi kecil harian untuk menjaga streak semangatmu dan lihat papan peringkat konsistensi bersama.</p>
-            </div>
-
-            <div class="bg-white p-8 rounded-[2rem] border border-emerald-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <i class="fa-solid fa-user-group clover-watermark"></i>
-                <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-6 text-2xl relative z-10">
-                    <i class="fa-solid fa-user-group"></i>
-                </div>
-                <h4 class="font-extrabold text-lg text-slate-900 mb-2 relative z-10">Teman & Obrolan Hangat</h4>
-                <p class="text-sm text-slate-500 leading-relaxed font-medium relative z-10">Tambahkan teman lewat nickname dan saling bertukar sapaan hangat secara privat dan aman.</p>
+            <!-- Tombol Navigasi Cepat -->
+            <div class="flex flex-wrap justify-center gap-3.5">
+                <a href="#curhat-publik" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-comments"></i> Ruang Curhat
+                </a>
+                <a href="#tantangan" class="bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-teal-700/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-leaf"></i> Tantangan & Peringkat
+                </a>
+                <button type="button" onclick="window.switchPageView('community', 'teman')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-slate-900/15 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-user-group"></i> Obrolan Teman & Masukan
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- =================================================
-         1. KELUHAN PRIBADI & VOICE NOTE
-    ================================================== -->
-    <section id="keluhan" class="relative rounded-[2.5rem] p-6 md:p-10 lg:p-14 shadow-2xl border border-white overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-teal-50 via-emerald-100/40 to-emerald-50 z-0"></div>
-        <div class="absolute -top-32 -right-32 w-[30rem] h-[30rem] bg-emerald-300/20 rounded-full mix-blend-multiply blur-3xl z-0"></div>
-        <div class="absolute -bottom-32 -left-32 w-[30rem] h-[30rem] bg-teal-300/20 rounded-full mix-blend-multiply blur-3xl z-0"></div>
-        <i class="fa-solid fa-clover absolute right-10 bottom-10 text-9xl text-emerald-500/5 pointer-events-none"></i>
+    <main class="max-w-5xl mx-auto px-4 pb-16 flex-1 space-y-24 w-full relative z-10">
 
-        <div class="relative z-10 glass-card rounded-[2rem] p-8 md:p-10">
-            <div class="flex flex-col md:flex-row gap-8 items-start">
-                <div class="flex-1">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white shadow-md text-emerald-500 text-xl mb-6">
-                        <i class="fa-solid fa-lock"></i>
+        <!-- 2. RUANG CURHAT PUBLIK -->
+        <section id="curhat-publik" class="space-y-8 relative">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-teal-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-clover"></i> Ruang Curhat Bersama
+                </span>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                    Curhat dan Saling Mendukung
+                </h3>
+                <p class="text-slate-500 leading-relaxed font-medium">
+                    Bagikan keluh kesahmu secara terbuka di sini. Anggota komunitas lain dapat membaca dan memberikan balasan dukungan hangat untukmu.
+                </p>
+            </div>
+
+            <div id="curhat-firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
+
+            <form id="curhat-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+                <i class="fa-solid fa-clover clover-watermark"></i>
+                <div>
+                    <label for="curhat-input" class="block text-sm font-extrabold text-slate-700 mb-2">Tulis Curhat Publik <span class="text-rose-500">*</span></label>
+                    <textarea id="curhat-input" rows="4" maxlength="400" required placeholder="Contoh: Rasanya akhir-akhir ini lelah banget menghadapi tekanan kuliah/kerja, ada yang ngerasain hal serupa? 🍀" 
+                              class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
+                    <div class="flex justify-between mt-2 px-1">
+                        <span class="text-[10px] font-bold text-slate-400">Maksimal 400 karakter</span>
+                        <span id="curhat-char-count" class="text-[10px] font-bold text-slate-400">0/400</span>
                     </div>
-                    <span class="block text-emerald-700 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                        <i class="fa-solid fa-clover"></i> Ruang Privat (Di Perangkat Anda)
-                    </span>
-                    <h3 class="text-3xl font-extrabold text-slate-900 mb-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-emerald-800">
-                        Catatan Keluhan Pribadi & Rekaman Suara
-                    </h3>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium">
-                        Tuliskan keluhan atau unek-unek harian untuk diri sendiri. 
-                        <strong>100% rahasia</strong> dan hanya tersimpan di browser perangkatmu.
-                    </p>
                 </div>
 
-                <div class="flex-[1.5] w-full">
-                    <div id="savedComplaintCard" class="hidden space-y-4 mb-6">
-                        <div id="savedTextCardWrapper" class="hidden bg-gradient-to-br from-emerald-50 to-teal-50/50 p-6 rounded-3xl border border-emerald-200 shadow-sm relative overflow-hidden">
-                            <div class="absolute -top-6 -right-6 text-emerald-500/10 text-8xl pointer-events-none">
-                                <i class="fa-solid fa-book-open"></i>
-                            </div>
-                            <div class="relative z-10">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
-                                        <i class="fa-solid fa-lock"></i> Catatan Privat Tersimpan
-                                    </h4>
-                                    <button id="editComplaintButton" type="button" class="bg-white hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-200 shadow-sm transition-all flex items-center gap-1.5">
-                                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                                    </button>
-                                </div>
-                                <div class="bg-white/70 p-4 rounded-2xl border border-white/50 shadow-inner">
-                                    <p id="savedComplaintText" class="text-sm text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap"></p>
-                                </div>
-                                <div id="textEncouragementContainer" class="hidden mt-3 p-3.5 rounded-2xl bg-white/90 border border-emerald-200 text-xs text-emerald-900 font-medium flex items-start gap-3 shadow-sm">
-                                    <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5">
-                                        <i class="fa-solid fa-seedling text-[10px]"></i>
-                                    </div>
-                                    <div>
-                                        <span class="font-extrabold block text-emerald-700 mb-0.5">Pesan Penyemangat Teks:</span>
-                                        <p id="textEncouragementText" class="italic leading-relaxed text-slate-700"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div>
+                    <label for="curhat-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
+                        Nama / Panggilan <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
+                    </label>
+                    <input type="text" id="curhat-sender-input" maxlength="40" placeholder="Pejuang Tenang" 
+                           class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
+                </div>
 
-                        <div id="savedAudioCardWrapper" class="hidden bg-gradient-to-br from-teal-50 to-cyan-50/50 p-6 rounded-3xl border border-teal-200 shadow-sm relative overflow-hidden">
-                            <div class="absolute -top-6 -right-6 text-teal-500/10 text-8xl pointer-events-none">
-                                <i class="fa-solid fa-microphone-lines"></i>
-                            </div>
-                            <div class="relative z-10">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-1.5">
-                                        <i class="fa-solid fa-microphone"></i> Rekaman Suara Privat Tersimpan
-                                    </h4>
-                                    <button id="deleteAudioOnlyButton" type="button" class="bg-white hover:bg-rose-50 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-rose-100 shadow-sm transition-all flex items-center gap-1.5" title="Hapus rekaman saja">
-                                        <i class="fa-solid fa-trash-can"></i> Hapus Suara
-                                    </button>
-                                </div>
-                                <div class="bg-white/70 p-4 rounded-2xl border border-white/50 shadow-inner flex items-center gap-3">
-                                    <audio id="savedAudioPlayback" controls class="w-full h-9"></audio>
-                                </div>
-                                <div id="audioEncouragementContainer" class="hidden mt-3 p-3.5 rounded-2xl bg-white/90 border border-teal-200 text-xs text-teal-900 font-medium flex items-start gap-3 shadow-sm">
-                                    <div class="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center shrink-0 mt-0.5">
-                                        <i class="fa-solid fa-music text-[10px]"></i>
-                                    </div>
-                                    <div>
-                                        <span class="font-extrabold block text-teal-700 mb-0.5">Pesan Penyemangat Suara:</span>
-                                        <p id="audioEncouragementText" class="italic leading-relaxed text-slate-700"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <button type="submit" id="submit-curhat-button" class="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-teal-600/25">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik
+                </button>
+                
+                <p class="text-xs text-center font-medium text-slate-400 pt-1">
+                    Curhat akan dimoderasi admin sebelum tampil.
+                </p>
+            </form>
 
-                    <div class="bg-white/80 rounded-3xl p-3 border border-slate-100 shadow-inner mb-4">
-                        <textarea id="complaintInput" rows="4" maxlength="1000" 
-                                  placeholder="Contoh: Hari ini terasa berat dan melelahkan, aku merasa..."
-                                  class="w-full p-4 bg-transparent text-sm text-slate-700 font-medium resize-none focus:outline-none placeholder:text-slate-400"></textarea>
-                    </div>
-                    
-                    <div class="bg-white/80 p-4 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-                        <div class="flex items-center gap-3 w-full sm:w-auto">
-                            <button id="recordVoiceBtn" type="button" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs px-4 py-2.5 rounded-2xl border border-emerald-200 transition-all flex items-center gap-2">
-                                <i class="fa-solid fa-microphone"></i> <span id="recordBtnText">Rekam Suara</span>
-                            </button>
-                            <span id="voiceTimer" class="text-xs font-bold text-slate-400 hidden">00:00</span>
+            <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
+                <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+                    <div class="loading-spinner mb-4"></div>
+                    <p class="text-sm font-bold text-slate-400">Memuat ruang curhat komunitas...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TANTANGAN HARIAN -->
+        <section id="tantangan" class="space-y-10 pt-6 border-t border-slate-200/60">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-clover"></i> Tantangan Harian
+                </span>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                    Langkah Melawan Sepi
+                </h3>
+                <p class="text-slate-500 leading-relaxed font-medium">
+                    Lakukan minimal 1 tantangan hari ini untuk menjaga streak-mu dan perlahan memecah isolasi diri.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-white rounded-[2rem] p-8 border border-emerald-100/60 shadow-sm text-center relative overflow-hidden">
+                        <i class="fa-solid fa-clover clover-watermark"></i>
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-6 relative z-10">Progres Hari Ini</p>
+                        
+                        <div class="relative inline-flex items-center justify-center mb-2 z-10">
+                            <i class="fa-solid fa-clover text-[8rem] text-emerald-100/70 drop-shadow-sm"></i>
+                            <div id="challengeProgressBar" class="absolute inset-0 text-emerald-500 transition-all duration-700 ease-out" style="clip-path: inset(100% 0 0 0);">
+                                <i class="fa-solid fa-clover text-[8rem]"></i>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center pb-2">
+                                <span id="challengeProgressText" class="text-xl font-black text-white bg-emerald-900/35 backdrop-blur-md px-3 py-1 rounded-2xl shadow-sm">0%</span>
+                            </div>
                         </div>
                         
-                        <div id="audioPreviewWrapper" class="hidden flex items-center gap-3 w-full sm:w-auto">
-                            <audio id="audioPlayback" controls class="h-9 w-full sm:w-44"></audio>
-                            <button id="deleteVoiceBtn" type="button" title="Hapus rekaman" class="text-rose-500 hover:text-rose-700 p-2 text-sm transition-colors">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
+                        <p class="text-sm font-bold text-slate-600 mt-4 relative z-10">
+                            <span id="completedToday" class="text-emerald-600">0</span> dari <span class="text-slate-400">5</span> selesai
+                        </p>
+                        <p id="streakStatusBadge" class="text-[11px] font-bold text-slate-400 mt-2 relative z-10">
+                            Selesaikan minimal 1 tantangan hari ini
+                        </p>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-2 px-2">
-                        <div class="flex items-center gap-2">
-                            <span id="complaintStatus" class="text-xs font-bold text-emerald-600"></span>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm text-center">
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Streak Saat Ini</p>
+                            <p id="currentStreak" class="text-3xl font-extrabold text-orange-500">0</p>
+                            <p class="text-[10px] font-bold text-slate-400 mt-1">Hari beruntun 🔥</p>
                         </div>
-                        <span id="complaintCount" class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">0/1000</span>
+                        <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm text-center">
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Rekor Terbaik</p>
+                            <p id="bestStreak" class="text-3xl font-extrabold text-amber-400">0</p>
+                            <p class="text-[10px] font-bold text-slate-400 mt-1">Hari beruntun 🏆</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8">
+                    <div id="challenge-list" class="space-y-4">
+                        <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                            <div class="mt-1 relative flex items-center justify-center">
+                                <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
+                                <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
+                                    <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
+                                    Sapaan Sederhana
+                                </span>
+                                <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
+                                    Menyapa atau tersenyum pada setidaknya satu orang hari ini.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                            <div class="mt-1 relative flex items-center justify-center">
+                                <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
+                                <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
+                                    <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
+                                    Udara Segar
+                                </span>
+                                <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
+                                    Keluar dari kamar atau rumah selama 10 menit untuk merasakan udara luar dan cahaya matahari.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                            <div class="mt-1 relative flex items-center justify-center">
+                                <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
+                                <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
+                                    <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
+                                    Satu Pesan Hangat
+                                </span>
+                                <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
+                                    Kirim pesan santai ke teman atau keluarga yang sudah lama tidak mengobrol.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                            <div class="mt-1 relative flex items-center justify-center">
+                                <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
+                                <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
+                                    <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
+                                    Jeda Dunia Maya
+                                </span>
+                                <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
+                                    Jauhkan diri dari media sosial selama 1 jam dan perhatikan keadaan fisik di sekitarmu.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                            <div class="mt-1 relative flex items-center justify-center">
+                                <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
+                                <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
+                                    <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
+                                    Mendengar Suara
+                                </span>
+                                <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
+                                    Dengarkan podcast ringan, musik ceria, atau radio agar suasana ruangan tidak terlalu hening.
+                                </span>
+                            </div>
+                        </label>
                     </div>
 
-                    <div class="flex flex-wrap gap-3 mt-6">
-                        <button id="saveComplaintButton" type="button" 
-                                class="flex-1 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-6 py-3.5 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-lock text-xs"></i> Simpan Keluhan Pribadi
+                    <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
+                        <button id="resetChallengesButton" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold px-5 py-3 rounded-xl transition-colors ml-auto">
+                            Reset Hari Ini
                         </button>
-                        <button id="clearComplaintButton" type="button" title="Hapus semua"
-                                class="bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-rose-600 text-sm font-bold px-6 py-3.5 rounded-2xl transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- =================================================
-         2. RUANG CURHAT PUBLIK
-    ================================================== -->
-    <section id="curhat-publik" class="space-y-8 pt-6 relative">
-        <div class="text-center max-w-2xl mx-auto mb-10">
-            <span class="text-teal-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-clover"></i> Ruang Curhat Bersama
-            </span>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                Curhat dan Saling Mendukung
-            </h3>
-            <p class="text-slate-500 leading-relaxed font-medium">
-                Bagikan keluh kesahmu secara terbuka di sini. Anggota komunitas lain dapat membaca dan memberikan balasan dukungan hangat untukmu.
-            </p>
-        </div>
-
-        <div id="curhat-firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
-
-        <form id="curhat-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
-            <i class="fa-solid fa-clover clover-watermark"></i>
-            <div>
-                <label for="curhat-input" class="block text-sm font-extrabold text-slate-700 mb-2">Tulis Curhat Publik <span class="text-rose-500">*</span></label>
-                <textarea id="curhat-input" rows="4" maxlength="400" required placeholder="Contoh: Rasanya akhir-akhir ini lelah banget menghadapi tekanan kuliah/kerja, ada yang ngerasain hal serupa? 🍀" 
-                          class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
-                <div class="flex justify-between mt-2 px-1">
-                    <span class="text-[10px] font-bold text-slate-400">Maksimal 400 karakter</span>
-                    <span id="curhat-char-count" class="text-[10px] font-bold text-slate-400">0/400</span>
-                </div>
-            </div>
-
-            <div>
-                <label for="curhat-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
-                    Nama / Panggilan <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
-                </label>
-                <input type="text" id="curhat-sender-input" maxlength="40" placeholder="Pejuang Tenang" 
-                       class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
-            </div>
-
-            <button type="submit" id="submit-curhat-button" class="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-teal-600/25">
-                <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik
-            </button>
-            
-            <p class="text-xs text-center font-medium text-slate-400 pt-1">
-                Curhat dan editannya akan dimoderasi admin sebelum tampil.
-            </p>
-        </form>
-
-        <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
-            <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
-                <div class="loading-spinner mb-4"></div>
-                <p class="text-sm font-bold text-slate-400">Memuat ruang curhat komunitas...</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- =================================================
-         3. TANTANGAN HARIAN & PAPAN PERINGKAT
-    ================================================== -->
-    <section id="tantangan" class="space-y-10">
-        <div class="text-center max-w-2xl mx-auto">
-            <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-clover"></i> Tantangan Harian
-            </span>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                Langkah Melawan Sepi
-            </h3>
-            <p class="text-slate-500 leading-relaxed font-medium">
-                Lakukan minimal 1 tantangan hari ini untuk menjaga streak-mu dan perlahan memecah isolasi diri.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div class="lg:col-span-4 space-y-6">
-                <div class="bg-white rounded-[2rem] p-8 border border-emerald-100/60 shadow-sm text-center relative overflow-hidden">
-                    <i class="fa-solid fa-clover clover-watermark"></i>
-                    <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-6 relative z-10">Progres Hari Ini</p>
-                    
-                    <div class="relative inline-flex items-center justify-center mb-2 z-10">
-                        <i class="fa-solid fa-clover text-[8rem] text-emerald-100/70 drop-shadow-sm"></i>
-                        <div id="challengeProgressBar" class="absolute inset-0 text-emerald-500 transition-all duration-700 ease-out" style="clip-path: inset(100% 0 0 0);">
-                            <i class="fa-solid fa-clover text-[8rem]"></i>
-                        </div>
-                        <div class="absolute inset-0 flex items-center justify-center pb-2">
-                            <span id="challengeProgressText" class="text-xl font-black text-white bg-emerald-900/35 backdrop-blur-md px-3 py-1 rounded-2xl shadow-sm">0%</span>
-                        </div>
-                    </div>
-                    
-                    <p class="text-sm font-bold text-slate-600 mt-4 relative z-10">
-                        <span id="completedToday" class="text-emerald-600">0</span> dari <span class="text-slate-400">5</span> selesai
-                    </p>
-                    <p id="streakStatusBadge" class="text-[11px] font-bold text-slate-400 mt-2 relative z-10">
-                        Selesaikan minimal 1 tantangan hari ini
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm text-center">
-                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Streak Saat Ini</p>
-                        <p id="currentStreak" class="text-3xl font-extrabold text-orange-500">0</p>
-                        <p class="text-[10px] font-bold text-slate-400 mt-1">Hari beruntun 🔥</p>
-                    </div>
-                    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm text-center">
-                        <p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Rekor Terbaik</p>
-                        <p id="bestStreak" class="text-3xl font-extrabold text-amber-400">0</p>
-                        <p class="text-[10px] font-bold text-slate-400 mt-1">Hari beruntun 🏆</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-8">
-                <div id="challenge-list" class="space-y-4">
-                    <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
-                        <div class="mt-1 relative flex items-center justify-center">
-                            <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
-                            <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
-                                <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
-                                Sapaan Sederhana
-                            </span>
-                            <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Menyapa atau tersenyum pada setidaknya satu orang hari ini.
-                            </span>
-                        </div>
-                    </label>
-
-                    <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
-                        <div class="mt-1 relative flex items-center justify-center">
-                            <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
-                            <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
-                                <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
-                                Udara Segar
-                            </span>
-                            <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Keluar dari kamar atau rumah selama 10 menit untuk merasakan udara luar dan cahaya matahari.
-                            </span>
-                        </div>
-                    </label>
-
-                    <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
-                        <div class="mt-1 relative flex items-center justify-center">
-                            <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
-                            <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
-                                <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
-                                Satu Pesan Hangat
-                            </span>
-                            <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Kirim pesan santai ke teman atau keluarga yang sudah lama tidak mengobrol.
-                            </span>
-                        </div>
-                    </label>
-
-                    <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
-                        <div class="mt-1 relative flex items-center justify-center">
-                            <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
-                            <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
-                                <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
-                                Jeda Dunia Maya
-                            </span>
-                            <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Jauhkan diri dari media sosial selama 1 jam dan perhatikan keadaan fisik di sekitarmu.
-                            </span>
-                        </div>
-                    </label>
-
-                    <label class="challenge-item group flex items-start gap-4 p-5 md:p-6 rounded-3xl border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-md">
-                        <div class="mt-1 relative flex items-center justify-center">
-                            <input type="checkbox" class="challenge-checkbox peer appearance-none w-6 h-6 rounded-full border-2 border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer shrink-0">
-                            <i class="fa-solid fa-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="task-title flex items-center gap-2 text-base font-extrabold text-slate-800 transition-colors">
-                                <i class="fa-solid fa-clover text-slate-200 clover-bullet text-sm transition-all duration-300"></i>
-                                Mendengar Suara
-                            </span>
-                            <span class="block text-sm text-slate-500 font-medium mt-1 leading-relaxed">
-                                Dengarkan podcast ringan, musik ceria, atau radio agar suasana ruangan tidak terlalu hening.
-                            </span>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
-                    <button id="resetChallengesButton" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold px-5 py-3 rounded-xl transition-colors ml-auto">
-                        Reset Hari Ini
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAPAN PERINGKAT TANTANGAN (LEADERBOARD) -->
-        <div class="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-100/80 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+        <!-- 4. PAPAN PERINGKAT TANTANGAN (LEADERBOARD) -->
+        <section id="peringkat" class="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-100/80 shadow-xl shadow-slate-200/40 relative overflow-hidden">
             <i class="fa-solid fa-trophy clover-watermark"></i>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 relative z-10">
                 <div>
@@ -952,303 +794,307 @@
                     Memuat papan peringkat...
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- =================================================
-         4. TEMAN & OBROLAN HANGAT (KOMUNIKASI SEDERHANA)
-    ================================================== -->
-    <section id="teman" class="space-y-8 pt-6 border-t border-slate-200/60 relative">
-        <div class="text-center max-w-2xl mx-auto">
-            <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-user-group"></i> Lingkar Teman Clover
-            </span>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                Add Teman & Obrolan Hangat
-            </h3>
-            <p class="text-slate-500 leading-relaxed font-medium">
-                Temukan teman seperjuangan lewat nickname, lihat streak harian mereka, dan saling bertukar sapaan hangat secara privat.
-            </p>
-        </div>
-
-        <!-- Tampilan Jika Mode Tamu -->
-        <div id="friends-guest-gate" class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-emerald-100/80 shadow-xl shadow-slate-200/40 text-center max-w-2xl mx-auto space-y-5 relative overflow-hidden">
-            <i class="fa-solid fa-user-group clover-watermark"></i>
-            <div class="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-sm relative z-10">
-                <i class="fa-solid fa-user-plus"></i>
-            </div>
-            <div class="space-y-2 relative z-10">
-                <h4 class="text-xl font-extrabold text-slate-900">Masuk atau Daftar untuk Menambah Teman</h4>
-                <p class="text-xs md:text-sm text-slate-500 font-medium leading-relaxed max-w-md mx-auto">
-                    Saat ini kamu sedang menjelajah sebagai <strong>Tamu</strong>. Buat akun dengan nickname & password agar bisa menambah teman dan mengirim pesan pribadi.
+        <!-- 5. PESAN KEHANGATAN -->
+        <section id="papan" class="space-y-8 pt-10 border-t border-slate-200/60 relative">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-clover"></i> Papan Kehangatan
+                </span>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                    Tinggalkan Sedikit Kehangatan
+                </h3>
+                <p class="text-slate-500 leading-relaxed font-medium">
+                    Tulis pesan positif untuk seseorang yang mungkin sedang merasa sendirian dan membutuhkan semangat darimu.
                 </p>
             </div>
-            <div class="flex flex-wrap justify-center gap-3 pt-2 relative z-10">
-                <button type="button" id="friends-open-register-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 transition-all">
-                    <i class="fa-solid fa-user-plus mr-1.5"></i> Daftar Akun Baru
-                </button>
-                <button type="button" id="friends-open-login-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs md:text-sm font-bold px-6 py-3.5 rounded-2xl transition-all">
-                    <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Sudah Punya Akun
-                </button>
-            </div>
-        </div>
 
-        <!-- Tampilan Jika Sudah Login -->
-        <div id="friends-logged-in-area" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
-            <!-- Kolom Kiri: Cari Teman, Permintaan Masuk, & Daftar Teman -->
-            <div class="lg:col-span-5 space-y-6">
+            <div id="firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
+
+            <form id="message-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+                <i class="fa-solid fa-clover clover-watermark"></i>
+                <div>
+                    <label for="message-input" class="block text-sm font-extrabold text-slate-700 mb-2">Pesan Kehangatan <span class="text-rose-500">*</span></label>
+                    <textarea id="message-input" rows="4" maxlength="300" required placeholder="Contoh: Kamu sudah melakukan yang terbaik hari ini. Mari istirahat. 🍀" 
+                              class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
+                    <div class="flex justify-between mt-2 px-1">
+                        <span class="text-[10px] font-bold text-slate-400">Maksimal 300 karakter</span>
+                        <span id="char-count" class="text-[10px] font-bold text-slate-400">0/300</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
+                        Nama <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
+                    </label>
+                    <input type="text" id="sender-input" maxlength="40" placeholder="Sahabat Anonim" 
+                           class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
+                </div>
+
+                <button type="submit" id="submit-message-button" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/25 mt-2">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Kehangatan
+                </button>
                 
-                <!-- Kartu Cari & Add Teman -->
-                <div class="bg-white rounded-[2rem] p-6 border border-emerald-100/80 shadow-lg shadow-slate-200/30 space-y-4">
-                    <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-magnifying-glass text-emerald-600"></i> Cari & Tambah Teman
-                    </h4>
-                    <form id="friend-search-form" class="flex gap-2">
-                        <input type="text" id="friend-search-input" maxlength="25" required placeholder="Ketik nickname teman..."
-                               class="flex-1 px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs font-semibold text-slate-800">
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-colors shrink-0">
-                            Cari
-                        </button>
-                    </form>
-                    <div id="friend-search-results" class="space-y-2"></div>
-                </div>
+                <p class="text-xs text-center font-medium text-slate-400 pt-2">
+                    Pesan akan diperiksa (dimoderasi) sebelum tampil di papan.
+                </p>
+            </form>
 
-                <!-- Kartu Permintaan Pertemanan Masuk -->
-                <div id="incoming-requests-card" class="hidden bg-amber-50/70 rounded-[2rem] p-6 border border-amber-200/80 shadow-sm space-y-3">
-                    <h4 class="text-xs font-black uppercase tracking-wider text-amber-800 flex items-center justify-between">
-                        <span><i class="fa-solid fa-bell mr-1.5"></i> Permintaan Pertemanan</span>
-                        <span id="incoming-requests-count" class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px]">0</span>
-                    </h4>
-                    <div id="incoming-requests-list" class="space-y-2.5"></div>
+            <div id="messages-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
+                <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+                    <div class="loading-spinner mb-4"></div>
+                    <p class="text-sm font-bold text-slate-400">Memuat pesan kehangatan...</p>
                 </div>
+            </div>
+        </section>
 
-                <!-- Kartu Daftar Teman -->
-                <div class="bg-white rounded-[2rem] p-6 border border-emerald-100/80 shadow-lg shadow-slate-200/30 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-user-check text-teal-600"></i> Daftar Teman
-                        </h4>
-                        <span id="friends-total-badge" class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">0 teman</span>
-                    </div>
-                    <div id="friends-list" class="space-y-2.5">
-                        <p class="text-xs text-slate-400 font-medium text-center py-6">
-                            Belum ada teman. Cari nickname temanmu di atas untuk mulai terhubung!
-                        </p>
-                    </div>
-                </div>
-
+        <!-- 6. BANTUAN -->
+        <section id="bantuan" class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-rose-100 shadow-inner">
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <span class="text-rose-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-life-ring"></i> Butuh Bantuan?
+                </span>
+                <h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-4">
+                    Kamu tidak harus menghadapi semuanya sendirian
+                </h3>
+                <p class="text-sm text-slate-600 font-medium leading-relaxed">
+                    Jika sepi terasa sangat menyesakkan atau ada keadaan darurat, hubungi orang yang kamu percaya atau layanan bantuan segera.
+                </p>
             </div>
 
-            <!-- Kolom Kanan: Ruang Obrolan Sederhana 1-on-1 -->
-            <div class="lg:col-span-7 bg-white rounded-[2.2rem] border border-emerald-100/80 shadow-xl shadow-slate-200/40 flex flex-col h-[540px] overflow-hidden">
-                
-                <!-- Header Chat -->
-                <div id="chat-header" class="px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50/70 border-b border-emerald-100 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div id="chat-partner-avatar" class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm">
-                            <i class="fa-solid fa-comments"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <h4 id="chat-partner-name" class="text-sm font-extrabold text-slate-900 truncate">Pilih Teman untuk Mengobrol</h4>
-                            <p id="chat-partner-sub" class="text-[11px] font-semibold text-slate-500 truncate">Obrolan privat antar teman Clover</p>
-                            <p id="chat-partner-bio" class="hidden text-[10px] font-medium text-emerald-700 italic truncate mt-0.5"></p>
-                        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+                <div class="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm flex items-center justify-between gap-4 hover:-translate-y-1 transition-transform">
+                    <div>
+                        <h4 class="font-extrabold text-slate-800">Layanan Darurat</h4>
+                        <p class="text-xs font-medium text-slate-500 mt-1">Bantuan medis/psikologis segera.</p>
                     </div>
+                    <a href="tel:112" class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold px-5 py-3 rounded-2xl transition-colors shadow-md shadow-rose-500/20">
+                        <i class="fa-solid fa-phone mr-1"></i> 112
+                    </a>
+                </div>
 
-                    <button id="open-report-modal-btn" type="button" title="Laporkan pengguna ini"
-                            class="hidden bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors shrink-0">
-                        <i class="fa-solid fa-flag mr-1"></i> Laporkan
+                <div class="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm hover:-translate-y-1 transition-transform">
+                    <h4 class="font-extrabold text-slate-800">Ceritakan Pada Seseorang</h4>
+                    <p class="text-xs font-medium text-slate-500 mt-2 leading-relaxed">
+                        Keluarga, teman, guru, atau konselor bisa menjadi tempat untuk sekadar didengar tanpa dihakimi.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- =====================================================
+     BERANDA 2: OBROLAN TEMAN & MASUKAN WEB
+===================================================== -->
+<div id="view-community" class="hidden flex-1 flex flex-col">
+    <main class="max-w-5xl mx-auto px-4 py-10 flex-1 space-y-20 w-full relative z-10">
+
+        <!-- 1. TEMAN & OBROLAN HANGAT -->
+        <section id="teman" class="space-y-8 relative">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+                <div>
+                    <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-user-group"></i> Lingkar Teman Clover
+                    </span>
+                    <h3 class="text-2xl md:text-4xl font-extrabold text-slate-900">
+                        Add Teman & Obrolan Hangat
+                    </h3>
+                </div>
+                <button type="button" onclick="window.switchPageView('home', 'hero')"
+                        class="self-start sm:self-auto bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-4 py-2.5 rounded-2xl transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda Utama
+                </button>
+            </div>
+
+            <!-- Tampilan Jika Mode Tamu -->
+            <div id="friends-guest-gate" class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-emerald-100/80 shadow-xl shadow-slate-200/40 text-center max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+                <i class="fa-solid fa-user-group clover-watermark"></i>
+                <div class="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-sm relative z-10">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <div class="space-y-2 relative z-10">
+                    <h4 class="text-xl font-extrabold text-slate-900">Masuk atau Daftar untuk Menambah Teman</h4>
+                    <p class="text-xs md:text-sm text-slate-500 font-medium leading-relaxed max-w-md mx-auto">
+                        Saat ini kamu sedang menjelajah sebagai <strong>Tamu</strong>. Buat akun dengan nickname & password agar bisa menambah teman dan mengirim pesan pribadi.
+                    </p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-3 pt-2 relative z-10">
+                    <button type="button" id="friends-open-register-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 transition-all">
+                        <i class="fa-solid fa-user-plus mr-1.5"></i> Daftar Akun Baru
+                    </button>
+                    <button type="button" id="friends-open-login-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs md:text-sm font-bold px-6 py-3.5 rounded-2xl transition-all">
+                        <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Sudah Punya Akun
                     </button>
                 </div>
+            </div>
 
-                <!-- Area Pesan Chat -->
-                <div id="chat-messages-box" class="flex-1 p-5 overflow-y-auto space-y-3 bg-slate-50/60">
-                    <div class="h-full flex flex-col items-center justify-center text-center px-6">
-                        <div class="w-14 h-14 rounded-3xl bg-white border border-emerald-100 text-emerald-500 flex items-center justify-center text-xl mb-3 shadow-sm">
-                            <i class="fa-solid fa-paper-plane"></i>
+            <!-- Tampilan Jika Sudah Login -->
+            <div id="friends-logged-in-area" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Kolom Kiri: Cari Teman, Permintaan Masuk, & Daftar Teman -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Kartu Cari & Add Teman -->
+                    <div class="bg-white rounded-[2rem] p-6 border border-emerald-100/80 shadow-lg shadow-slate-200/30 space-y-4">
+                        <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-emerald-600"></i> Cari & Tambah Teman
+                        </h4>
+                        <form id="friend-search-form" class="flex gap-2">
+                            <input type="text" id="friend-search-input" maxlength="25" required placeholder="Ketik nickname teman..."
+                                   class="flex-1 px-4 py-2.5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs font-semibold text-slate-800">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-colors shrink-0">
+                                Cari
+                            </button>
+                        </form>
+                        <div id="friend-search-results" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Kartu Permintaan Pertemanan Masuk -->
+                    <div id="incoming-requests-card" class="hidden bg-amber-50/70 rounded-[2rem] p-6 border border-amber-200/80 shadow-sm space-y-3">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-amber-800 flex items-center justify-between">
+                            <span><i class="fa-solid fa-bell mr-1.5"></i> Permintaan Pertemanan</span>
+                            <span id="incoming-requests-count" class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px]">0</span>
+                        </h4>
+                        <div id="incoming-requests-list" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- Kartu Daftar Teman -->
+                    <div class="bg-white rounded-[2rem] p-6 border border-emerald-100/80 shadow-lg shadow-slate-200/30 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-user-check text-teal-600"></i> Daftar Teman
+                            </h4>
+                            <span id="friends-total-badge" class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">0 teman</span>
                         </div>
-                        <p class="text-sm font-extrabold text-slate-700">Mulai Percakapan Hangat</p>
-                        <p class="text-xs text-slate-400 font-medium mt-1 max-w-xs">
-                            Klik salah satu teman di sebelah kiri untuk saling menyapa dan memberi semangat.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Sapaan Cepat (Icebreaker) & Input Pesan -->
-                <div id="chat-composer-area" class="hidden border-t border-slate-100 bg-white p-3.5 space-y-2.5">
-                    <!-- Tombol Sapaan Cepat -->
-                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                        <button type="button" class="quick-chat-btn shrink-0 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-200/70 transition-colors" data-msg="Halo! Semangat menjalani hari ini ya 🍀">
-                            👋 Semangat hari ini! 🍀
-                        </button>
-                        <button type="button" class="quick-chat-btn shrink-0 bg-teal-50 hover:bg-teal-100 text-teal-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-teal-200/70 transition-colors" data-msg="Sudah selesai tantangan hari ini belum? 🔥">
-                            🔥 Cek tantangan
-                        </button>
-                        <button type="button" class="quick-chat-btn shrink-0 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-cyan-200/70 transition-colors" data-msg="Kalau butuh teman cerita, aku di sini ya">
-                            💬 Aku di sini
-                        </button>
-                        <button type="button" class="quick-chat-btn shrink-0 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-amber-200/70 transition-colors" data-msg="Jangan lupa istirahat dan minum air putih 😊">
-                            ☕ Jangan lupa istirahat
-                        </button>
+                        <div id="friends-list" class="space-y-2.5">
+                            <p class="text-xs text-slate-400 font-medium text-center py-6">
+                                Belum ada teman. Cari nickname temanmu di atas untuk mulai terhubung!
+                            </p>
+                        </div>
                     </div>
 
-                    <form id="chat-send-form" class="flex items-center gap-2">
-                        <input type="text" id="chat-message-input" maxlength="250" required placeholder="Tulis pesan singkat (maks. 250 karakter)..."
-                               class="flex-1 px-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs sm:text-sm font-medium text-slate-800">
-                        <button type="submit" id="chat-send-btn" class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl transition-all shadow-md shadow-emerald-600/20 shrink-0">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </form>
                 </div>
 
+                <!-- Kolom Kanan: Ruang Obrolan Sederhana 1-on-1 -->
+                <div class="lg:col-span-7 bg-white rounded-[2.2rem] border border-emerald-100/80 shadow-xl shadow-slate-200/40 flex flex-col h-[540px] overflow-hidden">
+                    
+                    <!-- Header Chat -->
+                    <div id="chat-header" class="px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50/70 border-b border-emerald-100 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div id="chat-partner-avatar" class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 id="chat-partner-name" class="text-sm font-extrabold text-slate-900 truncate">Pilih Teman untuk Mengobrol</h4>
+                                <p id="chat-partner-sub" class="text-[11px] font-semibold text-slate-500 truncate">Obrolan privat antar teman Clover</p>
+                                <p id="chat-partner-bio" class="hidden text-[10px] font-medium text-emerald-700 italic truncate mt-0.5"></p>
+                            </div>
+                        </div>
+
+                        <button id="open-report-modal-btn" type="button" title="Laporkan pengguna ini"
+                                class="hidden bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors shrink-0">
+                            <i class="fa-solid fa-flag mr-1"></i> Laporkan
+                        </button>
+                    </div>
+
+                    <!-- Area Pesan Chat -->
+                    <div id="chat-messages-box" class="flex-1 p-5 overflow-y-auto space-y-3 bg-slate-50/60">
+                        <div class="h-full flex flex-col items-center justify-center text-center px-6">
+                            <div class="w-14 h-14 rounded-3xl bg-white border border-emerald-100 text-emerald-500 flex items-center justify-center text-xl mb-3 shadow-sm">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </div>
+                            <p class="text-sm font-extrabold text-slate-700">Mulai Percakapan Hangat</p>
+                            <p class="text-xs text-slate-400 font-medium mt-1 max-w-xs">
+                                Klik salah satu teman di sebelah kiri untuk saling menyapa dan memberi semangat.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Sapaan Cepat (Icebreaker) & Input Pesan -->
+                    <div id="chat-composer-area" class="hidden border-t border-slate-100 bg-white p-3.5 space-y-2.5">
+                        <!-- Tombol Sapaan Cepat -->
+                        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                            <button type="button" class="quick-chat-btn shrink-0 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-200/70 transition-colors" data-msg="Halo! Semangat menjalani hari ini ya 🍀">
+                                👋 Semangat hari ini! 🍀
+                            </button>
+                            <button type="button" class="quick-chat-btn shrink-0 bg-teal-50 hover:bg-teal-100 text-teal-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-teal-200/70 transition-colors" data-msg="Sudah selesai tantangan hari ini belum? 🔥">
+                                🔥 Cek tantangan
+                            </button>
+                            <button type="button" class="quick-chat-btn shrink-0 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-cyan-200/70 transition-colors" data-msg="Kalau butuh teman cerita, aku di sini ya">
+                                💬 Aku di sini
+                            </button>
+                            <button type="button" class="quick-chat-btn shrink-0 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-amber-200/70 transition-colors" data-msg="Jangan lupa istirahat dan minum air putih 😊">
+                                ☕ Jangan lupa istirahat
+                            </button>
+                        </div>
+
+                        <form id="chat-send-form" class="flex items-center gap-2">
+                            <input type="text" id="chat-message-input" maxlength="250" required placeholder="Tulis pesan singkat (maks. 250 karakter)..."
+                                   class="flex-1 px-4 py-3 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-xs sm:text-sm font-medium text-slate-800">
+                            <button type="submit" id="chat-send-btn" class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl transition-all shadow-md shadow-emerald-600/20 shrink-0">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- =================================================
-         5. PAPAN KEHANGATAN
-    ================================================== -->
-    <section id="papan" class="space-y-8 pt-10 border-t border-slate-200/60 relative">
-        <div class="text-center max-w-2xl mx-auto">
-            <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-clover"></i> Papan Kehangatan
-            </span>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                Tinggalkan Sedikit Kehangatan
-            </h3>
-            <p class="text-slate-500 leading-relaxed font-medium">
-                Tulis pesan positif untuk seseorang yang mungkin sedang merasa sendirian dan membutuhkan semangat darimu.
-            </p>
-        </div>
-
-        <div id="firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
-
-        <form id="message-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+        <!-- 2. MASUKAN & SARAN WEB -->
+        <section id="masukan" class="bg-white rounded-[2.5rem] p-6 md:p-10 lg:p-14 border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-3xl mx-auto relative overflow-hidden">
             <i class="fa-solid fa-clover clover-watermark"></i>
-            <div>
-                <label for="message-input" class="block text-sm font-extrabold text-slate-700 mb-2">Pesan Kehangatan <span class="text-rose-500">*</span></label>
-                <textarea id="message-input" rows="4" maxlength="300" required placeholder="Contoh: Kamu sudah melakukan yang terbaik hari ini. Mari istirahat. 🍀" 
-                          class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
-                <div class="flex justify-between mt-2 px-1">
-                    <span class="text-[10px] font-bold text-slate-400">Maksimal 300 karakter</span>
-                    <span id="char-count" class="text-[10px] font-bold text-slate-400">0/300</span>
-                </div>
-            </div>
-
-            <div>
-                <label for="sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
-                    Nama <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
-                </label>
-                <input type="text" id="sender-input" maxlength="40" placeholder="Sahabat Anonim" 
-                       class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
-            </div>
-
-            <button type="submit" id="submit-message-button" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/25 mt-2">
-                <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Kehangatan
-            </button>
-            
-            <p class="text-xs text-center font-medium text-slate-400 pt-2">
-                Pesan akan diperiksa (dimoderasi) sebelum tampil di papan.
-            </p>
-        </form>
-
-        <div id="messages-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
-            <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
-                <div class="loading-spinner mb-4"></div>
-                <p class="text-sm font-bold text-slate-400">Memuat pesan kehangatan...</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- =================================================
-         6. BANTUAN
-    ================================================== -->
-    <section id="bantuan" class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-rose-100 shadow-inner mt-12">
-        <div class="text-center max-w-2xl mx-auto mb-8">
-            <span class="text-rose-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-life-ring"></i> Butuh Bantuan?
-            </span>
-            <h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-4">
-                Kamu tidak harus menghadapi semuanya sendirian
-            </h3>
-            <p class="text-sm text-slate-600 font-medium leading-relaxed">
-                Jika sepi terasa sangat menyesakkan atau ada keadaan darurat, hubungi orang yang kamu percaya atau layanan bantuan segera.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
-            <div class="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm flex items-center justify-between gap-4 hover:-translate-y-1 transition-transform">
-                <div>
-                    <h4 class="font-extrabold text-slate-800">Layanan Darurat</h4>
-                    <p class="text-xs font-medium text-slate-500 mt-1">Bantuan medis/psikologis segera.</p>
-                </div>
-                <a href="tel:112" class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold px-5 py-3 rounded-2xl transition-colors shadow-md shadow-rose-500/20">
-                    <i class="fa-solid fa-phone mr-1"></i> 112
-                </a>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm hover:-translate-y-1 transition-transform">
-                <h4 class="font-extrabold text-slate-800">Ceritakan Pada Seseorang</h4>
-                <p class="text-xs font-medium text-slate-500 mt-2 leading-relaxed">
-                    Keluarga, teman, guru, atau konselor bisa menjadi tempat untuk sekadar didengar tanpa dihakimi.
+            <div class="text-center max-w-xl mx-auto mb-8 relative z-10">
+                <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-clover"></i> Masukan & Saran Web
+                </span>
+                <h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-3">
+                    Bantu Kami Menjadi Lebih Baik
+                </h3>
+                <p class="text-xs md:text-sm text-slate-500 font-medium leading-relaxed">
+                    Punya ide fitur baru, menemukan kendala, atau ingin memberikan kritik/saran? Sampaikan di sini untuk ditinjau oleh admin.
                 </p>
             </div>
-        </div>
-    </section>
 
-    <!-- =================================================
-         7. MASUKAN & SARAN WEB
-    ================================================== -->
-    <section id="masukan" class="bg-white rounded-[2.5rem] p-6 md:p-10 lg:p-14 border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-3xl mx-auto relative overflow-hidden">
-        <i class="fa-solid fa-clover clover-watermark"></i>
-        <div class="text-center max-w-xl mx-auto mb-8 relative z-10">
-            <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-clover"></i> Masukan & Saran Web
-            </span>
-            <h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-3">
-                Bantu Kami Menjadi Lebih Baik
-            </h3>
-            <p class="text-xs md:text-sm text-slate-500 font-medium leading-relaxed">
-                Punya ide fitur baru, menemukan kendala, atau ingin memberikan kritik/saran? Sampaikan di sini untuk ditinjau oleh admin.
-            </p>
-        </div>
+            <div id="feedback-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mb-6 shadow-sm relative z-10"></div>
 
-        <div id="feedback-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mb-6 shadow-sm relative z-10"></div>
-
-        <form id="feedback-form" class="space-y-5 relative z-10">
-            <div>
-                <label for="feedback-input" class="block text-sm font-extrabold text-slate-700 mb-2">Pesan Masukan <span class="text-rose-500">*</span></label>
-                <textarea id="feedback-input" rows="4" maxlength="500" required placeholder="Contoh: Fitur X sangat membantu, mungkin ke depannya bisa ditambahkan..." 
-                          class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
-                <div class="flex justify-between mt-2 px-1">
-                    <span class="text-[10px] font-bold text-slate-400">Maksimal 500 karakter</span>
-                    <span id="feedback-char-count" class="text-[10px] font-bold text-slate-400">0/500</span>
+            <form id="feedback-form" class="space-y-5 relative z-10">
+                <div>
+                    <label for="feedback-input" class="block text-sm font-extrabold text-slate-700 mb-2">Pesan Masukan <span class="text-rose-500">*</span></label>
+                    <textarea id="feedback-input" rows="4" maxlength="500" required placeholder="Contoh: Fitur X sangat membantu, mungkin ke depannya bisa ditambahkan..." 
+                              class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
+                    <div class="flex justify-between mt-2 px-1">
+                        <span class="text-[10px] font-bold text-slate-400">Maksimal 500 karakter</span>
+                        <span id="feedback-char-count" class="text-[10px] font-bold text-slate-400">0/500</span>
+                    </div>
                 </div>
+
+                <div>
+                    <label for="feedback-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
+                        Nama / Kontak <span class="font-medium text-slate-400">(opsional)</span>
+                    </label>
+                    <input type="text" id="feedback-sender-input" maxlength="40" placeholder="Nama atau email kamu" 
+                           class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
+                </div>
+
+                <button type="submit" id="submit-feedback-button" class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-slate-900/15">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan
+                </button>
+            </form>
+
+            <div id="myFeedbackContainer" class="mt-10 pt-8 border-t border-slate-100 hidden relative z-10">
+                <h4 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i> Riwayat Masukan & Tanggapan Admin Anda
+                </h4>
+                <div id="myFeedbackList" class="space-y-3"></div>
             </div>
+        </section>
 
-            <div>
-                <label for="feedback-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
-                    Nama / Kontak <span class="font-medium text-slate-400">(opsional)</span>
-                </label>
-                <input type="text" id="feedback-sender-input" maxlength="40" placeholder="Nama atau email kamu" 
-                       class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
-            </div>
-
-            <button type="submit" id="submit-feedback-button" class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-slate-900/15">
-                <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Masukan
-            </button>
-        </form>
-
-        <div id="myFeedbackContainer" class="mt-10 pt-8 border-t border-slate-100 hidden relative z-10">
-            <h4 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i> Riwayat Masukan & Tanggapan Admin Anda
-            </h4>
-            <div id="myFeedbackList" class="space-y-3"></div>
-        </div>
-    </section>
-
-</main>
+    </main>
+</div>
 
 <!-- =====================================================
      FOOTER
@@ -1274,7 +1120,7 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updatePassword, deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getDatabase, ref, push, set, get, onValue, query, orderByChild, equalTo, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDToak9j8PnMZ2Jflm9dqY5EQbBth8wqHk",
@@ -1290,6 +1136,66 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const database = getDatabase(app);
+
+    // =====================================================
+    // PERPINDAHAN ANTAR 2 BERANDA (UTAMA vs KOMUNITAS)
+    // =====================================================
+    let activePageView = "home";
+
+    window.switchPageView = function(viewName, targetSectionId = null) {
+        const viewHome = document.getElementById("view-home");
+        const viewCommunity = document.getElementById("view-community");
+        const topTabHome = document.getElementById("top-tab-home");
+        const topTabCommunity = document.getElementById("top-tab-community");
+        const mobileTabHome = document.getElementById("mobile-tab-home");
+        const mobileTabCommunity = document.getElementById("mobile-tab-community");
+        const subNavHome = document.getElementById("sub-nav-home");
+        const subNavCommunity = document.getElementById("sub-nav-community");
+
+        activePageView = viewName === "community" ? "community" : "home";
+
+        if (activePageView === "community") {
+            viewHome.classList.add("hidden");
+            viewCommunity.classList.remove("hidden");
+
+            topTabCommunity.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-white text-emerald-700 shadow-sm transition-all flex items-center gap-1.5";
+            topTabHome.className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5";
+
+            mobileTabCommunity.className = "py-2.5 rounded-xl text-xs font-extrabold bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-1";
+            mobileTabHome.className = "py-2.5 rounded-xl text-xs font-bold text-slate-600";
+
+            subNavHome.classList.add("md:hidden");
+            subNavHome.classList.remove("md:block");
+            subNavCommunity.classList.remove("hidden");
+            subNavCommunity.classList.add("hidden", "md:block");
+        } else {
+            viewCommunity.classList.add("hidden");
+            viewHome.classList.remove("hidden");
+
+            topTabHome.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-white text-emerald-700 shadow-sm transition-all flex items-center gap-1.5";
+            topTabCommunity.className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5";
+
+            mobileTabHome.className = "py-2.5 rounded-xl text-xs font-extrabold bg-white text-emerald-700 shadow-sm";
+            mobileTabCommunity.className = "py-2.5 rounded-xl text-xs font-bold text-slate-600 flex items-center justify-center gap-1";
+
+            subNavCommunity.classList.add("hidden");
+            subNavCommunity.classList.remove("md:block");
+            subNavHome.classList.add("hidden", "md:block");
+        }
+
+        if (targetSectionId) {
+            requestAnimationFrame(() => {
+                const targetEl = document.getElementById(targetSectionId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth" });
+                } else {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+            });
+        } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
 
     // =====================================================
     // FILTER ANTI-TOXIC & KATA KASAR
@@ -1379,7 +1285,7 @@
     }
 
     // =====================================================
-    // IDENTITAS PENGGUNA (DEFAULT TAMU SAAT PERTAMA BUKA)
+    // IDENTITAS PENGGUNA & PENCEGAHAN MULTI-AKUN (1 AKUN PER PERANGKAT)
     // =====================================================
     let guestDeviceId = localStorage.getItem("clover_user_device_id");
     if (!guestDeviceId) {
@@ -1391,8 +1297,8 @@
     let currentAccountId = guestDeviceId;
     let currentNickname = "";
     let currentCleanNick = "";
-    let authMode = "login"; // "login" | "register"
-    let isAuthenticating = false; // Mencegah race condition antara form submit & onAuthStateChanged
+    let authMode = "login";
+    let isAuthenticating = false;
     let unsubscribeBanListener = null;
     let unsubscribeProfileListener = null;
 
@@ -1447,6 +1353,11 @@
             authNickHint.classList.remove("hidden");
             authPassInput.setAttribute("autocomplete", "new-password");
             authSubmitBtn.innerHTML = `<i class="fa-solid fa-user-plus mr-1.5"></i> Daftar & Masuk`;
+
+            const registeredNickOnDevice = localStorage.getItem("clover_registered_nick");
+            if (registeredNickOnDevice) {
+                showAuthStatus(`Perangkat ini sudah pernah mendaftarkan akun (@${registeredNickOnDevice}). Silakan masuk menggunakan akun tersebut.`);
+            }
         }
     }
 
@@ -1487,7 +1398,6 @@
             unsubscribeProfileListener = null;
         }
 
-        // 1. Pantau status blokir di node clover/banned_users/{uid} secara real-time
         unsubscribeBanListener = onValue(ref(database, `clover/banned_users/${uid}`), async (banSnap) => {
             if (banSnap.exists() && !isAuthenticating) {
                 const banInfo = banSnap.val();
@@ -1496,7 +1406,6 @@
             }
         });
 
-        // 2. Pantau profil & status blokir di node clover/users/{cleanNick} secara real-time
         if (cleanNick) {
             unsubscribeProfileListener = onValue(ref(database, `clover/users/${cleanNick}`), async (profileSnap) => {
                 if (isAuthenticating) return;
@@ -1554,12 +1463,31 @@
 
         try {
             if (authMode === "register") {
+                // 1. Cek batas 1 akun per perangkat (localStorage & Firebase device_accounts)
+                const localRegisteredNick = localStorage.getItem("clover_registered_nick");
+                if (localRegisteredNick) {
+                    isAuthenticating = false;
+                    showAuthStatus(`Setiap perangkat hanya diperbolehkan membuat 1 akun. Silakan masuk dengan akun @${localRegisteredNick}.`);
+                    return;
+                }
+
+                const deviceCheckSnap = await get(ref(database, `clover/device_accounts/${guestDeviceId}`));
+                if (deviceCheckSnap.exists()) {
+                    const existingNick = deviceCheckSnap.val()?.cleanNick || "";
+                    if (existingNick) localStorage.setItem("clover_registered_nick", existingNick);
+                    isAuthenticating = false;
+                    showAuthStatus(`Perangkat ini sudah terdaftar dengan akun${existingNick ? ` @${existingNick}` : ""}. Silakan masuk menggunakan akun tersebut.`);
+                    return;
+                }
+
+                // 2. Buat akun di Firebase Auth
                 const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
                 await updateProfile(cred.user, { displayName: rawNick });
 
                 const initialUserData = {
                     nickname: rawNick,
                     uid: cred.user.uid,
+                    deviceId: guestDeviceId,
                     bio: "",
                     banned: false,
                     createdAt: Date.now()
@@ -1570,11 +1498,20 @@
                     lastDate: ""
                 };
 
-                await Promise.all([
-                    set(ref(database, `clover/users/${cleanNick}`), initialUserData),
-                    set(ref(database, `clover/streaks/${cred.user.uid}`), initialStreakData)
-                ]);
+                // 3. Simpan secara atomik ke users, uid_to_nick, device_accounts, dan streaks
+                const atomicUpdates = {};
+                atomicUpdates[`clover/users/${cleanNick}`] = initialUserData;
+                atomicUpdates[`clover/uid_to_nick/${cred.user.uid}`] = cleanNick;
+                atomicUpdates[`clover/device_accounts/${guestDeviceId}`] = {
+                    uid: cred.user.uid,
+                    cleanNick: cleanNick,
+                    createdAt: Date.now()
+                };
+                atomicUpdates[`clover/streaks/${cred.user.uid}`] = initialStreakData;
 
+                await update(ref(database), atomicUpdates);
+
+                localStorage.setItem("clover_registered_nick", cleanNick);
                 allUsersCache[cleanNick] = initialUserData;
                 allStreaksCache[cred.user.uid] = initialStreakData;
 
@@ -1591,7 +1528,6 @@
             } else {
                 const cred = await signInWithEmailAndPassword(auth, virtualEmail, password);
 
-                // Cek status blokir dari kedua sumber (banned_users & flag banned di users)
                 const [banSnap, profileSnap] = await Promise.all([
                     get(ref(database, `clover/banned_users/${cred.user.uid}`)),
                     get(ref(database, `clover/users/${cleanNick}`))
@@ -1607,7 +1543,6 @@
                     return;
                 }
 
-                // Jika akun Auth ada tapi node profil belum ada, pulihkan otomatis
                 let profileData = profileSnap.val();
                 if (!profileData) {
                     profileData = {
@@ -1645,7 +1580,7 @@
             } else if (err.code === "auth/too-many-requests") {
                 showAuthStatus("Terlalu banyak percobaan. Tunggu beberapa saat lalu coba lagi.");
             } else {
-                showAuthStatus("Gagal memproses akun. Periksa koneksi atau aturan database Firebase.");
+                showAuthStatus("Gagal memproses akun: " + (err.message || "Periksa koneksi atau aturan database."));
             }
         } finally {
             authSubmitBtn.disabled = false;
@@ -1669,12 +1604,12 @@
     const mobileMenu = document.getElementById("mobile-menu");
     const mobileMenuIcon = document.getElementById("mobile-menu-icon");
 
-    function closeMobileMenu() {
+    window.closeMobileMenu = function() {
         mobileMenu.classList.add("hidden");
         mobileMenuBtn.setAttribute("aria-expanded", "false");
         mobileMenuIcon.classList.remove("fa-xmark");
         mobileMenuIcon.classList.add("fa-bars");
-    }
+    };
 
     mobileMenuBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1685,17 +1620,13 @@
             mobileMenuIcon.classList.remove("fa-bars");
             mobileMenuIcon.classList.add("fa-xmark");
         } else {
-            closeMobileMenu();
+            window.closeMobileMenu();
         }
-    });
-
-    document.querySelectorAll(".mobile-nav-link").forEach((link) => {
-        link.addEventListener("click", closeMobileMenu);
     });
 
     document.addEventListener("click", (e) => {
         if (!mobileMenu.classList.contains("hidden") && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-            closeMobileMenu();
+            window.closeMobileMenu();
         }
     });
 
@@ -2470,227 +2401,7 @@
     });
 
     // =====================================================
-    // 5. KELUHAN PRIBADI & AUDIO RECORDER
-    // =====================================================
-    const complaintInput = document.getElementById("complaintInput");
-    const saveComplaintButton = document.getElementById("saveComplaintButton");
-    const clearComplaintButton = document.getElementById("clearComplaintButton");
-    const editComplaintButton = document.getElementById("editComplaintButton");
-    const complaintStatus = document.getElementById("complaintStatus");
-    const complaintCount = document.getElementById("complaintCount");
-
-    const savedComplaintCard = document.getElementById("savedComplaintCard");
-    const savedTextCardWrapper = document.getElementById("savedTextCardWrapper");
-    const savedComplaintText = document.getElementById("savedComplaintText");
-    const textEncouragementContainer = document.getElementById("textEncouragementContainer");
-    const textEncouragementText = document.getElementById("textEncouragementText");
-
-    const savedAudioCardWrapper = document.getElementById("savedAudioCardWrapper");
-    const savedAudioPlayback = document.getElementById("savedAudioPlayback");
-    const deleteAudioOnlyButton = document.getElementById("deleteAudioOnlyButton");
-    const audioEncouragementContainer = document.getElementById("audioEncouragementContainer");
-    const audioEncouragementText = document.getElementById("audioEncouragementText");
-
-    const recordVoiceBtn = document.getElementById("recordVoiceBtn");
-    const recordBtnText = document.getElementById("recordBtnText");
-    const voiceTimer = document.getElementById("voiceTimer");
-    const audioPreviewWrapper = document.getElementById("audioPreviewWrapper");
-    const audioPlayback = document.getElementById("audioPlayback");
-    const deleteVoiceBtn = document.getElementById("deleteVoiceBtn");
-
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let recordedAudioBlob = null;
-    let recordingTimerInterval = null;
-    let recordingSeconds = 0;
-
-    const encouragements = [
-        "Tidak apa-apa merasa lelah. Istirahatlah sejenak, kamu sudah berjuang sangat keras sampai hari ini. 🍀",
-        "Perasaan berat ini tidak akan selamanya ada. Tarik napas dalam-dalam, hembuskan perlahan.",
-        "Kamu berharga dan kehadiranmu berarti. Peluk erat dirimu sendiri ya.",
-        "Setiap langkah kecil adalah kemajuan. Jangan terlalu keras pada dirimu sendiri.",
-        "Badai pasti berlalu. Izinkan dirimu untuk tenang hari ini."
-    ];
-
-    function getRandomEncouragement() {
-        const idx = Math.floor(Math.random() * encouragements.length);
-        return encouragements[idx];
-    }
-
-    function loadSavedComplaintData() {
-        const savedText = localStorage.getItem("clover_saved_complaint");
-        const savedAudio = localStorage.getItem("clover_saved_audio");
-        const savedTextEnc = localStorage.getItem("clover_text_encouragement");
-        const savedAudioEnc = localStorage.getItem("clover_audio_encouragement");
-
-        let hasData = false;
-
-        if (savedText) {
-            savedComplaintText.textContent = savedText;
-            savedTextCardWrapper.classList.remove("hidden");
-            if (savedTextEnc) {
-                textEncouragementText.textContent = savedTextEnc;
-                textEncouragementContainer.classList.remove("hidden");
-            } else {
-                textEncouragementContainer.classList.add("hidden");
-            }
-            hasData = true;
-        } else {
-            savedTextCardWrapper.classList.add("hidden");
-        }
-
-        if (savedAudio) {
-            savedAudioPlayback.src = savedAudio;
-            savedAudioCardWrapper.classList.remove("hidden");
-            if (savedAudioEnc) {
-                audioEncouragementText.textContent = savedAudioEnc;
-                audioEncouragementContainer.classList.remove("hidden");
-            } else {
-                audioEncouragementContainer.classList.add("hidden");
-            }
-            hasData = true;
-        } else {
-            savedAudioCardWrapper.classList.add("hidden");
-        }
-
-        if (hasData) {
-            savedComplaintCard.classList.remove("hidden");
-        } else {
-            savedComplaintCard.classList.add("hidden");
-        }
-    }
-
-    loadSavedComplaintData();
-
-    complaintInput.addEventListener("input", () => {
-        complaintCount.textContent = `${complaintInput.value.length}/1000`;
-    });
-
-    saveComplaintButton.addEventListener("click", () => {
-        const textVal = complaintInput.value.trim();
-        if (!textVal && !recordedAudioBlob) {
-            complaintStatus.textContent = "Tulis keluhan atau rekam suara terlebih dahulu.";
-            setTimeout(() => { complaintStatus.textContent = ""; }, 4000);
-            return;
-        }
-
-        if (textVal) {
-            localStorage.setItem("clover_saved_complaint", textVal);
-            const enc = getRandomEncouragement();
-            localStorage.setItem("clover_text_encouragement", enc);
-        }
-
-        if (recordedAudioBlob) {
-            const reader = new FileReader();
-            reader.readAsDataURL(recordedAudioBlob);
-            reader.onloadend = () => {
-                try {
-                    localStorage.setItem("clover_saved_audio", reader.result);
-                    const enc = getRandomEncouragement();
-                    localStorage.setItem("clover_audio_encouragement", enc);
-                    loadSavedComplaintData();
-                } catch (err) {
-                    alert("Ukuran rekaman suara terlalu besar untuk penyimpanan browser.");
-                }
-            };
-        } else {
-            loadSavedComplaintData();
-        }
-
-        complaintInput.value = "";
-        complaintCount.textContent = "0/1000";
-        recordedAudioBlob = null;
-        audioPreviewWrapper.classList.add("hidden");
-
-        complaintStatus.textContent = "Keluhan pribadi berhasil disimpan secara aman di perangkatmu! 🍀";
-        setTimeout(() => { complaintStatus.textContent = ""; }, 5000);
-    });
-
-    editComplaintButton.addEventListener("click", () => {
-        const savedText = localStorage.getItem("clover_saved_complaint");
-        if (savedText) {
-            complaintInput.value = savedText;
-            complaintCount.textContent = `${savedText.length}/1000`;
-            window.scrollTo({ top: complaintInput.offsetTop - 120, behavior: 'smooth' });
-        }
-    });
-
-    clearComplaintButton.addEventListener("click", () => {
-        if (confirm("Hapus seluruh catatan dan rekaman privat di perangkat ini?")) {
-            localStorage.removeItem("clover_saved_complaint");
-            localStorage.removeItem("clover_saved_audio");
-            localStorage.removeItem("clover_text_encouragement");
-            localStorage.removeItem("clover_audio_encouragement");
-            complaintInput.value = "";
-            complaintCount.textContent = "0/1000";
-            recordedAudioBlob = null;
-            audioPreviewWrapper.classList.add("hidden");
-            loadSavedComplaintData();
-            complaintStatus.textContent = "Data privat berhasil dihapus.";
-            setTimeout(() => { complaintStatus.textContent = ""; }, 4000);
-        }
-    });
-
-    deleteAudioOnlyButton.addEventListener("click", () => {
-        if (confirm("Hapus rekaman suara privat ini?")) {
-            localStorage.removeItem("clover_saved_audio");
-            localStorage.removeItem("clover_audio_encouragement");
-            loadSavedComplaintData();
-        }
-    });
-
-    recordVoiceBtn.addEventListener("click", async () => {
-        if (!mediaRecorder || mediaRecorder.state === "inactive") {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioChunks = [];
-                mediaRecorder = new MediaRecorder(stream);
-
-                mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) audioChunks.push(e.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(recordedAudioBlob);
-                    audioPlayback.src = audioUrl;
-                    audioPreviewWrapper.classList.remove("hidden");
-                    stream.getTracks().forEach(track => track.stop());
-                };
-
-                mediaRecorder.start();
-                recordBtnText.textContent = "Berhenti Rekam";
-                recordVoiceBtn.classList.add("bg-rose-50", "text-rose-600", "border-rose-200");
-                voiceTimer.classList.remove("hidden");
-                recordingSeconds = 0;
-                voiceTimer.textContent = "00:00";
-                recordingTimerInterval = setInterval(() => {
-                    recordingSeconds++;
-                    const m = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
-                    const s = String(recordingSeconds % 60).padStart(2, '0');
-                    voiceTimer.textContent = `${m}:${s}`;
-                }, 1000);
-
-            } catch (err) {
-                alert("Tidak dapat mengakses mikrofon. Pastikan izin mikrofon diaktifkan.");
-            }
-        } else if (mediaRecorder && mediaRecorder.state === "recording") {
-            mediaRecorder.stop();
-            clearInterval(recordingTimerInterval);
-            recordBtnText.textContent = "Rekam Suara";
-            recordVoiceBtn.classList.remove("bg-rose-50", "text-rose-600", "border-rose-200");
-            voiceTimer.classList.add("hidden");
-        }
-    });
-
-    deleteVoiceBtn.addEventListener("click", () => {
-        recordedAudioBlob = null;
-        audioPlayback.src = "";
-        audioPreviewWrapper.classList.add("hidden");
-    });
-
-    // =====================================================
-    // 6. TANTANGAN HARIAN, STREAK & PAPAN PERINGKAT (LEADERBOARD)
+    // 5. TANTANGAN HARIAN, STREAK & PAPAN PERINGKAT (LEADERBOARD)
     // =====================================================
     const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
     const challengeProgressBar = document.getElementById("challengeProgressBar");
@@ -2706,9 +2417,9 @@
     const leaderboardMyBanner = document.getElementById("leaderboard-my-banner");
     const leaderboardList = document.getElementById("leaderboard-list");
 
-    let allUsersCache = {}; // { cleanNick: { nickname, uid, bio, banned, createdAt } }
-    let allStreaksCache = {}; // { uidOrDeviceId: { current, best, lastDate } }
-    let leaderboardSortBy = "current"; // "current" | "best"
+    let allUsersCache = {};
+    let allStreaksCache = {};
+    let leaderboardSortBy = "current";
     let unsubscribeStreak = null;
 
     function getStreakRef() {
@@ -3032,7 +2743,7 @@
     });
 
     // =====================================================
-    // 7. FITUR ADD TEMAN, OBROLAN HANGAT 1-ON-1, & LAPORAN
+    // 6. FITUR ADD TEMAN, OBROLAN HANGAT 1-ON-1, & LAPORAN
     // =====================================================
     const friendsGuestGate = document.getElementById("friends-guest-gate");
     const friendsLoggedInArea = document.getElementById("friends-logged-in-area");
@@ -3067,9 +2778,9 @@
     friendsOpenRegisterBtn.addEventListener("click", () => openAuthModal("register"));
     friendsOpenLoginBtn.addEventListener("click", () => openAuthModal("login"));
 
-    let myFriendsMap = {}; // { friendUid: { nickname, cleanNick, status, updatedAt } }
+    let myFriendsMap = {};
     let unsubscribeFriends = null;
-    let activeChatPartner = null; // { uid, nickname, cleanNick }
+    let activeChatPartner = null;
     let unsubscribeActiveChat = null;
 
     function getChatRoomId(uid1, uid2) {
@@ -3580,7 +3291,7 @@
     });
 
     // =====================================================
-    // 8. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
+    // 7. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -3719,7 +3430,7 @@
     });
 
     // =====================================================
-    // 9. PENGATURAN AKUN (EDIT PROFIL, PASSWORD, HAPUS AKUN)
+    // 8. PENGATURAN AKUN (EDIT PROFIL, PASSWORD, HAPUS AKUN)
     // =====================================================
     const accountSettingsModal = document.getElementById("account-settings-modal");
     const closeSettingsModalBtn = document.getElementById("close-settings-modal-btn");
@@ -3934,9 +3645,12 @@
             }
             await set(ref(database, `clover/friends/${uid}`), null).catch(() => {});
             await set(ref(database, `clover/streaks/${uid}`), null).catch(() => {});
+            await set(ref(database, `clover/uid_to_nick/${uid}`), null).catch(() => {});
+            await set(ref(database, `clover/device_accounts/${guestDeviceId}`), null).catch(() => {});
             await set(ref(database, `clover/users/${clean}`), null).catch(() => {});
 
             await deleteUser(currentUser);
+            localStorage.removeItem("clover_registered_nick");
             isAuthenticating = false;
             closeSettingsModal();
             alert("Akun kamu telah berhasil dihapus secara permanen.");
@@ -3954,7 +3668,6 @@
         }
     });
 
-    // Tutup modal dengan tombol Escape
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
             if (!authGateModal.classList.contains("hidden")) closeAuthModal();
@@ -3964,7 +3677,7 @@
     });
 
     // =====================================================
-    // 10. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
+    // 9. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
     // =====================================================
     function applyAccountAutofill() {
         senderInput.value = currentNickname || "";
@@ -4013,7 +3726,7 @@
                 </button>
             `;
             document.getElementById("mobile-open-settings-btn").addEventListener("click", () => {
-                closeMobileMenu();
+                window.closeMobileMenu();
                 openSettingsModal("profile");
             });
             document.getElementById("mobile-logout-btn").addEventListener("click", handleLogout);
@@ -4039,7 +3752,7 @@
                 </button>
             `;
             document.getElementById("mobile-open-auth-btn").addEventListener("click", () => {
-                closeMobileMenu();
+                window.closeMobileMenu();
                 openAuthModal("login");
             });
         }
@@ -4086,6 +3799,10 @@
                 }
             }
 
+            if (currentCleanNick) {
+                localStorage.setItem("clover_registered_nick", currentCleanNick);
+            }
+
             attachUserRealtimeWatchers(user.uid, currentCleanNick);
             closeAuthModal();
             updateAccountUI();
@@ -4099,7 +3816,6 @@
         }
     });
 
-    // Footer Year
     document.getElementById("year").textContent = new Date().getFullYear();
 
 </script>
