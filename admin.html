@@ -495,8 +495,10 @@
         let activeUnsubscribers = [];
         let lastCheckedDateKey = getTodayKey(Date.now());
 
-        function registerListener(dbRef, callback) {
-            const unsub = onValue(dbRef, callback);
+        function registerListener(dbRef, callback, errorCallback) {
+            const unsub = errorCallback
+                ? onValue(dbRef, callback, errorCallback)
+                : onValue(dbRef, callback);
             activeUnsubscribers.push(unsub);
             return unsub;
         }
@@ -711,11 +713,29 @@
             return { current: cur, best, lastDate };
         }
 
-        // Gabungkan dan pilih data streak paling mutakhir dari berbagai kemungkinan lokasi penyimpanan
+        // Pencocokan data streak menyeluruh (case-insensitive & multi-lokasi)
         function resolveUserStreak(uid, cleanNick, userObj) {
             const candidates = [];
+            const rawNick = userObj?.nickname ? String(userObj.nickname).trim() : "";
+
             if (uid && cachedStreaksData[uid]) candidates.push(cachedStreaksData[uid]);
             if (cleanNick && cachedStreaksData[cleanNick]) candidates.push(cachedStreaksData[cleanNick]);
+            if (rawNick && cachedStreaksData[rawNick]) candidates.push(cachedStreaksData[rawNick]);
+
+            const lowerClean = String(cleanNick || "").toLowerCase();
+            const lowerRaw = rawNick.toLowerCase();
+            Object.entries(cachedStreaksData).forEach(([key, val]) => {
+                if (!val || typeof val !== "object") return;
+                const kLower = key.toLowerCase();
+                if (
+                    (uid && (key === uid || val.uid === uid)) ||
+                    (lowerClean && (kLower === lowerClean || String(val.nickname || "").toLowerCase() === lowerClean)) ||
+                    (lowerRaw && (kLower === lowerRaw || String(val.nickname || "").toLowerCase() === lowerRaw))
+                ) {
+                    candidates.push(val);
+                }
+            });
+
             if (userObj && typeof userObj === "object") {
                 if (userObj.streakData && typeof userObj.streakData === "object") {
                     candidates.push(userObj.streakData);
@@ -752,7 +772,7 @@
             return bestResolved;
         }
 
-        // Otomatis segarkan tampilan streak jika pergantian hari terjadi saat dashboard terbuka
+        // Cek pergantian hari otomatis setiap 1 menit
         setInterval(() => {
             const currentKey = getTodayKey(Date.now());
             if (currentKey !== lastCheckedDateKey) {
@@ -980,10 +1000,16 @@
                 renderOwnerUsersList();
             });
 
-            registerListener(ref(database, "clover/streaks"), (snap) => {
-                cachedStreaksData = snap.val() || {};
-                renderOwnerUsersList();
-            });
+            registerListener(
+                ref(database, "clover/streaks"),
+                (snap) => {
+                    cachedStreaksData = snap.val() || {};
+                    renderOwnerUsersList();
+                },
+                (err) => {
+                    console.error("Gagal membaca clover/streaks (periksa Firebase Rules):", err);
+                }
+            );
 
             registerListener(ref(database, "clover/banned_users"), (snap) => {
                 cachedBannedData = snap.val() || {};
@@ -1178,7 +1204,7 @@
                     }
                 });
 
-                // 2. Reset Streak Tantangan (Sinkron ke seluruh node streak & profil user)
+                // 2. Reset Streak Tantangan (Sesuai aturan .validate clover/streaks)
                 card.querySelector(".owner-reset-streak-btn").addEventListener("click", async () => {
                     if (currentUserRole !== "owner") return;
                     if (!confirm(`Reset streak tantangan milik ${u.nickname} menjadi 0?`)) return;
@@ -1196,14 +1222,6 @@
                         if (u.cleanNick && cachedStreaksData[u.cleanNick]) {
                             tasks.push(set(ref(database, `clover/streaks/${u.cleanNick}`), resetPayload));
                             cachedStreaksData[u.cleanNick] = resetPayload;
-                        }
-                        if (u.cleanNick) {
-                            tasks.push(update(ref(database, `clover/users/${u.cleanNick}`), {
-                                currentStreak: 0,
-                                bestStreak: 0,
-                                lastStreakDate: "",
-                                streakData: null
-                            }));
                         }
                         await Promise.all(tasks);
                         renderOwnerUsersList();
