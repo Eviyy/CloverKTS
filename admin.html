@@ -460,8 +460,6 @@
             measurementId: "G-3TK6ZQGMDP"
         };
 
-        // Gunakan nama app instance terpisah & sessionPersistence agar sesi admin
-        // terisolasi dari tab index.html (tidak tertimpa atau auto-logout oleh index.html)
         const app = initializeApp(firebaseConfig, "cloverAdminPanel");
         const auth = getAuth(app);
         const database = getDatabase(app);
@@ -494,6 +492,22 @@
         let isAdminPanelInitialized = false;
         let isManualLogout = false;
         let wasAuthenticated = false;
+        let activeUnsubscribers = [];
+        let lastCheckedDateKey = getTodayKey(Date.now());
+
+        function registerListener(dbRef, callback) {
+            const unsub = onValue(dbRef, callback);
+            activeUnsubscribers.push(unsub);
+            return unsub;
+        }
+
+        function cleanupListeners() {
+            activeUnsubscribers.forEach(unsub => {
+                if (typeof unsub === "function") unsub();
+            });
+            activeUnsubscribers = [];
+            isAdminPanelInitialized = false;
+        }
 
         function hasValidRoleEntry(snap) {
             if (!snap || !snap.exists()) return false;
@@ -561,6 +575,7 @@
 
         logoutBtn.addEventListener("click", async () => {
             isManualLogout = true;
+            cleanupListeners();
             await signOut(auth);
         });
 
@@ -624,6 +639,7 @@
                     loginBtn.innerHTML = `<span>Masuk</span>`;
                 }
             } else {
+                cleanupListeners();
                 loginScreen.classList.remove("hidden");
                 adminDashboard.classList.add("hidden");
                 loginBtn.disabled = false;
@@ -638,11 +654,14 @@
         });
 
         function applyRolePermissions() {
+            const bulkDeleteMsgBtn = document.getElementById("bulkDeleteMsgBtn");
+            const bulkDeleteCurhatBtn = document.getElementById("bulkDeleteCurhatBtn");
             if (currentUserRole === "admin") {
-                const bulkMsg = document.getElementById("bulkActionMsgContainer");
-                if (bulkMsg) document.getElementById("bulkDeleteMsgBtn").style.display = "none";
-                const bulkCurhat = document.getElementById("bulkActionCurhatContainer");
-                if (bulkCurhat) document.getElementById("bulkDeleteCurhatBtn").style.display = "none";
+                if (bulkDeleteMsgBtn) bulkDeleteMsgBtn.style.display = "none";
+                if (bulkDeleteCurhatBtn) bulkDeleteCurhatBtn.style.display = "none";
+            } else {
+                if (bulkDeleteMsgBtn) bulkDeleteMsgBtn.style.display = "";
+                if (bulkDeleteCurhatBtn) bulkDeleteCurhatBtn.style.display = "";
             }
         }
 
@@ -661,31 +680,89 @@
         }
 
         function parseDateUTC(dateStr) {
+            if (!dateStr || !String(dateStr).includes("-")) return NaN;
             const [y, m, d] = String(dateStr).split("-").map(Number);
+            if (!y || !m || !d) return NaN;
             return Date.UTC(y, m - 1, d);
         }
 
         function getDaysDifference(dateStr1, dateStr2) {
-            const diffTime = parseDateUTC(dateStr2) - parseDateUTC(dateStr1);
+            const utc1 = parseDateUTC(dateStr1);
+            const utc2 = parseDateUTC(dateStr2);
+            if (Number.isNaN(utc1) || Number.isNaN(utc2)) return 0;
+            const diffTime = utc2 - utc1;
             return Math.floor(diffTime / (1000 * 60 * 60 * 24));
         }
 
         function getEffectiveStreakValues(streakObj) {
-            if (!streakObj) return { current: 0, best: 0 };
+            if (!streakObj || typeof streakObj !== "object") {
+                const numVal = Number(streakObj || 0);
+                return { current: numVal, best: numVal, lastDate: "" };
+            }
             const todayStr = getTodayKey(Date.now());
-            let cur = Number(streakObj.current || 0);
-            if (streakObj.lastDate && streakObj.lastDate !== todayStr) {
-                const diff = getDaysDifference(streakObj.lastDate, todayStr);
+            let cur = Number(streakObj.current ?? streakObj.streak ?? 0);
+            const best = Math.max(Number(streakObj.best ?? streakObj.bestStreak ?? 0), cur);
+            const lastDate = String(streakObj.lastDate || streakObj.lastCompletedDate || "");
+
+            if (lastDate && lastDate !== todayStr) {
+                const diff = getDaysDifference(lastDate, todayStr);
                 if (diff > 1) cur = 0;
             }
-            return {
-                current: cur,
-                best: Number(streakObj.best || 0)
-            };
+            return { current: cur, best, lastDate };
         }
 
+        // Gabungkan dan pilih data streak paling mutakhir dari berbagai kemungkinan lokasi penyimpanan
+        function resolveUserStreak(uid, cleanNick, userObj) {
+            const candidates = [];
+            if (uid && cachedStreaksData[uid]) candidates.push(cachedStreaksData[uid]);
+            if (cleanNick && cachedStreaksData[cleanNick]) candidates.push(cachedStreaksData[cleanNick]);
+            if (userObj && typeof userObj === "object") {
+                if (userObj.streakData && typeof userObj.streakData === "object") {
+                    candidates.push(userObj.streakData);
+                } else if (userObj.currentStreak !== undefined || userObj.streak !== undefined || userObj.bestStreak !== undefined) {
+                    candidates.push({
+                        current: userObj.currentStreak ?? userObj.streak ?? 0,
+                        best: userObj.bestStreak ?? 0,
+                        lastDate: userObj.lastStreakDate || userObj.lastDate || ""
+                    });
+                }
+            }
+
+            if (candidates.length === 0) return { current: 0, best: 0 };
+
+            let bestResolved = { current: 0, best: 0 };
+            let latestDateScore = -1;
+
+            candidates.forEach(raw => {
+                const eff = getEffectiveStreakValues(raw);
+                const dateScore = eff.lastDate ? (parseDateUTC(eff.lastDate) || 0) : 0;
+                if (dateScore > latestDateScore) {
+                    latestDateScore = dateScore;
+                    bestResolved = { current: eff.current, best: Math.max(bestResolved.best, eff.best) };
+                } else if (dateScore === latestDateScore) {
+                    bestResolved = {
+                        current: Math.max(bestResolved.current, eff.current),
+                        best: Math.max(bestResolved.best, eff.best)
+                    };
+                } else {
+                    bestResolved.best = Math.max(bestResolved.best, eff.best);
+                }
+            });
+
+            return bestResolved;
+        }
+
+        // Otomatis segarkan tampilan streak jika pergantian hari terjadi saat dashboard terbuka
+        setInterval(() => {
+            const currentKey = getTodayKey(Date.now());
+            if (currentKey !== lastCheckedDateKey) {
+                lastCheckedDateKey = currentKey;
+                if (currentUserRole === "owner") renderOwnerUsersList();
+            }
+        }, 60000);
+
         function initAdminPanel() {
-            onValue(ref(database, ".info/connected"), (snapshot) => {
+            registerListener(ref(database, ".info/connected"), (snapshot) => {
                 const connected = snapshot.val();
                 document.querySelectorAll(".server-status-display").forEach(el => {
                     el.innerHTML = connected ? 
@@ -694,24 +771,27 @@
                 });
             });
 
-            onValue(ref(database, "clover/stats/totalVisits"), (snapshot) => {
+            registerListener(ref(database, "clover/stats/totalVisits"), (snapshot) => {
                 document.getElementById("statTotalVisits").textContent = snapshot.val() || 0;
             });
 
             const todayKey = getTodayKey(Date.now());
-            onValue(ref(database, `clover/stats/dailyVisits/${todayKey}`), (snapshot) => {
+            registerListener(ref(database, `clover/stats/dailyVisits/${todayKey}`), (snapshot) => {
                 document.getElementById("statTodayVisits").textContent = snapshot.val() || 0;
             });
 
-            onValue(ref(database, "clover/active_users"), (snapshot) => {
+            registerListener(ref(database, "clover/active_users"), (snapshot) => {
                 document.getElementById("statActiveUsers").textContent = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
             });
 
             // Messages
-            onValue(ref(database, "clover/messages"), (snapshot) => {
+            registerListener(ref(database, "clover/messages"), (snapshot) => {
                 const data = snapshot.val();
                 cachedMessages = data ? Object.entries(data).map(([id, msg]) => ({ id, ...msg })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
                 
+                const validIds = new Set(cachedMessages.map(m => m.id));
+                selectedMessageIds.forEach(id => { if (!validIds.has(id)) selectedMessageIds.delete(id); });
+
                 const todayStr = getTodayKey(Date.now());
                 let todayCount = 0, approvedCount = 0, pendingCount = 0, rejectedCount = 0;
                 cachedMessages.forEach(msg => {
@@ -731,9 +811,12 @@
             });
 
             // Curhat Publik
-            onValue(ref(database, "clover/curhat_publik"), (snapshot) => {
+            registerListener(ref(database, "clover/curhat_publik"), (snapshot) => {
                 const data = snapshot.val();
                 cachedCurhats = data ? Object.entries(data).map(([id, val]) => ({ id, ...val })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
+
+                const validIds = new Set(cachedCurhats.map(c => c.id));
+                selectedCurhatIds.forEach(id => { if (!validIds.has(id)) selectedCurhatIds.delete(id); });
 
                 let approvedC = 0, pendingC = 0, rejectedC = 0;
                 cachedCurhats.forEach(c => {
@@ -751,7 +834,7 @@
             });
 
             // Feedback
-            onValue(ref(database, "clover/feedback"), (snapshot) => {
+            registerListener(ref(database, "clover/feedback"), (snapshot) => {
                 const data = snapshot.val();
                 cachedFeedback = data ? Object.entries(data).map(([id, fb]) => ({ id, ...fb })).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)) : [];
 
@@ -771,61 +854,10 @@
                 renderFeedback();
             });
 
-            // Event Listeners Filter & Pencarian
-            document.getElementById("searchMessageInput").addEventListener("input", renderMessages);
-            document.getElementById("filterDateMessage").addEventListener("change", renderMessages);
-            document.getElementById("resetDateMessage").addEventListener("click", () => {
-                document.getElementById("filterDateMessage").value = "";
-                renderMessages();
-            });
-            document.getElementById("filterStatusSelect").addEventListener("change", renderMessages);
-
-            document.getElementById("searchCurhatInput").addEventListener("input", renderCurhats);
-            document.getElementById("filterDateCurhat").addEventListener("change", renderCurhats);
-            document.getElementById("resetDateCurhat").addEventListener("click", () => {
-                document.getElementById("filterDateCurhat").value = "";
-                renderCurhats();
-            });
-            document.getElementById("filterCurhatStatusSelect").addEventListener("change", renderCurhats);
-
-            document.getElementById("searchFeedbackInput").addEventListener("input", renderFeedback);
-            document.getElementById("filterDateFeedback").addEventListener("change", renderFeedback);
-            document.getElementById("resetDateFeedback").addEventListener("click", () => {
-                document.getElementById("filterDateFeedback").value = "";
-                renderFeedback();
-            });
-
-            document.getElementById("selectAllMessages").addEventListener("change", (e) => {
-                const isChecked = e.target.checked;
-                if (isChecked) currentFilteredMessages.forEach(msg => selectedMessageIds.add(msg.id));
-                else selectedMessageIds.clear();
-                renderMessages();
-            });
-
-            document.getElementById("selectAllCurhat").addEventListener("change", (e) => {
-                const isChecked = e.target.checked;
-                if (isChecked) currentFilteredCurhats.forEach(c => selectedCurhatIds.add(c.id));
-                else selectedCurhatIds.clear();
-                renderCurhats();
-            });
-
-            document.getElementById("bulkApproveMsgBtn").addEventListener("click", () => bulkUpdateMessages("approved"));
-            document.getElementById("bulkRejectMsgBtn").addEventListener("click", () => bulkUpdateMessages("rejected"));
-            
             if (currentUserRole === "owner") {
-                document.getElementById("bulkDeleteMsgBtn").addEventListener("click", bulkDeleteMessages);
-                document.getElementById("bulkDeleteCurhatBtn").addEventListener("click", bulkDeleteCurhats);
-            }
-
-            document.getElementById("bulkApproveCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("approved"));
-            document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
-
-            if (currentUserRole === "owner") {
-                // Inisialisasi Manajemen Akun Pengguna
                 initOwnerUserControl();
 
-                // Load Maintenance Mode Status
-                onValue(ref(database, "clover/maintenance"), (snapshot) => {
+                registerListener(ref(database, "clover/maintenance"), (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
                         document.getElementById("maintenanceActiveSelect").value = String(Boolean(data.active));
@@ -833,54 +865,106 @@
                     }
                 });
 
-                document.getElementById("maintenanceForm").addEventListener("submit", async (e) => {
-                    e.preventDefault();
-                    const active = document.getElementById("maintenanceActiveSelect").value === "true";
-                    const message = document.getElementById("maintenanceMessageInput").value.trim();
-                    const statusMsg = document.getElementById("maintenanceStatusMsg");
-
-                    try {
-                        await set(ref(database, "clover/maintenance"), { active, message, updatedAt: Date.now() });
-                        statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 border border-emerald-200";
-                        statusMsg.textContent = "Status pemeliharaan website berhasil diperbarui!";
-                        statusMsg.classList.remove("hidden");
-                        setTimeout(() => statusMsg.classList.add("hidden"), 4000);
-                    } catch (err) {
-                        statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
-                        statusMsg.textContent = "Gagal: " + err.message;
-                        statusMsg.classList.remove("hidden");
-                    }
-                });
-
-                // Load Broadcast Status
-                onValue(ref(database, "clover/broadcast"), (snapshot) => {
+                registerListener(ref(database, "clover/broadcast"), (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
                         document.getElementById("broadcastActiveSelect").value = String(Boolean(data.active));
                         document.getElementById("broadcastMessageInput").value = data.message || "";
                     }
                 });
-
-                document.getElementById("broadcastForm").addEventListener("submit", async (e) => {
-                    e.preventDefault();
-                    const active = document.getElementById("broadcastActiveSelect").value === "true";
-                    const message = document.getElementById("broadcastMessageInput").value.trim();
-                    const statusMsg = document.getElementById("broadcastStatusMsg");
-
-                    try {
-                        await set(ref(database, "clover/broadcast"), { active, message, updatedAt: Date.now() });
-                        statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 border border-emerald-200";
-                        statusMsg.textContent = "Broadcast berhasil diperbarui!";
-                        statusMsg.classList.remove("hidden");
-                        setTimeout(() => statusMsg.classList.add("hidden"), 4000);
-                    } catch (err) {
-                        statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
-                        statusMsg.textContent = "Gagal: " + err.message;
-                        statusMsg.classList.remove("hidden");
-                    }
-                });
             }
         }
+
+        // Event Listeners UI
+        document.getElementById("searchMessageInput").addEventListener("input", () => { selectedMessageIds.clear(); renderMessages(); });
+        document.getElementById("filterDateMessage").addEventListener("change", () => { selectedMessageIds.clear(); renderMessages(); });
+        document.getElementById("resetDateMessage").addEventListener("click", () => {
+            document.getElementById("filterDateMessage").value = "";
+            selectedMessageIds.clear();
+            renderMessages();
+        });
+        document.getElementById("filterStatusSelect").addEventListener("change", () => { selectedMessageIds.clear(); renderMessages(); });
+
+        document.getElementById("searchCurhatInput").addEventListener("input", () => { selectedCurhatIds.clear(); renderCurhats(); });
+        document.getElementById("filterDateCurhat").addEventListener("change", () => { selectedCurhatIds.clear(); renderCurhats(); });
+        document.getElementById("resetDateCurhat").addEventListener("click", () => {
+            document.getElementById("filterDateCurhat").value = "";
+            selectedCurhatIds.clear();
+            renderCurhats();
+        });
+        document.getElementById("filterCurhatStatusSelect").addEventListener("change", () => { selectedCurhatIds.clear(); renderCurhats(); });
+
+        document.getElementById("searchFeedbackInput").addEventListener("input", renderFeedback);
+        document.getElementById("filterDateFeedback").addEventListener("change", renderFeedback);
+        document.getElementById("resetDateFeedback").addEventListener("click", () => {
+            document.getElementById("filterDateFeedback").value = "";
+            renderFeedback();
+        });
+
+        document.getElementById("selectAllMessages").addEventListener("change", (e) => {
+            const isChecked = e.target.checked;
+            if (isChecked) currentFilteredMessages.forEach(msg => selectedMessageIds.add(msg.id));
+            else selectedMessageIds.clear();
+            renderMessages();
+        });
+
+        document.getElementById("selectAllCurhat").addEventListener("change", (e) => {
+            const isChecked = e.target.checked;
+            if (isChecked) currentFilteredCurhats.forEach(c => selectedCurhatIds.add(c.id));
+            else selectedCurhatIds.clear();
+            renderCurhats();
+        });
+
+        document.getElementById("bulkApproveMsgBtn").addEventListener("click", () => bulkUpdateMessages("approved"));
+        document.getElementById("bulkRejectMsgBtn").addEventListener("click", () => bulkUpdateMessages("rejected"));
+        document.getElementById("bulkDeleteMsgBtn").addEventListener("click", bulkDeleteMessages);
+
+        document.getElementById("bulkApproveCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("approved"));
+        document.getElementById("bulkRejectCurhatBtn").addEventListener("click", () => bulkUpdateCurhats("rejected"));
+        document.getElementById("bulkDeleteCurhatBtn").addEventListener("click", bulkDeleteCurhats);
+
+        document.getElementById("ownerUserSearchInput").addEventListener("input", renderOwnerUsersList);
+        document.getElementById("ownerUserFilterSelect").addEventListener("change", renderOwnerUsersList);
+
+        document.getElementById("maintenanceForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (currentUserRole !== "owner") return;
+            const active = document.getElementById("maintenanceActiveSelect").value === "true";
+            const message = document.getElementById("maintenanceMessageInput").value.trim();
+            const statusMsg = document.getElementById("maintenanceStatusMsg");
+
+            try {
+                await set(ref(database, "clover/maintenance"), { active, message, updatedAt: Date.now() });
+                statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 border border-emerald-200";
+                statusMsg.textContent = "Status pemeliharaan website berhasil diperbarui!";
+                statusMsg.classList.remove("hidden");
+                setTimeout(() => statusMsg.classList.add("hidden"), 4000);
+            } catch (err) {
+                statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
+                statusMsg.textContent = "Gagal: " + err.message;
+                statusMsg.classList.remove("hidden");
+            }
+        });
+
+        document.getElementById("broadcastForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (currentUserRole !== "owner") return;
+            const active = document.getElementById("broadcastActiveSelect").value === "true";
+            const message = document.getElementById("broadcastMessageInput").value.trim();
+            const statusMsg = document.getElementById("broadcastStatusMsg");
+
+            try {
+                await set(ref(database, "clover/broadcast"), { active, message, updatedAt: Date.now() });
+                statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 border border-emerald-200";
+                statusMsg.textContent = "Broadcast berhasil diperbarui!";
+                statusMsg.classList.remove("hidden");
+                setTimeout(() => statusMsg.classList.add("hidden"), 4000);
+            } catch (err) {
+                statusMsg.className = "p-4 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200";
+                statusMsg.textContent = "Gagal: " + err.message;
+                statusMsg.classList.remove("hidden");
+            }
+        });
 
         // =====================================================
         // MANAJEMEN SEMUA AKUN PENGGUNA (KHUSUS OWNER)
@@ -891,28 +975,25 @@
         let cachedReportsData = {};
 
         function initOwnerUserControl() {
-            onValue(ref(database, "clover/users"), (snap) => {
+            registerListener(ref(database, "clover/users"), (snap) => {
                 cachedUsersData = snap.val() || {};
                 renderOwnerUsersList();
             });
 
-            onValue(ref(database, "clover/streaks"), (snap) => {
+            registerListener(ref(database, "clover/streaks"), (snap) => {
                 cachedStreaksData = snap.val() || {};
                 renderOwnerUsersList();
             });
 
-            onValue(ref(database, "clover/banned_users"), (snap) => {
+            registerListener(ref(database, "clover/banned_users"), (snap) => {
                 cachedBannedData = snap.val() || {};
                 renderOwnerUsersList();
             });
 
-            onValue(ref(database, "clover/user_reports"), (snap) => {
+            registerListener(ref(database, "clover/user_reports"), (snap) => {
                 cachedReportsData = snap.val() || {};
                 renderOwnerUsersList();
             });
-
-            document.getElementById("ownerUserSearchInput").addEventListener("input", renderOwnerUsersList);
-            document.getElementById("ownerUserFilterSelect").addEventListener("change", renderOwnerUsersList);
         }
 
         function renderOwnerUsersList() {
@@ -932,10 +1013,8 @@
 
             const allEntries = Object.entries(cachedUsersData).map(([cleanNick, u]) => {
                 const uid = u.uid || "";
-                const rawSt = cachedStreaksData[uid] || cachedStreaksData[cleanNick] || null;
-                const st = getEffectiveStreakValues(rawSt);
+                const st = resolveUserStreak(uid, cleanNick, u);
 
-                // Deteksi blokir dari kedua sumber (banned_users maupun flag banned di users)
                 const banFromNode = cachedBannedData[uid] || null;
                 const isBannedFlag = u.banned === true;
                 const banInfo = banFromNode || (isBannedFlag ? { reason: u.banReason || "Melanggar pedoman komunitas Clover." } : null);
@@ -1099,7 +1178,7 @@
                     }
                 });
 
-                // 2. Reset Streak Tantangan
+                // 2. Reset Streak Tantangan (Sinkron ke seluruh node streak & profil user)
                 card.querySelector(".owner-reset-streak-btn").addEventListener("click", async () => {
                     if (currentUserRole !== "owner") return;
                     if (!confirm(`Reset streak tantangan milik ${u.nickname} menjadi 0?`)) return;
@@ -1109,8 +1188,24 @@
                             best: 0,
                             lastDate: ""
                         };
-                        await set(ref(database, `clover/streaks/${u.uid}`), resetPayload);
-                        cachedStreaksData[u.uid] = resetPayload;
+                        const tasks = [];
+                        if (u.uid) {
+                            tasks.push(set(ref(database, `clover/streaks/${u.uid}`), resetPayload));
+                            cachedStreaksData[u.uid] = resetPayload;
+                        }
+                        if (u.cleanNick && cachedStreaksData[u.cleanNick]) {
+                            tasks.push(set(ref(database, `clover/streaks/${u.cleanNick}`), resetPayload));
+                            cachedStreaksData[u.cleanNick] = resetPayload;
+                        }
+                        if (u.cleanNick) {
+                            tasks.push(update(ref(database, `clover/users/${u.cleanNick}`), {
+                                currentStreak: 0,
+                                bestStreak: 0,
+                                lastStreakDate: "",
+                                streakData: null
+                            }));
+                        }
+                        await Promise.all(tasks);
                         renderOwnerUsersList();
                         alert("Streak berhasil di-reset ke 0.");
                     } catch (err) {
@@ -1118,7 +1213,7 @@
                     }
                 });
 
-                // 3. Blokir / Buka Blokir Akun (Sinkron ke kedua node)
+                // 3. Blokir / Buka Blokir Akun
                 const banBtn = card.querySelector(".owner-ban-btn");
                 if (banBtn) {
                     banBtn.addEventListener("click", async () => {
@@ -1168,7 +1263,7 @@
                 // 4. Hapus Data Akun Permanen
                 card.querySelector(".owner-delete-btn").addEventListener("click", async () => {
                     if (currentUserRole !== "owner") return;
-                    if (!confirm(`Hapus permanen data profil, teman, dan streak milik ${u.nickname}?`)) return;
+                    if (!confirm(`Hapus permanen data profil, teman, laporan, dan streak milik ${u.nickname}?`)) return;
                     try {
                         const userFriendsSnap = await get(ref(database, `clover/friends/${u.uid}`));
                         if (userFriendsSnap.exists()) {
@@ -1178,9 +1273,13 @@
                             }
                         }
 
+                        const reportDeletes = u.reports.map(r => remove(ref(database, `clover/user_reports/${r.repId}`)).catch(() => {}));
+
                         await Promise.all([
+                            ...reportDeletes,
                             remove(ref(database, `clover/friends/${u.uid}`)),
                             remove(ref(database, `clover/streaks/${u.uid}`)),
+                            remove(ref(database, `clover/streaks/${u.cleanNick}`)),
                             remove(ref(database, `clover/banned_users/${u.uid}`)),
                             remove(ref(database, `clover/users/${u.cleanNick}`))
                         ]);
@@ -1232,6 +1331,9 @@
             });
 
             document.getElementById("selectedCountMsg").textContent = selectedMessageIds.size;
+            const selectAllCb = document.getElementById("selectAllMessages");
+            selectAllCb.checked = currentFilteredMessages.length > 0 && currentFilteredMessages.every(m => selectedMessageIds.has(m.id));
+
             const hasSelection = selectedMessageIds.size > 0;
             document.getElementById("bulkApproveMsgBtn").disabled = !hasSelection;
             document.getElementById("bulkRejectMsgBtn").disabled = !hasSelection;
@@ -1353,6 +1455,9 @@
             });
 
             document.getElementById("selectedCountCurhat").textContent = selectedCurhatIds.size;
+            const selectAllCb = document.getElementById("selectAllCurhat");
+            selectAllCb.checked = currentFilteredCurhats.length > 0 && currentFilteredCurhats.every(c => selectedCurhatIds.has(c.id));
+
             const hasSelection = selectedCurhatIds.size > 0;
             document.getElementById("bulkApproveCurhatBtn").disabled = !hasSelection;
             document.getElementById("bulkRejectCurhatBtn").disabled = !hasSelection;
@@ -1521,14 +1626,17 @@
                 statsData.push(["Total Akun Diblokir", document.getElementById("ownerBannedUsersCount").textContent]);
             }
 
-            let csvContent = "data:text/csv;charset=utf-8," + statsData.map(e => e.join(",")).join("\n");
-            const encodedUri = encodeURI(csvContent);
+            const escapeCSV = (val) => `"${String(val ?? "").replace(/"/g, '""')}"`;
+            const csvString = statsData.map(row => row.map(escapeCSV).join(",")).join("\n");
+            const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", `statistik_clover_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         };
 
         async function bulkUpdateMessages(status) {
