@@ -111,6 +111,27 @@
 
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative selection:bg-emerald-500 selection:text-white">
 
+<!-- =====================================================
+     OVERLAY PEMELIHARAAN (MAINTENANCE & AUTO-REFRESH)
+===================================================== -->
+<div id="maintenance-overlay" class="hidden fixed inset-0 bg-slate-900 z-[9999] flex items-center justify-center p-4 text-center">
+    <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full shadow-2xl space-y-6 border border-slate-100">
+        <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-lg shadow-rose-500/10">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        <div>
+            <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Sedang Dalam Pemeliharaan</h1>
+            <p id="maintenance-message" class="text-xs text-slate-600 font-medium leading-relaxed">
+                Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi.
+            </p>
+        </div>
+        <div class="flex items-center justify-center gap-2 text-[11px] font-bold text-emerald-600 bg-emerald-50 py-2.5 px-4 rounded-xl border border-emerald-100">
+            <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+            <span>Halaman akan dimuat ulang otomatis saat selesai...</span>
+        </div>
+    </div>
+</div>
+
 <!-- Background Floating Clovers -->
 <div id="floating-backgrounds">
     <i class="fa-solid fa-clover bg-clover text-2xl" style="left: 8%; animation-duration: 20s; animation-delay: 0s;"></i>
@@ -1371,7 +1392,7 @@
     let currentNickname = "";
     let currentCleanNick = "";
     let authMode = "login"; // "login" | "register"
-    let isRegistering = false;
+    let isAuthenticating = false; // Mencegah race condition antara form submit & onAuthStateChanged
     let unsubscribeBanListener = null;
     let unsubscribeProfileListener = null;
 
@@ -1456,6 +1477,51 @@
         toggleAuthPassIcon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
     });
 
+    function attachUserRealtimeWatchers(uid, cleanNick) {
+        if (unsubscribeBanListener) {
+            unsubscribeBanListener();
+            unsubscribeBanListener = null;
+        }
+        if (unsubscribeProfileListener) {
+            unsubscribeProfileListener();
+            unsubscribeProfileListener = null;
+        }
+
+        // 1. Pantau status blokir di node clover/banned_users/{uid} secara real-time
+        unsubscribeBanListener = onValue(ref(database, `clover/banned_users/${uid}`), async (banSnap) => {
+            if (banSnap.exists() && !isAuthenticating) {
+                const banInfo = banSnap.val();
+                await signOut(auth);
+                alert(`Akun kamu telah diblokir oleh Owner.\nAlasan: ${banInfo.reason || "Melanggar pedoman komunitas Clover."}`);
+            }
+        });
+
+        // 2. Pantau profil & status blokir di node clover/users/{cleanNick} secara real-time
+        if (cleanNick) {
+            unsubscribeProfileListener = onValue(ref(database, `clover/users/${cleanNick}`), async (profileSnap) => {
+                if (isAuthenticating) return;
+
+                if (!profileSnap.exists()) {
+                    await signOut(auth);
+                    alert("Data akun ini telah dihapus oleh pengelola Clover.");
+                    return;
+                }
+
+                const updatedData = profileSnap.val();
+                if (updatedData.banned === true) {
+                    await signOut(auth);
+                    alert(`Akun kamu telah diblokir oleh Owner.\nAlasan: ${updatedData.banReason || "Melanggar pedoman komunitas Clover."}`);
+                    return;
+                }
+
+                if (updatedData.nickname && updatedData.nickname !== currentNickname) {
+                    currentNickname = updatedData.nickname;
+                    updateAccountUI();
+                }
+            });
+        }
+    }
+
     authGateForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         hideAuthStatus();
@@ -1484,53 +1550,91 @@
 
         authSubmitBtn.disabled = true;
         authSubmitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> ${authMode === "register" ? "Mendaftarkan..." : "Memasuki..."}`;
+        isAuthenticating = true;
 
         try {
             if (authMode === "register") {
-                isRegistering = true;
                 const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
                 await updateProfile(cred.user, { displayName: rawNick });
 
-                await set(ref(database, `clover/users/${cleanNick}`), {
+                const initialUserData = {
                     nickname: rawNick,
                     uid: cred.user.uid,
                     bio: "",
+                    banned: false,
                     createdAt: Date.now()
-                });
+                };
+                const initialStreakData = {
+                    current: 0,
+                    best: 0,
+                    lastDate: ""
+                };
 
-                isRegistering = false;
+                await Promise.all([
+                    set(ref(database, `clover/users/${cleanNick}`), initialUserData),
+                    set(ref(database, `clover/streaks/${cred.user.uid}`), initialStreakData)
+                ]);
+
+                allUsersCache[cleanNick] = initialUserData;
+                allStreaksCache[cred.user.uid] = initialStreakData;
+
+                currentUser = cred.user;
+                currentAccountId = cred.user.uid;
                 currentNickname = rawNick;
                 currentCleanNick = cleanNick;
+
+                isAuthenticating = false;
+                attachUserRealtimeWatchers(cred.user.uid, cleanNick);
                 authGateForm.reset();
                 closeAuthModal();
+                updateAccountUI();
             } else {
                 const cred = await signInWithEmailAndPassword(auth, virtualEmail, password);
 
-                // Cek apakah akun diblokir oleh Owner
-                const banCheckSnap = await get(ref(database, `clover/banned_users/${cred.user.uid}`));
-                if (banCheckSnap.exists()) {
-                    const banReason = banCheckSnap.val().reason || "Melanggar pedoman komunitas Clover.";
+                // Cek status blokir dari kedua sumber (banned_users & flag banned di users)
+                const [banSnap, profileSnap] = await Promise.all([
+                    get(ref(database, `clover/banned_users/${cred.user.uid}`)),
+                    get(ref(database, `clover/users/${cleanNick}`))
+                ]);
+
+                if (banSnap.exists() || (profileSnap.exists() && profileSnap.val().banned === true)) {
+                    const banReason = (banSnap.exists() && banSnap.val().reason)
+                        || (profileSnap.exists() && profileSnap.val().banReason)
+                        || "Melanggar pedoman komunitas Clover.";
+                    isAuthenticating = false;
                     await signOut(auth);
                     showAuthStatus(`Akun ini sedang diblokir oleh Owner. Alasan: ${banReason}`);
                     return;
                 }
 
-                // Cek apakah data profil masih tersedia (belum dihapus Owner)
-                const profileSnap = await get(ref(database, `clover/users/${cleanNick}`));
-                if (!profileSnap.exists()) {
-                    await signOut(auth);
-                    showAuthStatus("Akun tidak ditemukan atau telah dihapus oleh pengelola Clover.");
-                    return;
+                // Jika akun Auth ada tapi node profil belum ada, pulihkan otomatis
+                let profileData = profileSnap.val();
+                if (!profileData) {
+                    profileData = {
+                        nickname: cred.user.displayName || rawNick,
+                        uid: cred.user.uid,
+                        bio: "",
+                        banned: false,
+                        createdAt: Date.now()
+                    };
+                    await set(ref(database, `clover/users/${cleanNick}`), profileData);
                 }
 
+                allUsersCache[cleanNick] = profileData;
+
+                currentUser = cred.user;
+                currentAccountId = cred.user.uid;
                 currentCleanNick = cleanNick;
-                const profileData = profileSnap.val();
                 currentNickname = profileData.nickname || cred.user.displayName || rawNick;
+
+                isAuthenticating = false;
+                attachUserRealtimeWatchers(cred.user.uid, cleanNick);
                 authGateForm.reset();
                 closeAuthModal();
+                updateAccountUI();
             }
         } catch (err) {
-            isRegistering = false;
+            isAuthenticating = false;
             console.error("Auth error:", err);
             if (err.code === "auth/email-already-in-use") {
                 showAuthStatus("Nickname ini sudah dipakai. Silakan pilih nickname lain atau masuk.");
@@ -1541,10 +1645,9 @@
             } else if (err.code === "auth/too-many-requests") {
                 showAuthStatus("Terlalu banyak percobaan. Tunggu beberapa saat lalu coba lagi.");
             } else {
-                showAuthStatus("Gagal memproses akun. Pastikan metode Email/Password aktif di Firebase.");
+                showAuthStatus("Gagal memproses akun. Periksa koneksi atau aturan database Firebase.");
             }
         } finally {
-            isRegistering = false;
             authSubmitBtn.disabled = false;
             setAuthMode(authMode);
         }
@@ -1624,27 +1727,29 @@
     onDisconnect(activeUsersRef).remove();
 
     // =====================================================
-    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN)
+    // 1.1. CEK STATUS PEMELIHARAAN (TAKEDOWN & AUTO-REFRESH)
     // =====================================================
+    const maintenanceOverlay = document.getElementById("maintenance-overlay");
+    const maintenanceMessage = document.getElementById("maintenance-message");
     const maintenanceRef = ref(database, "clover/maintenance");
+    let wasInMaintenance = false;
+
     onValue(maintenanceRef, (snapshot) => {
         const data = snapshot.val();
-        if (data && data.active === true) {
-            document.body.innerHTML = `
-                <div class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4 text-center">
-                    <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full shadow-2xl space-y-6 border border-slate-100">
-                        <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-lg shadow-rose-500/10">
-                            <i class="fa-solid fa-screwdriver-wrench"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Sedang Dalam Pemeliharaan</h1>
-                            <p class="text-xs text-slate-600 font-medium leading-relaxed">
-                                ${escapeHTML(data.message || "Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi.")}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
+        const isActive = Boolean(data && data.active === true);
+
+        if (isActive) {
+            wasInMaintenance = true;
+            maintenanceMessage.textContent = data.message || "Mohon maaf, website sedang dalam pemeliharaan rutin. Silakan kembali beberapa saat lagi.";
+            maintenanceOverlay.classList.remove("hidden");
+            document.body.classList.add("overflow-hidden");
+        } else {
+            if (wasInMaintenance) {
+                window.location.reload();
+                return;
+            }
+            maintenanceOverlay.classList.add("hidden");
+            document.body.classList.remove("overflow-hidden");
         }
     });
 
@@ -2633,8 +2738,10 @@
                 }
             }
 
+            allStreaksCache[currentAccountId] = streakData;
             currentStreakSpan.textContent = streakData.current || 0;
             bestStreakSpan.textContent = streakData.best || 0;
+            renderLeaderboard();
         });
     }
 
@@ -2673,8 +2780,8 @@
         renderLeaderboard();
     });
 
-    function getEffectiveStreak(uid) {
-        const s = allStreaksCache[uid];
+    function getEffectiveStreak(uid, cleanNick = "") {
+        const s = (uid && allStreaksCache[uid]) || (cleanNick && allStreaksCache[cleanNick]) || null;
         if (!s) return { current: 0, best: 0 };
         const todayStr = getTodayDateString();
         let cur = Number(s.current || 0);
@@ -2690,9 +2797,9 @@
 
     function renderLeaderboard() {
         const entries = Object.entries(allUsersCache)
-            .filter(([, u]) => !u.banned)
+            .filter(([, u]) => u && u.banned !== true && u.uid)
             .map(([cleanNick, u]) => {
-                const st = getEffectiveStreak(u.uid);
+                const st = getEffectiveStreak(u.uid, cleanNick);
                 return {
                     uid: u.uid,
                     nickname: u.nickname || cleanNick,
@@ -2900,11 +3007,14 @@
                         }
                     }
                     const best = Math.max(cur, streakData.best || 0);
-                    await set(streakRef, {
+                    const newStreakPayload = {
                         current: cur,
                         best: best,
                         lastDate: todayStr
-                    });
+                    };
+                    await set(streakRef, newStreakPayload);
+                    allStreaksCache[currentAccountId] = newStreakPayload;
+                    renderLeaderboard();
                 }
             }
         });
@@ -3123,7 +3233,7 @@
 
         matches.forEach((u) => {
             const rel = myFriendsMap[u.uid];
-            const st = getEffectiveStreak(u.uid);
+            const st = getEffectiveStreak(u.uid, u.cleanNick);
             const row = document.createElement("div");
             row.className = "flex items-center justify-between gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-100";
 
@@ -3231,7 +3341,7 @@
 
         friendsList.innerHTML = "";
         accepted.forEach((friend) => {
-            const st = getEffectiveStreak(friend.uid);
+            const st = getEffectiveStreak(friend.uid, friend.cleanNick);
             const userProfile = allUsersCache[friend.cleanNick] || {};
             const displayNick = userProfile.nickname || friend.nickname;
             const bioSnippet = userProfile.bio ? ` • ${userProfile.bio}` : "";
@@ -3283,7 +3393,7 @@
         activeChatPartner = friend;
         renderFriendsUI();
 
-        const st = getEffectiveStreak(friend.uid);
+        const st = getEffectiveStreak(friend.uid, friend.cleanNick);
         const partnerInfo = allUsersCache[friend.cleanNick] || {};
         const displayNick = partnerInfo.nickname || friend.nickname;
 
@@ -3449,7 +3559,6 @@
                 status: "pending"
             });
 
-            // Kirim salinan ringkas ke masukan admin agar langsung terlihat di panel admin
             const summaryText = `[LAPORAN AKUN: ${targetNick}] Alasan: ${reason}${details ? ` — ${details}` : ""}`.slice(0, 500);
             await set(push(ref(database, "clover/feedback")), {
                 text: summaryText,
@@ -3736,9 +3845,11 @@
             const existingData = existingSnap.val() || {};
 
             await set(ref(database, `clover/users/${clean}`), {
+                ...existingData,
                 nickname: newNick,
                 uid: currentUser.uid,
                 bio: newBio,
+                banned: existingData.banned === true,
                 createdAt: existingData.createdAt || Date.now()
             });
 
@@ -3811,6 +3922,7 @@
 
         settingsDeleteAccountBtn.disabled = true;
         settingsDeleteAccountBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Menghapus Akun...`;
+        isAuthenticating = true;
 
         try {
             const credential = EmailAuthProvider.credential(currentUser.email, pass);
@@ -3825,9 +3937,11 @@
             await set(ref(database, `clover/users/${clean}`), null).catch(() => {});
 
             await deleteUser(currentUser);
+            isAuthenticating = false;
             closeSettingsModal();
             alert("Akun kamu telah berhasil dihapus secara permanen.");
         } catch (err) {
+            isAuthenticating = false;
             console.error("Gagal menghapus akun:", err);
             if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
                 showSettingsStatus("Password konfirmasi salah.");
@@ -3941,6 +4055,8 @@
     }
 
     onAuthStateChanged(auth, async (user) => {
+        if (isAuthenticating) return;
+
         if (unsubscribeBanListener) {
             unsubscribeBanListener();
             unsubscribeBanListener = null;
@@ -3970,49 +4086,7 @@
                 }
             }
 
-            // 1. Pantau status blokir dari Owner secara real-time
-            unsubscribeBanListener = onValue(ref(database, `clover/banned_users/${user.uid}`), async (banSnap) => {
-                if (banSnap.exists()) {
-                    const banInfo = banSnap.val();
-                    await signOut(auth);
-                    alert(`Akun kamu telah diblokir oleh Owner.\nAlasan: ${banInfo.reason || "Melanggar pedoman komunitas Clover."}`);
-                }
-            });
-
-            // 2. Pantau jika profil diedit atau dihapus permanen oleh Owner
-            if (currentCleanNick) {
-                let profileInitialized = false;
-                unsubscribeProfileListener = onValue(ref(database, `clover/users/${currentCleanNick}`), async (profileSnap) => {
-                    if (!profileSnap.exists()) {
-                        if (!isRegistering && profileInitialized) {
-                            await signOut(auth);
-                            alert("Data akun ini telah dihapus oleh pengelola Clover.");
-                        }
-                        return;
-                    }
-
-                    profileInitialized = true;
-                    const updatedData = profileSnap.val();
-                    if (updatedData.nickname && updatedData.nickname !== currentNickname) {
-                        currentNickname = updatedData.nickname;
-                        updateAccountUI();
-                    }
-                });
-
-                // Cek langsung saat sesi lama dimuat ulang apakah akun sudah dihapus sebelumnya
-                if (!isRegistering) {
-                    try {
-                        const initialProfileSnap = await get(ref(database, `clover/users/${currentCleanNick}`));
-                        if (!initialProfileSnap.exists() && !isRegistering) {
-                            await signOut(auth);
-                            return;
-                        }
-                    } catch (err) {
-                        console.error("Gagal memverifikasi profil awal:", err);
-                    }
-                }
-            }
-
+            attachUserRealtimeWatchers(user.uid, currentCleanNick);
             closeAuthModal();
             updateAccountUI();
         } else {
