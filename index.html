@@ -219,7 +219,7 @@
                     <div class="text-xs">
                         <span class="font-extrabold text-emerald-900 block"><i class="fa-solid fa-link mr-1 text-emerald-600"></i> Tautkan Progres Mode Tamu</span>
                         <span id="guest-bind-summary" class="text-[11px] font-medium text-emerald-700 leading-snug block mt-0.5">
-                            Progres tantangan & streak dari sesi tamu akan dipindahkan ke akun ini.
+                            Progres tantangan, streak, & curhat pribadi dari sesi tamu akan dipindahkan ke akun ini.
                         </span>
                     </div>
                 </label>
@@ -427,7 +427,7 @@
         </button>
 
         <!-- Menu Desktop (Diisi Dinamis Sesuai Beranda yang Sedang Dipilih) -->
-        <nav id="desktop-context-nav" class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600"></nav>
+        <nav id="desktop-context-nav" class="hidden md:flex items-center gap-5 text-xs font-bold text-slate-600"></nav>
 
         <!-- Right Actions: Ikon Pengguna + Tombol Bantuan + Hamburger Mobile -->
         <div class="flex items-center gap-2 shrink-0">
@@ -524,16 +524,19 @@
             </h2>
 
             <p class="text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
-                Clover hadir sebagai ruang hangat untuk berbagi curhat, menyelesaikan tantangan harian, menjaga streak semangat, dan saling menguatkan.
+                Clover hadir sebagai ruang hangat untuk menumpahkan isi hati, menyelesaikan tantangan harian, menjaga streak semangat, dan saling menguatkan.
             </p>
 
             <!-- Tombol Navigasi Cepat -->
             <div class="flex flex-wrap justify-center gap-3.5">
-                <a href="#curhat-publik" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-comments"></i> Ruang Curhat
+                <a href="#tentang" class="bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-sm px-6 py-3.5 rounded-2xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-seedling"></i> Tentang Clover
+                </a>
+                <a href="#curhat" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-heart-pulse"></i> Curhat Pribadi & Bersama
                 </a>
                 <a href="#tantangan" class="bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-teal-700/25 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-leaf"></i> Tantangan & Peringkat
+                    <i class="fa-solid fa-leaf"></i> Tantangan Harian
                 </a>
                 <a href="#papan" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-lg shadow-slate-900/15 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                     <i class="fa-solid fa-envelope-open-text"></i> Pesan Kehangatan
@@ -544,64 +547,227 @@
 
     <main class="max-w-5xl mx-auto px-4 pb-16 flex-1 space-y-24 w-full relative z-10">
 
-        <!-- 2. RUANG CURHAT PUBLIK -->
-        <section id="curhat-publik" class="space-y-8 relative">
-            <div class="text-center max-w-2xl mx-auto mb-10">
-                <span class="text-teal-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                    <i class="fa-solid fa-clover"></i> Ruang Curhat Bersama
+        <!-- 2. TENTANG KAMI & 3 PILAR CLOVER -->
+        <section id="tentang" class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-emerald-100/80 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+            <i class="fa-solid fa-clover clover-watermark"></i>
+
+            <div class="text-center max-w-2xl mx-auto mb-10 relative z-10">
+                <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-clover"></i> Tentang Kami
                 </span>
                 <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                    Curhat dan Saling Mendukung
+                    Mengapa Clover Hadir?
                 </h3>
-                <p class="text-slate-500 leading-relaxed font-medium">
-                    Bagikan keluh kesahmu secara terbuka di sini. Anggota komunitas lain dapat membaca dan memberikan balasan dukungan hangat untukmu.
+                <p class="text-slate-600 leading-relaxed font-medium text-sm md:text-base">
+                    Rasa sepi dan terisolasi sering kali datang diam-diam di tengah kesibukan. Seperti daun semanggi berdaun empat yang melambangkan harapan dan kehangatan, <strong>Clover</strong> dibangun sebagai tempat pulang yang aman—di mana kamu bebas bercerita tanpa dihakimi, melangkah pelan setiap hari, dan merasakan dukungan tulus dari sesama.
                 </p>
             </div>
 
-            <div id="curhat-firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
-
-            <form id="curhat-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
-                <i class="fa-solid fa-clover clover-watermark"></i>
-                <div>
-                    <label for="curhat-input" class="block text-sm font-extrabold text-slate-700 mb-2">Tulis Curhat Publik <span class="text-rose-500">*</span></label>
-                    <textarea id="curhat-input" rows="4" maxlength="400" required placeholder="Contoh: Rasanya akhir-akhir ini lelah banget menghadapi tekanan kuliah/kerja, ada yang ngerasain hal serupa? 🍀" 
-                              class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
-                    <div class="flex justify-between mt-2 px-1">
-                        <span class="text-[10px] font-bold text-slate-400">Maksimal 400 karakter</span>
-                        <span id="curhat-char-count" class="text-[10px] font-bold text-slate-400">0/400</span>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="curhat-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
-                        Nama / Panggilan <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
-                    </label>
-                    <input type="text" id="curhat-sender-input" maxlength="40" placeholder="Pejuang Tenang" 
-                           class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
-                </div>
-
-                <button type="submit" id="submit-curhat-button" class="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-teal-600/25">
-                    <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik
-                </button>
-                
-                <p class="text-xs text-center font-medium text-slate-400 pt-1">
-                    Curhat akan dimoderasi admin sebelum tampil.
+            <!-- 3 Pilar Utama Clover -->
+            <div class="relative z-10">
+                <p class="text-center text-xs font-black uppercase tracking-widest text-slate-400 mb-6">
+                    3 Pilar Utama Clover
                 </p>
-            </form>
 
-            <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
-                <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
-                    <div class="loading-spinner mb-4"></div>
-                    <p class="text-sm font-bold text-slate-400">Memuat ruang curhat komunitas...</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Pilar 1: Curhat Pribadi & Bersama -->
+                    <a href="#curhat" class="group bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/70 p-7 rounded-[2rem] border border-emerald-200/80 hover:border-emerald-400 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl mb-5 shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-600 mb-1">Pilar 1</span>
+                        <h4 class="text-lg font-extrabold text-slate-900 mb-2.5 group-hover:text-emerald-700 transition-colors">
+                            Curhat Pribadi & Bersama
+                        </h4>
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed flex-1">
+                            Tulis catatan hati secara <strong>pribadi</strong> di perangkatmu sendiri untuk melegakan pikiran, atau bagikan secara terbuka di <strong>ruang bersama</strong> untuk saling menguatkan.
+                        </p>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-emerald-700 mt-5">
+                            Mulai Bercerita <i class="fa-solid fa-arrow-right text-[11px] group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </a>
+
+                    <!-- Pilar 2: Tantangan Harian Langkah Melawan Sepi -->
+                    <a href="#tantangan" class="group bg-gradient-to-br from-teal-50/90 via-white to-cyan-50/70 p-7 rounded-[2rem] border border-teal-200/80 hover:border-teal-400 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col">
+                        <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl mb-5 shadow-md shadow-teal-600/20 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-shoe-prints"></i>
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-teal-600 mb-1">Pilar 2</span>
+                        <h4 class="text-lg font-extrabold text-slate-900 mb-2.5 group-hover:text-teal-700 transition-colors">
+                            Tantangan Harian: Langkah Melawan Sepi
+                        </h4>
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed flex-1">
+                            Aksi-aksi kecil setiap hari—mulai dari menyapa seseorang hingga menghirup udara segar—untuk membangun streak konsistensi dan perlahan keluar dari rasa terisolasi.
+                        </p>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-teal-700 mt-5">
+                            Cek Tantangan Hari Ini <i class="fa-solid fa-arrow-right text-[11px] group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </a>
+
+                    <!-- Pilar 3: Pesan Kehangatan -->
+                    <a href="#papan" class="group bg-gradient-to-br from-amber-50/80 via-white to-emerald-50/70 p-7 rounded-[2rem] border border-amber-200/80 hover:border-amber-400 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-300 flex items-center justify-center text-xl mb-5 shadow-md shadow-slate-900/15 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-amber-600 mb-1">Pilar 3</span>
+                        <h4 class="text-lg font-extrabold text-slate-900 mb-2.5 group-hover:text-slate-700 transition-colors">
+                            Pesan Kehangatan
+                        </h4>
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed flex-1">
+                            Tinggalkan kata-kata positif dan harapan baik di papan komunitas agar siapa pun yang sedang berjuang hari ini merasa ditemani dan dihargai.
+                        </p>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-slate-800 mt-5">
+                            Kirim Kehangatan <i class="fa-solid fa-arrow-right text-[11px] group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- 3. TANTANGAN HARIAN -->
+        <!-- 3. PILAR 1: CURHAT PRIBADI (LOKAL) & RUANG CURHAT BERSAMA -->
+        <section id="curhat" class="space-y-8 relative pt-4 border-t border-slate-200/60">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-teal-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-clover"></i> Pilar 1 • Curhat Pribadi & Bersama
+                </span>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                    Tumpahkan Isi Hatimu dengan Nyaman
+                </h3>
+                <p class="text-slate-500 leading-relaxed font-medium">
+                    Pilih menulis catatan <strong>Curhat Pribadi</strong> yang tersimpan khusus di perangkatmu, atau berbagi di <strong>Curhat Bersama</strong> untuk mendapatkan dukungan komunitas.
+                </p>
+
+                <!-- Switch Tab Curhat Pribadi vs Curhat Bersama -->
+                <div class="inline-grid grid-cols-2 gap-1.5 bg-white p-1.5 rounded-2xl border border-emerald-100 shadow-sm mt-6">
+                    <button type="button" id="curhat-tab-private"
+                            class="px-4 sm:px-6 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lock"></i> Curhat Pribadi
+                    </button>
+                    <button type="button" id="curhat-tab-public"
+                            class="px-4 sm:px-6 py-2.5 rounded-xl text-xs font-extrabold text-slate-600 hover:text-teal-700 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-users"></i> Curhat Bersama
+                    </button>
+                </div>
+            </div>
+
+            <!-- SUB-PANEL A: CURHAT PRIBADI (CATATAN PRIVAT DI PERANGKAT) -->
+            <div id="curhat-private-panel" class="space-y-8">
+                <div class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/80 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+                    <i class="fa-solid fa-book-open clover-watermark"></i>
+
+                    <div class="flex items-center justify-between gap-2 bg-emerald-50/80 border border-emerald-200/70 rounded-2xl px-4 py-3 text-xs text-emerald-800 relative z-10">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-shield-halved text-emerald-600 text-sm shrink-0"></i>
+                            <span class="font-semibold leading-snug">
+                                <strong>100% Privat:</strong> Catatan ini hanya tersimpan di perangkatmu dan tidak dikirim ke server maupun admin.
+                            </span>
+                        </div>
+                    </div>
+
+                    <form id="private-curhat-form" class="space-y-4 relative z-10">
+                        <div>
+                            <label for="private-curhat-mood" class="block text-xs font-extrabold text-slate-700 mb-2">
+                                Suasana Hatimu Saat Ini
+                            </label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="private-mood-group">
+                                <button type="button" data-mood="😔 Lelah / Sedih" class="private-mood-btn px-3 py-2 rounded-xl text-xs font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-800 transition-all">
+                                    😔 Lelah / Sedih
+                                </button>
+                                <button type="button" data-mood="😰 Cemas / Overthinking" class="private-mood-btn px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-100 bg-slate-50 text-slate-600 hover:border-emerald-200 transition-all">
+                                    😰 Cemas
+                                </button>
+                                <button type="button" data-mood="🌧️ Merasa Sepi" class="private-mood-btn px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-100 bg-slate-50 text-slate-600 hover:border-emerald-200 transition-all">
+                                    🌧️ Merasa Sepi
+                                </button>
+                                <button type="button" data-mood="🌱 Lega / Bersyukur" class="private-mood-btn px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-100 bg-slate-50 text-slate-600 hover:border-emerald-200 transition-all">
+                                    🌱 Lega / Syukur
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="private-curhat-input" class="block text-sm font-extrabold text-slate-700 mb-2">
+                                Tulis Catatan Pribadimu <span class="text-rose-500">*</span>
+                            </label>
+                            <textarea id="private-curhat-input" rows="4" maxlength="1000" required
+                                      placeholder="Tuliskan apa saja yang sedang membebani pikiranmu hari ini tanpa perlu takut dinilai siapa pun..."
+                                      class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
+                            <div class="flex justify-between mt-2 px-1">
+                                <span class="text-[10px] font-bold text-slate-400">Maksimal 1000 karakter</span>
+                                <span id="private-curhat-char-count" class="text-[10px] font-bold text-slate-400">0/1000</span>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                                class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-emerald-600/25">
+                            <i class="fa-solid fa-lock mr-2"></i> Simpan di Jurnal Pribadi
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Daftar Catatan Curhat Pribadi -->
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="flex items-center justify-between px-1">
+                        <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-emerald-600"></i>
+                            <span>Jurnal Pribadimu (<span id="private-curhat-count">0</span>)</span>
+                        </h4>
+                        <button type="button" id="clear-all-private-curhat-btn" class="hidden text-[11px] font-bold text-rose-500 hover:text-rose-700 transition-colors">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Hapus Semua
+                        </button>
+                    </div>
+
+                    <div id="private-curhat-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                </div>
+            </div>
+
+            <!-- SUB-PANEL B: CURHAT BERSAMA (KOMUNITAS PUBLIK) -->
+            <div id="curhat-public-panel" class="hidden space-y-8">
+                <div id="curhat-firebase-status" class="hidden rounded-2xl px-5 py-4 text-sm font-bold text-center mx-auto max-w-2xl shadow-sm"></div>
+
+                <form id="curhat-form" class="bg-white p-6 md:p-10 rounded-[2.5rem] border border-emerald-100/60 shadow-xl shadow-slate-200/40 max-w-2xl mx-auto space-y-5 relative overflow-hidden">
+                    <i class="fa-solid fa-clover clover-watermark"></i>
+                    <div>
+                        <label for="curhat-input" class="block text-sm font-extrabold text-slate-700 mb-2">Tulis Curhat Bersama <span class="text-rose-500">*</span></label>
+                        <textarea id="curhat-input" rows="4" maxlength="400" required placeholder="Contoh: Rasanya akhir-akhir ini lelah banget menghadapi tekanan kuliah/kerja, ada yang ngerasain hal serupa? 🍀" 
+                                  class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium resize-none transition-all shadow-inner"></textarea>
+                        <div class="flex justify-between mt-2 px-1">
+                            <span class="text-[10px] font-bold text-slate-400">Maksimal 400 karakter</span>
+                            <span id="curhat-char-count" class="text-[10px] font-bold text-slate-400">0/400</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="curhat-sender-input" class="block text-sm font-extrabold text-slate-700 mb-2">
+                            Nama / Panggilan <span class="font-medium text-slate-400">(opsional — kosongkan untuk anonim)</span>
+                        </label>
+                        <input type="text" id="curhat-sender-input" maxlength="40" placeholder="Pejuang Tenang" 
+                               class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:outline-none focus:border-teal-400 focus:bg-white text-slate-800 text-sm font-medium transition-all shadow-inner">
+                    </div>
+
+                    <button type="submit" id="submit-curhat-button" class="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm font-bold px-5 py-4 rounded-2xl transition-all shadow-lg shadow-teal-600/25">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Kirim ke Ruang Bersama
+                    </button>
+                    
+                    <p class="text-xs text-center font-medium text-slate-400 pt-1">
+                        Curhat bersama akan dimoderasi admin sebelum tampil.
+                    </p>
+                </form>
+
+                <div id="curhats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 max-w-3xl mx-auto">
+                    <div class="md:col-span-2 bg-white rounded-[2rem] p-12 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+                        <div class="loading-spinner mb-4"></div>
+                        <p class="text-sm font-bold text-slate-400">Memuat ruang curhat komunitas...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PILAR 2: TANTANGAN HARIAN (LANGKAH MELAWAN SEPI) -->
         <section id="tantangan" class="space-y-10 pt-6 border-t border-slate-200/60">
             <div class="text-center max-w-2xl mx-auto">
                 <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                    <i class="fa-solid fa-clover"></i> Tantangan Harian
+                    <i class="fa-solid fa-clover"></i> Pilar 2 • Tantangan Harian
                 </span>
                 <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
                     Langkah Melawan Sepi
@@ -741,7 +907,7 @@
             </div>
         </section>
 
-        <!-- 4. PAPAN PERINGKAT TANTANGAN (LEADERBOARD) -->
+        <!-- 5. PAPAN PERINGKAT TANTANGAN (LEADERBOARD) -->
         <section id="peringkat" class="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-100/80 shadow-xl shadow-slate-200/40 relative overflow-hidden">
             <i class="fa-solid fa-trophy clover-watermark"></i>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 relative z-10">
@@ -773,11 +939,11 @@
             </div>
         </section>
 
-        <!-- 5. PESAN KEHANGATAN -->
+        <!-- 6. PILAR 3: PESAN KEHANGATAN -->
         <section id="papan" class="space-y-8 pt-10 border-t border-slate-200/60 relative">
             <div class="text-center max-w-2xl mx-auto">
                 <span class="text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
-                    <i class="fa-solid fa-clover"></i> Papan Kehangatan
+                    <i class="fa-solid fa-clover"></i> Pilar 3 • Papan Kehangatan
                 </span>
                 <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
                     Tinggalkan Sedikit Kehangatan
@@ -826,7 +992,7 @@
             </div>
         </section>
 
-        <!-- 6. BANTUAN -->
+        <!-- 7. BANTUAN -->
         <section id="bantuan" class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-rose-100 shadow-inner">
             <div class="text-center max-w-2xl mx-auto mb-8">
                 <span class="text-rose-600 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
@@ -1119,7 +1285,8 @@
     const VIEW_NAV_ITEMS = {
         home: [
             { label: "Beranda", href: "#hero", icon: "fa-house", color: "text-emerald-500" },
-            { label: "Curhat", href: "#curhat-publik", icon: "fa-comments", color: "text-teal-500" },
+            { label: "Tentang", href: "#tentang", icon: "fa-seedling", color: "text-emerald-600" },
+            { label: "Curhat", href: "#curhat", icon: "fa-comments", color: "text-teal-500" },
             { label: "Tantangan", href: "#tantangan", icon: "fa-leaf", color: "text-emerald-500" },
             { label: "Peringkat", href: "#peringkat", icon: "fa-trophy", color: "text-amber-500" },
             { label: "Kehangatan", href: "#papan", icon: "fa-envelope-open-text", color: "text-emerald-500" },
@@ -1286,6 +1453,15 @@
         return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
     }
 
+    function formatDate(timestamp) {
+        if (!timestamp) return "";
+        const date = new Date(Number(timestamp));
+        if (Number.isNaN(date.getTime())) return "";
+        return date.toLocaleDateString("id-ID", {
+            day: "2-digit", month: "long", year: "numeric"
+        });
+    }
+
     // =====================================================
     // IDENTITAS PENGGUNA & PENCEGAHAN MULTI-AKUN (1 AKUN PER PERANGKAT)
     // =====================================================
@@ -1328,6 +1504,12 @@
     const mobileAccountArea = document.getElementById("mobile-account-area");
     const heroGreeting = document.getElementById("hero-greeting");
 
+    function getGuestPrivateNotes() {
+        const accountNotes = JSON.parse(localStorage.getItem(`clover_private_curhat_${guestDeviceId}`) || "[]");
+        const legacyNotes = JSON.parse(localStorage.getItem("clover_private_curhat") || "[]");
+        return [...accountNotes, ...legacyNotes];
+    }
+
     async function checkGuestProgressSummary() {
         const todayStr = getTodayDateString();
         const guestDate = localStorage.getItem(`clover_challenge_date_${guestDeviceId}`);
@@ -1335,6 +1517,7 @@
             ? JSON.parse(localStorage.getItem(`clover_challenge_map_${guestDeviceId}`) || "{}")
             : {};
         const doneCount = Object.values(guestMap).filter(Boolean).length;
+        const guestNotes = getGuestPrivateNotes();
 
         let guestStreak = { current: 0, best: 0, lastDate: "" };
         try {
@@ -1353,8 +1536,8 @@
             }
         } catch {}
 
-        const hasProgress = doneCount > 0 || guestStreak.current > 0 || guestStreak.best > 0;
-        return { hasProgress, doneCount, guestMap, guestStreak };
+        const hasProgress = doneCount > 0 || guestStreak.current > 0 || guestStreak.best > 0 || guestNotes.length > 0;
+        return { hasProgress, doneCount, guestMap, guestStreak, guestNotesCount: guestNotes.length };
     }
 
     function showAuthStatus(message, type = "error") {
@@ -1394,9 +1577,13 @@
                 showAuthStatus(`Perangkat ini sudah pernah mendaftarkan akun (@${registeredNickOnDevice}). Silakan masuk menggunakan akun tersebut.`);
             }
 
-            checkGuestProgressSummary().then(({ hasProgress, doneCount, guestStreak }) => {
+            checkGuestProgressSummary().then(({ hasProgress, doneCount, guestStreak, guestNotesCount }) => {
                 if (authMode === "register" && hasProgress) {
-                    guestBindSummary.textContent = `Ditemukan ${doneCount} tantangan hari ini & streak ${guestStreak.current} hari (rekor ${guestStreak.best} hari) siap dipindahkan ke akun baru.`;
+                    const parts = [];
+                    if (doneCount > 0) parts.push(`${doneCount} tantangan hari ini`);
+                    if (guestStreak.current > 0 || guestStreak.best > 0) parts.push(`streak ${guestStreak.current} hari`);
+                    if (guestNotesCount > 0) parts.push(`${guestNotesCount} curhat pribadi`);
+                    guestBindSummary.textContent = `Ditemukan ${parts.join(", ")} dari sesi tamu siap dipindahkan ke akun baru.`;
                     bindGuestProgressCb.checked = true;
                     guestBindBox.classList.remove("hidden");
                 } else {
@@ -1563,19 +1750,28 @@
                 atomicUpdates[`clover/streaks/${cred.user.uid}`] = initialStreakData;
 
                 // Bersihkan streak tamu lama di database jika di-bind ke akun baru
-                if (shouldBindGuest && guestInfo.hasProgress) {
+                if (shouldBindGuest && guestInfo.hasProgress && (guestInfo.guestStreak.current > 0 || guestInfo.guestStreak.best > 0)) {
                     atomicUpdates[`clover/streaks/${guestDeviceId}`] = null;
                 }
 
                 await update(ref(database), atomicUpdates);
 
-                // Pindahkan checklist tantangan hari ini di localStorage ke UID akun baru
-                if (shouldBindGuest && guestInfo.hasProgress && guestInfo.doneCount > 0) {
-                    const todayStr = getTodayDateString();
-                    localStorage.setItem(`clover_challenge_date_${cred.user.uid}`, todayStr);
-                    localStorage.setItem(`clover_challenge_map_${cred.user.uid}`, JSON.stringify(guestInfo.guestMap));
-                    localStorage.removeItem(`clover_challenge_date_${guestDeviceId}`);
-                    localStorage.removeItem(`clover_challenge_map_${guestDeviceId}`);
+                // Pindahkan checklist tantangan & curhat pribadi tamu di localStorage ke UID akun baru
+                if (shouldBindGuest && guestInfo.hasProgress) {
+                    if (guestInfo.doneCount > 0) {
+                        const todayStr = getTodayDateString();
+                        localStorage.setItem(`clover_challenge_date_${cred.user.uid}`, todayStr);
+                        localStorage.setItem(`clover_challenge_map_${cred.user.uid}`, JSON.stringify(guestInfo.guestMap));
+                        localStorage.removeItem(`clover_challenge_date_${guestDeviceId}`);
+                        localStorage.removeItem(`clover_challenge_map_${guestDeviceId}`);
+                    }
+                    const guestNotes = getGuestPrivateNotes();
+                    if (guestNotes.length > 0) {
+                        const existingUserNotes = JSON.parse(localStorage.getItem(`clover_private_curhat_${cred.user.uid}`) || "[]");
+                        localStorage.setItem(`clover_private_curhat_${cred.user.uid}`, JSON.stringify([...guestNotes, ...existingUserNotes]));
+                        localStorage.removeItem(`clover_private_curhat_${guestDeviceId}`);
+                        localStorage.removeItem("clover_private_curhat");
+                    }
                 }
 
                 localStorage.setItem("clover_registered_nick", cleanNick);
@@ -1786,7 +1982,490 @@
     });
 
     // =====================================================
-    // 3. PAPAN KEHANGATAN
+    // 3. CURHAT PRIBADI (CATATAN LOKAL PRIVAT) & TAB SWITCH
+    // =====================================================
+    const curhatTabPrivate = document.getElementById("curhat-tab-private");
+    const curhatTabPublic = document.getElementById("curhat-tab-public");
+    const curhatPrivatePanel = document.getElementById("curhat-private-panel");
+    const curhatPublicPanel = document.getElementById("curhat-public-panel");
+
+    const privateCurhatForm = document.getElementById("private-curhat-form");
+    const privateCurhatInput = document.getElementById("private-curhat-input");
+    const privateCurhatCharCount = document.getElementById("private-curhat-char-count");
+    const privateCurhatList = document.getElementById("private-curhat-list");
+    const privateCurhatCount = document.getElementById("private-curhat-count");
+    const clearAllPrivateCurhatBtn = document.getElementById("clear-all-private-curhat-btn");
+
+    let selectedPrivateMood = "😔 Lelah / Sedih";
+
+    curhatTabPrivate.addEventListener("click", () => {
+        curhatTabPrivate.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition-all flex items-center justify-center gap-2";
+        curhatTabPublic.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs font-extrabold text-slate-600 hover:text-teal-700 transition-all flex items-center justify-center gap-2";
+        curhatPrivatePanel.classList.remove("hidden");
+        curhatPublicPanel.classList.add("hidden");
+    });
+
+    curhatTabPublic.addEventListener("click", () => {
+        curhatTabPublic.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs font-extrabold bg-teal-600 text-white shadow-sm transition-all flex items-center justify-center gap-2";
+        curhatTabPrivate.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs font-extrabold text-slate-600 hover:text-emerald-700 transition-all flex items-center justify-center gap-2";
+        curhatPublicPanel.classList.remove("hidden");
+        curhatPrivatePanel.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".private-mood-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            selectedPrivateMood = btn.getAttribute("data-mood") || "😔 Lelah / Sedih";
+            document.querySelectorAll(".private-mood-btn").forEach((b) => {
+                b.className = "private-mood-btn px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-100 bg-slate-50 text-slate-600 hover:border-emerald-200 transition-all";
+            });
+            btn.className = "private-mood-btn px-3 py-2 rounded-xl text-xs font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-800 transition-all";
+        });
+    });
+
+    privateCurhatInput.addEventListener("input", () => {
+        privateCurhatCharCount.textContent = `${privateCurhatInput.value.length}/1000`;
+    });
+
+    function getPrivateCurhatStorageKey() {
+        return `clover_private_curhat_${currentAccountId}`;
+    }
+
+    function readPrivateCurhats() {
+        const key = getPrivateCurhatStorageKey();
+        let items = JSON.parse(localStorage.getItem(key) || "[]");
+
+        // Migrasi otomatis data lama jika masih tersimpan di key lama tanpa ID
+        if (!currentUser) {
+            const legacy = JSON.parse(localStorage.getItem("clover_private_curhat") || "[]");
+            if (legacy.length > 0) {
+                items = [...items, ...legacy];
+                localStorage.setItem(key, JSON.stringify(items));
+                localStorage.removeItem("clover_private_curhat");
+            }
+        }
+        return items;
+    }
+
+    function savePrivateCurhats(items) {
+        localStorage.setItem(getPrivateCurhatStorageKey(), JSON.stringify(items));
+    }
+
+    function renderPrivateCurhats() {
+        const items = readPrivateCurhats();
+        privateCurhatCount.textContent = items.length;
+
+        if (items.length === 0) {
+            clearAllPrivateCurhatBtn.classList.add("hidden");
+            privateCurhatList.innerHTML = `
+                <div class="md:col-span-2 bg-white rounded-3xl p-10 border-2 border-dashed border-emerald-100 text-center shadow-sm">
+                    <div class="text-4xl text-emerald-200 mb-3"><i class="fa-solid fa-feather-pointed"></i></div>
+                    <h5 class="font-extrabold text-slate-800 text-sm mb-1">Belum ada catatan pribadi</h5>
+                    <p class="text-xs font-medium text-slate-400">Tuliskan perasaanmu di atas kapan pun kamu butuh ruang tenang untuk diri sendiri.</p>
+                </div>
+            `;
+            return;
+        }
+
+        clearAllPrivateCurhatBtn.classList.remove("hidden");
+        privateCurhatList.innerHTML = "";
+
+        items.forEach((item) => {
+            const card = document.createElement("article");
+            card.className = "message-card bg-white p-6 rounded-[2rem] border border-emerald-100/90 shadow-md shadow-slate-200/30 flex flex-col justify-between gap-4";
+
+            card.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] font-extrabold">
+                            ${escapeHTML(item.mood || "🍀 Catatan Hati")}
+                        </span>
+                        <button type="button" class="delete-private-note-btn text-slate-400 hover:text-rose-500 p-1.5 rounded-lg transition-colors text-xs" title="Hapus catatan ini">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap break-words">
+                        ${escapeHTML(item.text)}
+                    </p>
+                </div>
+                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 pt-3 border-t border-slate-100">
+                    <span class="text-emerald-600"><i class="fa-solid fa-lock mr-1"></i> Tersimpan Lokal</span>
+                    <span>${formatDate(item.createdAt)} • ${formatTimeShort(item.createdAt)}</span>
+                </div>
+            `;
+
+            card.querySelector(".delete-private-note-btn").addEventListener("click", () => {
+                const updated = readPrivateCurhats().filter((n) => n.id !== item.id);
+                savePrivateCurhats(updated);
+                renderPrivateCurhats();
+            });
+
+            privateCurhatList.appendChild(card);
+        });
+    }
+
+    privateCurhatForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const text = privateCurhatInput.value.trim();
+        if (!text) return;
+
+        const items = readPrivateCurhats();
+        items.unshift({
+            id: "note_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+            mood: selectedPrivateMood,
+            text: text.slice(0, 1000),
+            createdAt: Date.now()
+        });
+
+        savePrivateCurhats(items);
+        privateCurhatInput.value = "";
+        privateCurhatCharCount.textContent = "0/1000";
+        renderPrivateCurhats();
+    });
+
+    clearAllPrivateCurhatBtn.addEventListener("click", () => {
+        if (confirm("Hapus semua catatan curhat pribadi di perangkat ini?")) {
+            savePrivateCurhats([]);
+            renderPrivateCurhats();
+        }
+    });
+
+    // =====================================================
+    // 4. RUANG CURHAT BERSAMA (PUBLIK)
+    // =====================================================
+    const curhatForm = document.getElementById("curhat-form");
+    const curhatInput = document.getElementById("curhat-input");
+    const curhatSenderInput = document.getElementById("curhat-sender-input");
+    const submitCurhatButton = document.getElementById("submit-curhat-button");
+    const curhatFirebaseStatus = document.getElementById("curhat-firebase-status");
+    const curhatCharCount = document.getElementById("curhat-char-count");
+    const curhatsContainer = document.getElementById("curhats-container");
+
+    let isCurhatInteracting = false;
+    let curhatPauseTimeout = null;
+
+    function pauseCurhatRotationShort() {
+        isCurhatInteracting = true;
+        if (curhatPauseTimeout) clearTimeout(curhatPauseTimeout);
+        curhatPauseTimeout = setTimeout(() => {
+            if (!document.activeElement.closest('#curhat-public-panel .reply-form-wrapper')) {
+                isCurhatInteracting = false;
+            }
+        }, 3000);
+    }
+
+    curhatPublicPanel.addEventListener("mouseenter", () => { isCurhatInteracting = true; });
+    curhatPublicPanel.addEventListener("mouseleave", () => { 
+        if (!document.activeElement.closest('#curhat-public-panel .reply-form-wrapper') && !curhatPauseTimeout) {
+            isCurhatInteracting = false; 
+        }
+    });
+
+    function showCurhatStatus(message, type = "info") {
+        curhatFirebaseStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-teal-50", "text-teal-700", "border-teal-200", "bg-amber-50", "text-amber-700", "border-amber-200");
+        curhatFirebaseStatus.classList.add("border-2");
+        if (type === "error") curhatFirebaseStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+        else if (type === "success") curhatFirebaseStatus.classList.add("bg-teal-50", "text-teal-700", "border-teal-200");
+        else curhatFirebaseStatus.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
+        curhatFirebaseStatus.textContent = message;
+    }
+
+    function hideCurhatStatus() {
+        curhatFirebaseStatus.classList.add("hidden");
+    }
+
+    curhatInput.addEventListener("input", () => {
+        curhatCharCount.textContent = `${curhatInput.value.length}/400`;
+    });
+
+    const curhatRefAll = ref(database, "clover/curhat_publik");
+    let curhatsCache = [];
+    let curhatRotationTimer = null;
+    let curhatStartIndex = 0;
+    let isCurhatInitialLoad = true;
+
+    onValue(curhatRefAll, (snapshot) => {
+        const scrollY = window.scrollY;
+        hideCurhatStatus();
+        const data = snapshot.val();
+
+        if (curhatRotationTimer) {
+            clearInterval(curhatRotationTimer);
+            curhatRotationTimer = null;
+        }
+
+        if (!data) {
+            curhatsContainer.innerHTML = `
+                <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-teal-100 text-center shadow-sm">
+                    <div class="text-5xl text-teal-200 mb-4"><i class="fa-solid fa-comments"></i></div>
+                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada curhat bersama.</h4>
+                    <p class="text-sm font-medium text-slate-400">Jadilah yang pertama berbagi cerita di sini.</p>
+                </div>
+            `;
+            window.scrollTo(0, scrollY);
+            return;
+        }
+
+        curhatsCache = Object.entries(data)
+            .map(([id, val]) => ({ id, ...val }))
+            .filter(c => c.status === "approved");
+
+        curhatsCache.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+        if (curhatsCache.length === 0) {
+            curhatsContainer.innerHTML = `
+                <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-teal-100 text-center shadow-sm">
+                    <div class="text-5xl text-teal-200 mb-4"><i class="fa-solid fa-comments"></i></div>
+                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada curhat yang disetujui.</h4>
+                    <p class="text-sm font-medium text-slate-400">Silakan tunggu moderasi admin.</p>
+                </div>
+            `;
+            window.scrollTo(0, scrollY);
+            return;
+        }
+
+        if (isCurhatInitialLoad) {
+            curhatStartIndex = 0;
+            isCurhatInitialLoad = false;
+        } else {
+            if (curhatStartIndex >= curhatsCache.length) {
+                curhatStartIndex = 0;
+            }
+        }
+
+        renderRotatingCurhats();
+
+        if (curhatsCache.length > 2) {
+            curhatRotationTimer = setInterval(() => {
+                if (!isCurhatInteracting) {
+                    curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
+                    renderRotatingCurhats();
+                }
+            }, 6000);
+        }
+        window.scrollTo(0, scrollY);
+    });
+
+    function renderRotatingCurhats() {
+        if (isCurhatInteracting || curhatsCache.length === 0) return;
+        curhatsContainer.innerHTML = "";
+        curhatsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 max-w-3xl mx-auto";
+
+        const total = curhatsCache.length;
+        const countToDisplay = Math.min(2, total);
+
+        for (let i = 0; i < countToDisplay; i++) {
+            const idx = (curhatStartIndex + i) % total;
+            const curhat = curhatsCache[idx];
+            if (curhat) {
+                renderCurhatCard(curhat, i);
+            }
+        }
+    }
+
+    function renderCurhatCard(curhat, cardIndex) {
+        const card = document.createElement("article");
+        
+        const curhatVariants = [
+            "bg-white border-teal-200/90 shadow-lg shadow-teal-500/5 ring-1 ring-teal-100/50",
+            "bg-gradient-to-br from-teal-50/70 via-white to-cyan-50/50 border-teal-200/70 shadow-lg shadow-cyan-500/5",
+            "bg-gradient-to-br from-emerald-50/60 via-white to-teal-50/60 border-emerald-200/60 shadow-lg shadow-emerald-500/5",
+            "bg-gradient-to-br from-cyan-50/80 via-white to-teal-100/30 border-cyan-200/70 shadow-lg shadow-teal-600/5"
+        ];
+        const chosenVariant = curhatVariants[cardIndex % curhatVariants.length];
+
+        card.className = `message-card ${chosenVariant} p-7 rounded-[2.2rem] hover:-translate-y-1 transition-all flex flex-col h-full relative overflow-hidden`;
+
+        const sender = curhat.sender?.trim() || "Pejuang Tenang";
+        const text = curhat.text?.trim() || "";
+
+        const likesObj = curhat.likes || {};
+        const likeCount = Object.keys(likesObj).length;
+        const hasLiked = Boolean(likesObj[currentAccountId]);
+
+        let repliesHTML = "";
+        const repliesObj = curhat.replies || {};
+        const approvedReplies = Object.entries(repliesObj)
+            .map(([repId, rep]) => ({ repId, ...rep }))
+            .filter(rep => rep.status === "approved");
+
+        if (approvedReplies.length > 0) {
+            approvedReplies.forEach(rep => {
+                repliesHTML += `
+                    <div class="mt-3 p-3 bg-white/80 rounded-2xl border border-slate-100 text-xs space-y-1 shadow-sm">
+                        <div class="font-bold text-slate-700 flex items-center justify-between">
+                            <span>${escapeHTML(rep.sender || "Sahabat Baik")}</span>
+                        </div>
+                        <p class="text-slate-600 italic">"${escapeHTML(rep.text)}"</p>
+                    </div>
+                `;
+            });
+        }
+
+        card.innerHTML = `
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white flex items-center justify-center shrink-0 font-bold shadow-md shadow-teal-500/20">
+                        ${escapeHTML(sender.charAt(0).toUpperCase())}
+                    </div>
+                    <div>
+                        <p class="text-sm font-extrabold text-slate-800">${escapeHTML(sender)}</p>
+                    </div>
+                </div>
+                <button type="button" class="curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm ${hasLiked ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-white hover:bg-teal-50 text-slate-600 border border-slate-200'}" title="Sukai curhat ini">
+                    <i class="${hasLiked ? 'fa-solid text-rose-500' : 'fa-regular text-slate-400'} fa-heart"></i>
+                    <span>${likeCount}</span>
+                </button>
+            </div>
+            <div class="flex-1 mb-4">
+                <p class="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap break-words italic mb-4">
+                    "${escapeHTML(text)}"
+                </p>
+                <div class="space-y-2">
+                    ${repliesHTML}
+                </div>
+            </div>
+
+            <div class="mt-auto pt-4 border-t border-slate-200/60 space-y-3">
+                <button type="button" class="toggle-reply-form w-full bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold py-2.5 px-4 rounded-xl border border-teal-200 transition-all flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-reply"></i> Kasih Dukungan!
+                </button>
+                <div class="reply-form-wrapper hidden space-y-2 bg-white/90 p-3 rounded-2xl border border-teal-200 shadow-inner">
+                    <input type="text" class="reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-teal-400" placeholder="Nama / Panggilan (opsional)" maxlength="30" value="${escapeHTML(currentNickname)}">
+                    <textarea class="reply-text-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium resize-none focus:outline-none focus:border-teal-400" rows="2" placeholder="Tulis kata dukungan..." maxlength="200"></textarea>
+                    <button type="button" class="send-reply-btn bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-xl w-full transition-colors shadow-sm">Kirim Balasan</button>
+                </div>
+                <div class="flex items-center justify-between text-[10px] font-bold text-teal-600 pt-1">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-comments"></i> Ruang Curhat Bersama</span>
+                    <span class="text-slate-400">${formatDate(curhat.createdAt)}</span>
+                </div>
+            </div>
+        `;
+
+        const curhatLikeBtn = card.querySelector(".curhat-like-btn");
+        curhatLikeBtn.addEventListener("click", async () => {
+            pauseCurhatRotationShort();
+            const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${currentAccountId}`);
+            
+            const icon = curhatLikeBtn.querySelector("i");
+            const spanCount = curhatLikeBtn.querySelector("span");
+            let count = parseInt(spanCount.textContent) || 0;
+            const isCurrentlyLiked = curhatLikeBtn.classList.contains("bg-rose-50");
+
+            if (isCurrentlyLiked) {
+                curhatLikeBtn.className = "curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-white hover:bg-teal-50 text-slate-600 border border-slate-200";
+                icon.className = "fa-regular text-slate-400 fa-heart";
+                spanCount.textContent = Math.max(0, count - 1);
+            } else {
+                curhatLikeBtn.className = "curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-rose-50 text-rose-600 border border-rose-200";
+                icon.className = "fa-solid text-rose-500 fa-heart";
+                spanCount.textContent = count + 1;
+            }
+
+            try {
+                if (isCurrentlyLiked) {
+                    await set(likeRef, null);
+                } else {
+                    await set(likeRef, true);
+                }
+            } catch (err) {
+                console.error("Gagal mengubah like curhat:", err);
+            }
+        });
+
+        const toggleBtn = card.querySelector(".toggle-reply-form");
+        const replyWrapper = card.querySelector(".reply-form-wrapper");
+        const sendReplyBtn = card.querySelector(".send-reply-btn");
+        const replySenderInput = card.querySelector(".reply-sender-input");
+        const replyTextInput = card.querySelector(".reply-text-input");
+
+        toggleBtn.addEventListener("click", () => {
+            replyWrapper.classList.toggle("hidden");
+            if (!replyWrapper.classList.contains("hidden") && !replySenderInput.value && currentNickname) {
+                replySenderInput.value = currentNickname;
+            }
+            isCurhatInteracting = !replyWrapper.classList.contains("hidden");
+        });
+
+        replyTextInput.addEventListener("focus", () => { isCurhatInteracting = true; });
+        replySenderInput.addEventListener("focus", () => { isCurhatInteracting = true; });
+
+        sendReplyBtn.addEventListener("click", async () => {
+            const rText = replyTextInput.value.trim();
+            const rSender = replySenderInput.value.trim() || "Sahabat Baik";
+            if (!rText) return;
+
+            if (containsToxicWord(rText) || containsToxicWord(rSender)) {
+                alert("Balasan atau nama mengandung kata yang kurang pantas. Mari saling menguatkan dengan bahasa yang baik 🍀");
+                return;
+            }
+
+            sendReplyBtn.disabled = true;
+            sendReplyBtn.textContent = "Mengirim...";
+
+            try {
+                const repliesRef = ref(database, `clover/curhat_publik/${curhat.id}/replies`);
+                await set(push(repliesRef), {
+                    text: rText,
+                    sender: rSender,
+                    createdAt: Date.now(),
+                    status: "pending"
+                });
+                replyTextInput.value = "";
+                replySenderInput.value = currentNickname || "";
+                replyWrapper.classList.add("hidden");
+                isCurhatInteracting = false;
+                alert("Balasan terkirim dan menunggu moderasi admin 🍀");
+            } catch (err) {
+                alert("Gagal mengirim balasan.");
+            } finally {
+                sendReplyBtn.disabled = false;
+                sendReplyBtn.textContent = "Kirim Balasan";
+            }
+        });
+
+        curhatsContainer.appendChild(card);
+    }
+
+    curhatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = curhatInput.value.trim();
+        const sender = curhatSenderInput.value.trim() || "Pejuang Tenang";
+
+        if (!text || text.length > 400) {
+            showCurhatStatus("Curhat wajib diisi (maksimal 400 karakter).", "error");
+            return;
+        }
+        if (containsToxicWord(text) || containsToxicWord(sender)) {
+            showCurhatStatus("Curhat atau nama mengandung kata yang kurang pantas.", "error");
+            return;
+        }
+
+        submitCurhatButton.disabled = true;
+        submitCurhatButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
+
+        try {
+            const curhatRef = ref(database, "clover/curhat_publik");
+            await set(push(curhatRef), {
+                text,
+                sender,
+                createdAt: Date.now(),
+                status: "pending"
+            });
+            curhatForm.reset();
+            if (currentNickname) curhatSenderInput.value = currentNickname;
+            curhatCharCount.textContent = "0/400";
+            showCurhatStatus("Curhat terkirim! Akan muncul setelah disetujui admin 🍀", "success");
+            setTimeout(hideCurhatStatus, 6000);
+        } catch (err) {
+            showCurhatStatus("Gagal mengirim curhat.", "error");
+        } finally {
+            submitCurhatButton.disabled = false;
+            submitCurhatButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim ke Ruang Bersama`;
+        }
+    });
+
+    // =====================================================
+    // 5. PILAR 3: PAPAN KEHANGATAN
     // =====================================================
     const messageForm = document.getElementById("message-form");
     const messageInput = document.getElementById("message-input");
@@ -1833,15 +2512,6 @@
 
     function hideFirebaseStatus() {
         firebaseStatus.classList.add("hidden");
-    }
-
-    function formatDate(timestamp) {
-        if (!timestamp) return "";
-        const date = new Date(Number(timestamp));
-        if (Number.isNaN(date.getTime())) return "";
-        return date.toLocaleDateString("id-ID", {
-            day: "2-digit", month: "long", year: "numeric"
-        });
     }
 
     const approvedMessagesQuery = query(ref(database, "clover/messages"), orderByChild("status"), equalTo("approved"));
@@ -2135,343 +2805,7 @@
     });
 
     // =====================================================
-    // 4. RUANG CURHAT PUBLIK
-    // =====================================================
-    const curhatForm = document.getElementById("curhat-form");
-    const curhatInput = document.getElementById("curhat-input");
-    const curhatSenderInput = document.getElementById("curhat-sender-input");
-    const submitCurhatButton = document.getElementById("submit-curhat-button");
-    const curhatFirebaseStatus = document.getElementById("curhat-firebase-status");
-    const curhatCharCount = document.getElementById("curhat-char-count");
-    const curhatsContainer = document.getElementById("curhats-container");
-    const curhatPublikSection = document.getElementById("curhat-publik");
-
-    let isCurhatInteracting = false;
-    let curhatPauseTimeout = null;
-
-    function pauseCurhatRotationShort() {
-        isCurhatInteracting = true;
-        if (curhatPauseTimeout) clearTimeout(curhatPauseTimeout);
-        curhatPauseTimeout = setTimeout(() => {
-            if (!document.activeElement.closest('#curhat-publik .reply-form-wrapper')) {
-                isCurhatInteracting = false;
-            }
-        }, 3000);
-    }
-
-    curhatPublikSection.addEventListener("mouseenter", () => { isCurhatInteracting = true; });
-    curhatPublikSection.addEventListener("mouseleave", () => { 
-        if (!document.activeElement.closest('#curhat-publik .reply-form-wrapper') && !curhatPauseTimeout) {
-            isCurhatInteracting = false; 
-        }
-    });
-
-    function showCurhatStatus(message, type = "info") {
-        curhatFirebaseStatus.classList.remove("hidden", "bg-rose-50", "text-rose-700", "border-rose-200", "bg-teal-50", "text-teal-700", "border-teal-200", "bg-amber-50", "text-amber-700", "border-amber-200");
-        curhatFirebaseStatus.classList.add("border-2");
-        if (type === "error") curhatFirebaseStatus.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
-        else if (type === "success") curhatFirebaseStatus.classList.add("bg-teal-50", "text-teal-700", "border-teal-200");
-        else curhatFirebaseStatus.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
-        curhatFirebaseStatus.textContent = message;
-    }
-
-    function hideCurhatStatus() {
-        curhatFirebaseStatus.classList.add("hidden");
-    }
-
-    curhatInput.addEventListener("input", () => {
-        curhatCharCount.textContent = `${curhatInput.value.length}/400`;
-    });
-
-    const curhatRefAll = ref(database, "clover/curhat_publik");
-    let curhatsCache = [];
-    let curhatRotationTimer = null;
-    let curhatStartIndex = 0;
-    let isCurhatInitialLoad = true;
-
-    onValue(curhatRefAll, (snapshot) => {
-        const scrollY = window.scrollY;
-        hideCurhatStatus();
-        const data = snapshot.val();
-
-        if (curhatRotationTimer) {
-            clearInterval(curhatRotationTimer);
-            curhatRotationTimer = null;
-        }
-
-        if (!data) {
-            curhatsContainer.innerHTML = `
-                <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-teal-100 text-center shadow-sm">
-                    <div class="text-5xl text-teal-200 mb-4"><i class="fa-solid fa-comments"></i></div>
-                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada curhat publik.</h4>
-                    <p class="text-sm font-medium text-slate-400">Jadilah yang pertama berbagi cerita di sini.</p>
-                </div>
-            `;
-            window.scrollTo(0, scrollY);
-            return;
-        }
-
-        curhatsCache = Object.entries(data)
-            .map(([id, val]) => ({ id, ...val }))
-            .filter(c => c.status === "approved");
-
-        curhatsCache.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-
-        if (curhatsCache.length === 0) {
-            curhatsContainer.innerHTML = `
-                <div class="md:col-span-2 bg-white rounded-3xl p-12 border-2 border-dashed border-teal-100 text-center shadow-sm">
-                    <div class="text-5xl text-teal-200 mb-4"><i class="fa-solid fa-comments"></i></div>
-                    <h4 class="font-extrabold text-slate-800 mb-2">Belum ada curhat yang disetujui.</h4>
-                    <p class="text-sm font-medium text-slate-400">Silakan tunggu moderasi admin.</p>
-                </div>
-            `;
-            window.scrollTo(0, scrollY);
-            return;
-        }
-
-        if (isCurhatInitialLoad) {
-            curhatStartIndex = 0;
-            isCurhatInitialLoad = false;
-        } else {
-            if (curhatStartIndex >= curhatsCache.length) {
-                curhatStartIndex = 0;
-            }
-        }
-
-        renderRotatingCurhats();
-
-        if (curhatsCache.length > 2) {
-            curhatRotationTimer = setInterval(() => {
-                if (!isCurhatInteracting) {
-                    curhatStartIndex = (curhatStartIndex + 1) % curhatsCache.length;
-                    renderRotatingCurhats();
-                }
-            }, 6000);
-        }
-        window.scrollTo(0, scrollY);
-    });
-
-    function renderRotatingCurhats() {
-        if (isCurhatInteracting || curhatsCache.length === 0) return;
-        curhatsContainer.innerHTML = "";
-        curhatsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto";
-
-        const total = curhatsCache.length;
-        const countToDisplay = Math.min(2, total);
-
-        for (let i = 0; i < countToDisplay; i++) {
-            const idx = (curhatStartIndex + i) % total;
-            const curhat = curhatsCache[idx];
-            if (curhat) {
-                renderCurhatCard(curhat, i);
-            }
-        }
-    }
-
-    function renderCurhatCard(curhat, cardIndex) {
-        const card = document.createElement("article");
-        
-        const curhatVariants = [
-            "bg-white border-teal-200/90 shadow-lg shadow-teal-500/5 ring-1 ring-teal-100/50",
-            "bg-gradient-to-br from-teal-50/70 via-white to-cyan-50/50 border-teal-200/70 shadow-lg shadow-cyan-500/5",
-            "bg-gradient-to-br from-emerald-50/60 via-white to-teal-50/60 border-emerald-200/60 shadow-lg shadow-emerald-500/5",
-            "bg-gradient-to-br from-cyan-50/80 via-white to-teal-100/30 border-cyan-200/70 shadow-lg shadow-teal-600/5"
-        ];
-        const chosenVariant = curhatVariants[cardIndex % curhatVariants.length];
-
-        card.className = `message-card ${chosenVariant} p-7 rounded-[2.2rem] hover:-translate-y-1 transition-all flex flex-col h-full relative overflow-hidden`;
-
-        const sender = curhat.sender?.trim() || "Pejuang Tenang";
-        const text = curhat.text?.trim() || "";
-
-        const likesObj = curhat.likes || {};
-        const likeCount = Object.keys(likesObj).length;
-        const hasLiked = Boolean(likesObj[currentAccountId]);
-
-        let repliesHTML = "";
-        const repliesObj = curhat.replies || {};
-        const approvedReplies = Object.entries(repliesObj)
-            .map(([repId, rep]) => ({ repId, ...rep }))
-            .filter(rep => rep.status === "approved");
-
-        if (approvedReplies.length > 0) {
-            approvedReplies.forEach(rep => {
-                repliesHTML += `
-                    <div class="mt-3 p-3 bg-white/80 rounded-2xl border border-slate-100 text-xs space-y-1 shadow-sm">
-                        <div class="font-bold text-slate-700 flex items-center justify-between">
-                            <span>${escapeHTML(rep.sender || "Sahabat Baik")}</span>
-                        </div>
-                        <p class="text-slate-600 italic">"${escapeHTML(rep.text)}"</p>
-                    </div>
-                `;
-            });
-        }
-
-        card.innerHTML = `
-            <div class="flex items-start justify-between gap-4 mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white flex items-center justify-center shrink-0 font-bold shadow-md shadow-teal-500/20">
-                        ${escapeHTML(sender.charAt(0).toUpperCase())}
-                    </div>
-                    <div>
-                        <p class="text-sm font-extrabold text-slate-800">${escapeHTML(sender)}</p>
-                    </div>
-                </div>
-                <button type="button" class="curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm ${hasLiked ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-white hover:bg-teal-50 text-slate-600 border border-slate-200'}" title="Sukai curhat ini">
-                    <i class="${hasLiked ? 'fa-solid text-rose-500' : 'fa-regular text-slate-400'} fa-heart"></i>
-                    <span>${likeCount}</span>
-                </button>
-            </div>
-            <div class="flex-1 mb-4">
-                <p class="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap break-words italic mb-4">
-                    "${escapeHTML(text)}"
-                </p>
-                <div class="space-y-2">
-                    ${repliesHTML}
-                </div>
-            </div>
-
-            <div class="mt-auto pt-4 border-t border-slate-200/60 space-y-3">
-                <button type="button" class="toggle-reply-form w-full bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold py-2.5 px-4 rounded-xl border border-teal-200 transition-all flex items-center justify-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-reply"></i> Kasih Dukungan!
-                </button>
-                <div class="reply-form-wrapper hidden space-y-2 bg-white/90 p-3 rounded-2xl border border-teal-200 shadow-inner">
-                    <input type="text" class="reply-sender-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-teal-400" placeholder="Nama / Panggilan (opsional)" maxlength="30" value="${escapeHTML(currentNickname)}">
-                    <textarea class="reply-text-input w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium resize-none focus:outline-none focus:border-teal-400" rows="2" placeholder="Tulis kata dukungan..." maxlength="200"></textarea>
-                    <button type="button" class="send-reply-btn bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-xl w-full transition-colors shadow-sm">Kirim Balasan</button>
-                </div>
-                <div class="flex items-center justify-between text-[10px] font-bold text-teal-600 pt-1">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-comments"></i> Ruang Curhat Komunitas</span>
-                    <span class="text-slate-400">${formatDate(curhat.createdAt)}</span>
-                </div>
-            </div>
-        `;
-
-        const curhatLikeBtn = card.querySelector(".curhat-like-btn");
-        curhatLikeBtn.addEventListener("click", async () => {
-            pauseCurhatRotationShort();
-            const likeRef = ref(database, `clover/curhat_publik/${curhat.id}/likes/${currentAccountId}`);
-            
-            const icon = curhatLikeBtn.querySelector("i");
-            const spanCount = curhatLikeBtn.querySelector("span");
-            let count = parseInt(spanCount.textContent) || 0;
-            const isCurrentlyLiked = curhatLikeBtn.classList.contains("bg-rose-50");
-
-            if (isCurrentlyLiked) {
-                curhatLikeBtn.className = "curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-white hover:bg-teal-50 text-slate-600 border border-slate-200";
-                icon.className = "fa-regular text-slate-400 fa-heart";
-                spanCount.textContent = Math.max(0, count - 1);
-            } else {
-                curhatLikeBtn.className = "curhat-like-btn flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-sm bg-rose-50 text-rose-600 border border-rose-200";
-                icon.className = "fa-solid text-rose-500 fa-heart";
-                spanCount.textContent = count + 1;
-            }
-
-            try {
-                if (isCurrentlyLiked) {
-                    await set(likeRef, null);
-                } else {
-                    await set(likeRef, true);
-                }
-            } catch (err) {
-                console.error("Gagal mengubah like curhat:", err);
-            }
-        });
-
-        const toggleBtn = card.querySelector(".toggle-reply-form");
-        const replyWrapper = card.querySelector(".reply-form-wrapper");
-        const sendReplyBtn = card.querySelector(".send-reply-btn");
-        const replySenderInput = card.querySelector(".reply-sender-input");
-        const replyTextInput = card.querySelector(".reply-text-input");
-
-        toggleBtn.addEventListener("click", () => {
-            replyWrapper.classList.toggle("hidden");
-            if (!replyWrapper.classList.contains("hidden") && !replySenderInput.value && currentNickname) {
-                replySenderInput.value = currentNickname;
-            }
-            isCurhatInteracting = !replyWrapper.classList.contains("hidden");
-        });
-
-        replyTextInput.addEventListener("focus", () => { isCurhatInteracting = true; });
-        replySenderInput.addEventListener("focus", () => { isCurhatInteracting = true; });
-
-        sendReplyBtn.addEventListener("click", async () => {
-            const rText = replyTextInput.value.trim();
-            const rSender = replySenderInput.value.trim() || "Sahabat Baik";
-            if (!rText) return;
-
-            if (containsToxicWord(rText) || containsToxicWord(rSender)) {
-                alert("Balasan atau nama mengandung kata yang kurang pantas. Mari saling menguatkan dengan bahasa yang baik 🍀");
-                return;
-            }
-
-            sendReplyBtn.disabled = true;
-            sendReplyBtn.textContent = "Mengirim...";
-
-            try {
-                const repliesRef = ref(database, `clover/curhat_publik/${curhat.id}/replies`);
-                await set(push(repliesRef), {
-                    text: rText,
-                    sender: rSender,
-                    createdAt: Date.now(),
-                    status: "pending"
-                });
-                replyTextInput.value = "";
-                replySenderInput.value = currentNickname || "";
-                replyWrapper.classList.add("hidden");
-                isCurhatInteracting = false;
-                alert("Balasan terkirim dan menunggu moderasi admin 🍀");
-            } catch (err) {
-                alert("Gagal mengirim balasan.");
-            } finally {
-                sendReplyBtn.disabled = false;
-                sendReplyBtn.textContent = "Kirim Balasan";
-            }
-        });
-
-        curhatsContainer.appendChild(card);
-    }
-
-    curhatForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const text = curhatInput.value.trim();
-        const sender = curhatSenderInput.value.trim() || "Pejuang Tenang";
-
-        if (!text || text.length > 400) {
-            showCurhatStatus("Curhat wajib diisi (maksimal 400 karakter).", "error");
-            return;
-        }
-        if (containsToxicWord(text) || containsToxicWord(sender)) {
-            showCurhatStatus("Curhat atau nama mengandung kata yang kurang pantas.", "error");
-            return;
-        }
-
-        submitCurhatButton.disabled = true;
-        submitCurhatButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim...`;
-
-        try {
-            const curhatRef = ref(database, "clover/curhat_publik");
-            await set(push(curhatRef), {
-                text,
-                sender,
-                createdAt: Date.now(),
-                status: "pending"
-            });
-            curhatForm.reset();
-            if (currentNickname) curhatSenderInput.value = currentNickname;
-            curhatCharCount.textContent = "0/400";
-            showCurhatStatus("Curhat terkirim! Akan muncul setelah disetujui admin 🍀", "success");
-            setTimeout(hideCurhatStatus, 6000);
-        } catch (err) {
-            showCurhatStatus("Gagal mengirim curhat.", "error");
-        } finally {
-            submitCurhatButton.disabled = false;
-            submitCurhatButton.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Curhat Publik`;
-        }
-    });
-
-    // =====================================================
-    // 5. TANTANGAN HARIAN, STREAK & PAPAN PERINGKAT (LEADERBOARD)
+    // 6. TANTANGAN HARIAN, STREAK & PAPAN PERINGKAT (LEADERBOARD)
     // =====================================================
     const challengeCheckboxes = document.querySelectorAll(".challenge-checkbox");
     const challengeProgressBar = document.getElementById("challengeProgressBar");
@@ -2813,7 +3147,7 @@
     });
 
     // =====================================================
-    // 6. FITUR ADD TEMAN, OBROLAN HANGAT 1-ON-1, & LAPORAN
+    // 7. FITUR ADD TEMAN, OBROLAN HANGAT 1-ON-1, & LAPORAN
     // =====================================================
     const friendsGuestGate = document.getElementById("friends-guest-gate");
     const friendsLoggedInArea = document.getElementById("friends-logged-in-area");
@@ -3357,7 +3691,7 @@
     });
 
     // =====================================================
-    // 7. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
+    // 8. MASUKAN & SARAN WEB (TERSINKRONISASI PER AKUN)
     // =====================================================
     const feedbackForm = document.getElementById("feedback-form");
     const feedbackInput = document.getElementById("feedback-input");
@@ -3496,7 +3830,7 @@
     });
 
     // =====================================================
-    // 8. PENGATURAN AKUN (EDIT PROFIL, PASSWORD, HAPUS AKUN)
+    // 9. PENGATURAN AKUN (EDIT PROFIL, PASSWORD, HAPUS AKUN)
     // =====================================================
     const accountSettingsModal = document.getElementById("account-settings-modal");
     const closeSettingsModalBtn = document.getElementById("close-settings-modal-btn");
@@ -3743,7 +4077,7 @@
     });
 
     // =====================================================
-    // 9. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
+    // 10. SINKRONISASI UI & STATE SAAT STATUS LOGIN BERUBAH
     // =====================================================
     function applyAccountAutofill() {
         senderInput.value = currentNickname || "";
@@ -3822,6 +4156,7 @@
         }
 
         applyAccountAutofill();
+        renderPrivateCurhats();
         bindStreakListener();
         bindFriendsListener();
         loadChallengeState();
