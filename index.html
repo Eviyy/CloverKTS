@@ -1552,6 +1552,41 @@
         authModalStatus.classList.add("hidden");
     }
 
+    async function verifyAndCleanStaleDeviceLock() {
+        const localNick = localStorage.getItem("clover_registered_nick");
+        let deviceNick = "";
+
+        try {
+            const deviceSnap = await get(ref(database, `clover/device_accounts/${guestDeviceId}`));
+            if (deviceSnap.exists()) {
+                deviceNick = deviceSnap.val()?.cleanNick || "";
+            }
+        } catch (err) {
+            console.warn("Gagal mengecek device_accounts:", err);
+        }
+
+        const nickToCheck = deviceNick || localNick;
+        if (!nickToCheck) {
+            return { locked: false, cleanNick: "" };
+        }
+
+        try {
+            const userSnap = await get(ref(database, `clover/users/${nickToCheck}`));
+            if (userSnap.exists()) {
+                localStorage.setItem("clover_registered_nick", nickToCheck);
+                return { locked: true, cleanNick: nickToCheck };
+            } else {
+                // Akun sudah dihapus! Bersihkan kunci perangkat lama secara otomatis
+                localStorage.removeItem("clover_registered_nick");
+                await set(ref(database, `clover/device_accounts/${guestDeviceId}`), null).catch(() => {});
+                return { locked: false, cleanNick: "" };
+            }
+        } catch (err) {
+            console.warn("Gagal memverifikasi keberadaan akun:", err);
+            return { locked: Boolean(localNick), cleanNick: localNick || "" };
+        }
+    }
+
     function setAuthMode(mode) {
         authMode = mode;
         hideAuthStatus();
@@ -1569,10 +1604,13 @@
             authPassInput.setAttribute("autocomplete", "new-password");
             authSubmitBtn.innerHTML = `<i class="fa-solid fa-user-plus mr-1.5"></i> Daftar & Masuk`;
 
-            const registeredNickOnDevice = localStorage.getItem("clover_registered_nick");
-            if (registeredNickOnDevice) {
-                showAuthStatus(`Perangkat ini sudah pernah mendaftarkan akun (@${registeredNickOnDevice}). Silakan masuk menggunakan akun tersebut.`);
-            }
+            verifyAndCleanStaleDeviceLock().then(({ locked, cleanNick }) => {
+                if (authMode === "register" && locked) {
+                    showAuthStatus(`Perangkat ini sudah pernah mendaftarkan akun (@${cleanNick}). Silakan masuk menggunakan akun tersebut.`);
+                } else {
+                    hideAuthStatus();
+                }
+            });
 
             checkGuestProgressSummary().then(({ hasProgress, doneCount, guestStreak, guestNotesCount }) => {
                 if (authMode === "register" && hasProgress) {
@@ -1693,19 +1731,10 @@
 
         try {
             if (authMode === "register") {
-                const localRegisteredNick = localStorage.getItem("clover_registered_nick");
-                if (localRegisteredNick) {
+                const lockStatus = await verifyAndCleanStaleDeviceLock();
+                if (lockStatus.locked) {
                     isAuthenticating = false;
-                    showAuthStatus(`Setiap perangkat hanya diperbolehkan membuat 1 akun. Silakan masuk dengan akun @${localRegisteredNick}.`);
-                    return;
-                }
-
-                const deviceCheckSnap = await get(ref(database, `clover/device_accounts/${guestDeviceId}`));
-                if (deviceCheckSnap.exists()) {
-                    const existingNick = deviceCheckSnap.val()?.cleanNick || "";
-                    if (existingNick) localStorage.setItem("clover_registered_nick", existingNick);
-                    isAuthenticating = false;
-                    showAuthStatus(`Perangkat ini sudah terdaftar dengan akun${existingNick ? ` @${existingNick}` : ""}. Silakan masuk menggunakan akun tersebut.`);
+                    showAuthStatus(`Setiap perangkat hanya diperbolehkan membuat 1 akun. Silakan masuk dengan akun @${lockStatus.cleanNick}.`);
                     return;
                 }
 
